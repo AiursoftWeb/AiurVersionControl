@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurStore.Tests", "tests\Ai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurVersionControl.Tests", "tests\AiurVersionControl.Tests\AiurVersionControl.Tests.csproj", "{03476D69-6BE7-4757-AACC-6B9E0D3700AF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurCollectionSyncer", "src\AiurCollectionSyncer\AiurCollectionSyncer.csproj", "{BDEC4545-04ED-4A56-9289-101F83D831A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,18 @@ Global
 		{03476D69-6BE7-4757-AACC-6B9E0D3700AF}.Release|x64.Build.0 = Release|Any CPU
 		{03476D69-6BE7-4757-AACC-6B9E0D3700AF}.Release|x86.ActiveCfg = Release|Any CPU
 		{03476D69-6BE7-4757-AACC-6B9E0D3700AF}.Release|x86.Build.0 = Release|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Debug|x64.Build.0 = Debug|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Debug|x86.Build.0 = Debug|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Release|x64.ActiveCfg = Release|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Release|x64.Build.0 = Release|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Release|x86.ActiveCfg = Release|Any CPU
+		{BDEC4545-04ED-4A56-9289-101F83D831A7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -112,6 +126,7 @@ Global
 		{A245211C-3C06-463B-AE01-AB45D77E4403} = {62B32D96-CE0C-4DB1-9675-00846867EE62}
 		{24B12066-E34C-47CB-8258-5A80269862E5} = {62B32D96-CE0C-4DB1-9675-00846867EE62}
 		{03476D69-6BE7-4757-AACC-6B9E0D3700AF} = {62B32D96-CE0C-4DB1-9675-00846867EE62}
+		{BDEC4545-04ED-4A56-9289-101F83D831A7} = {24C2CE11-A0CD-44B8-9946-94A70F897534}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0188878-FDED-49EB-9F3D-9BDA29D52347}
