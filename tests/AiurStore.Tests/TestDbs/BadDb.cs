@@ -1,11 +1,12 @@
 ﻿using AiurStore.Models;
-using AiurStore.Providers.MemoryProvider;
 
 namespace AiurStore.Tests.TestDbs
 {
-    public class MemoryTestDb : InOutDatabase<string>
+    public class BadDb : InOutDatabase<string>
     {
         protected override void OnConfiguring(InOutDbOptions options)
-            => options.UseMemoryStore();
+        {
+
+        }
     }
 }

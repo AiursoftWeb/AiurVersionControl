@@ -14,7 +14,7 @@ namespace AiurStore.Models
             this.OnConfiguring(_options);
             if (_options.Provider == null)
             {
-                throw new InvalidOperationException("No file store configured!");
+                throw new InvalidOperationException("No store service configured!");
             }
         }
 

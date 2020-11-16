@@ -10,7 +10,7 @@ namespace AiurStore.Tests
         [TestMethod]
         public void BasicTest()
         {
-            var fileStore = new MemoryTestDb();
+            var fileStore = new FileTestDb();
             fileStore.Drop();
             fileStore.Insert("House");
             fileStore.Insert("Home");
