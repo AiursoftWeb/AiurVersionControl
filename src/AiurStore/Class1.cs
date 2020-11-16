@@ -1,24 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace AiurStore
 {
     public abstract class InOutDatabase<T>
     {
-        public abstract IQueryable<T> Query();
-        public abstract void Insert(T newObject);
-    }
-
-    public class FileInOutDatabase<T> : InOutDatabase<T>
-    {
-        public override void Insert(T newObject)
+        private readonly InOutDbOptions _options;
+        public InOutDatabase()
         {
-            throw new NotImplementedException();
+            _options = new InOutDbOptions();
+            this.OnConfiguring(_options);
+            if (_options.Provider == null)
+            {
+                throw new InvalidOperationException("No file store configured!");
+            }
         }
 
-        public override IQueryable<T> Query()
+        public IEnumerable<T> Query()
         {
-            throw new NotImplementedException();
+            return _options.Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t));
         }
+
+        public void Insert(T newObject)
+        {
+            _options.Provider.Insert(JsonSerializer.Serialize(newObject));
+        }
+
+        public void Drop()
+        {
+            _options.Provider.Drop();
+        }
+
+        protected abstract void OnConfiguring(InOutDbOptions options);
     }
 }
