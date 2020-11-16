@@ -5,7 +5,7 @@ using System.Linq;
 namespace AiurStore.Tests
 {
     [TestClass]
-    public class TestInFileDb
+    public class TestInMemoryDb
     {
         [TestMethod]
         public void BasicTest()
