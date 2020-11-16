@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AiurEventSyncer
+﻿namespace AiurEventSyncer
 {
     public class Class1
     {

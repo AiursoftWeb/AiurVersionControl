@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AiurVersionControl
+﻿namespace AiurVersionControl
 {
     public class Class1
     {

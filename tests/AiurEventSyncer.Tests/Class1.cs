@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AiurEventSyncer.Tests
+﻿namespace AiurEventSyncer.Tests
 {
     public class Class1
     {

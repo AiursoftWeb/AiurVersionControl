@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AiurCollectionSyncer
+﻿namespace AiurCollectionSyncer
 {
     public class Class1
     {

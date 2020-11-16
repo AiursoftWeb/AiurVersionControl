@@ -1,22 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using AiurStore.Tests.TestDbs;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
 namespace AiurStore.Tests
 {
-    public class MyTestDb : InOutDatabase<string>
-    {
-        protected override void OnConfiguring(InOutDbOptions options)
-            => options.UseFileStore("test.txt");
-    }
-
     [TestClass]
-    public class Class1
+    public class TestInFileDb
     {
         [TestMethod]
-        public void Test()
+        public void BasicTest()
         {
-            var fileStore = new MyTestDb();
+            var fileStore = new FileTestDb();
             fileStore.Drop();
             fileStore.Insert("House");
             fileStore.Insert("Home");

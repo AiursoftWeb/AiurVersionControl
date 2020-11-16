@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AiurVersionControl.Tests
+﻿namespace AiurVersionControl.Tests
 {
     public class Class1
     {
