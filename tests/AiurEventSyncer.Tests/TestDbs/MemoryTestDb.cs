@@ -1,4 +1,5 @@
-﻿using AiurStore.Models;
+﻿using AiurEventSyncer.Models;
+using AiurStore.Models;
 using AiurStore.Providers.MemoryProvider;
 using System;
 using System.Collections.Generic;
