@@ -12,9 +12,9 @@ namespace AiurStore.Tests
         {
             var fileStore = new MemoryTestDb();
             fileStore.Drop();
-            fileStore.Insert("House");
-            fileStore.Insert("Home");
-            fileStore.Insert("Room");
+            fileStore.Add("House");
+            fileStore.Add("Home");
+            fileStore.Add("Room");
 
             TestExtends.AssertDb(fileStore, "House", "Home", "Room");
         }

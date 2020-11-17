@@ -28,7 +28,7 @@ namespace AiurStore.Providers.FileProvider
             fileSteam.WriteLine(newItem);
         }
 
-        public void Drop()
+        public void Clear()
         {
             if (File.Exists(path))
             {

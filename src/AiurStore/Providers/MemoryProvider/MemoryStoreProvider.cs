@@ -8,7 +8,7 @@ namespace AiurStore.Providers.MemoryProvider
     {
         private readonly ConcurrentQueue<string> _store = new ConcurrentQueue<string>();
 
-        public void Drop()
+        public void Clear()
         {
             _store.Clear();
         }

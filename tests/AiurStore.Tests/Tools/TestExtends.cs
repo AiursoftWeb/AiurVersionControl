@@ -8,11 +8,11 @@ namespace AiurStore.Tests.Tools
     {
         public static void AssertDb<T>(InOutDatabase<T> db, params T[] array)
         {
-            for (int i = 0; i < db.Query().Count(); i++)
+            for (int i = 0; i < db.Count(); i++)
             {
-                Assert.AreEqual(db.Query().ToArray()[i], array[i]);
+                Assert.AreEqual(db.ToArray()[i], array[i]);
             }
-            Assert.AreEqual(db.Query().Count(), array.Length);
+            Assert.AreEqual(db.Count(), array.Length);
         }
     }
 }

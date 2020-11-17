@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
 namespace AiurStore.Models
 {
-    public abstract class InOutDatabase<T>
+    public abstract class InOutDatabase<T> : IEnumerable<T>
     {
         private readonly InOutDbOptions _options;
         public InOutDatabase()
@@ -18,21 +19,26 @@ namespace AiurStore.Models
             }
         }
 
-        public IEnumerable<T> Query()
-        {
-            return _options.Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t));
-        }
+        protected abstract void OnConfiguring(InOutDbOptions options);
 
-        public void Insert(T newObject)
+        public void Add(T newObject)
         {
             _options.Provider.Insert(JsonSerializer.Serialize(newObject));
         }
 
         public void Drop()
         {
-            _options.Provider.Drop();
+            _options.Provider.Clear();
         }
 
-        protected abstract void OnConfiguring(InOutDbOptions options);
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _options.Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t)).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

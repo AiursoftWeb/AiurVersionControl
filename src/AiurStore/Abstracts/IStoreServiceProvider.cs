@@ -6,6 +6,6 @@ namespace AiurStore.Abstracts
     {
         public IEnumerable<string> GetAll();
         public void Insert(string newItem);
-        public void Drop();
+        public void Clear();
     }
 }

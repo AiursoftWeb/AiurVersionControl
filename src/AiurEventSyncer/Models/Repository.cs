@@ -7,7 +7,7 @@ namespace AiurEventSyncer.Models
 {
     public class Repository<T>
     {
-        public IEnumerable<Commit<T>> Commits => _commits.Query();
+        public IEnumerable<Commit<T>> Commits => _commits;
         private InOutDatabase<Commit<T>> _commits { get; }
         public List<IRemote<T>> Remotes { get; } = new List<IRemote<T>>();
 
@@ -18,7 +18,7 @@ namespace AiurEventSyncer.Models
 
         public void Commit(T content)
         {
-            _commits.Insert(new Commit<T>
+            _commits.Add(new Commit<T>
             {
                 Item = content
             });
@@ -40,7 +40,7 @@ namespace AiurEventSyncer.Models
             var subtraction = remoteRecord.DownloadFrom(remoteRecord.LocalPointerPosition?.Id);
             foreach (var subtract in subtraction)
             {
-                _commits.Insert(subtract);
+                _commits.Add(subtract);
                 remoteRecord.LocalPointerPosition = subtract;
             }
         }
