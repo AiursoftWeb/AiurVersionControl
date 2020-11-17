@@ -1,7 +1,6 @@
 ﻿using AiurStore.Tests.TestDbs;
 using AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace AiurStore.Tests
 {
