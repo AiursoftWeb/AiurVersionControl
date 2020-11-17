@@ -25,16 +25,16 @@ namespace AiurEventSyncer
 
         public Commit<T> LocalPointerPosition { get; set; }
 
-        public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
+        public IEnumerable<Commit<T>> DownloadFrom(string sourcePointerPosition)
         {
-            var yielding = false;
+            var yielding = string.IsNullOrWhiteSpace(sourcePointerPosition);
             foreach (var commit in _localRepository.Commits.Query())
             {
                 if (yielding)
                 {
                     yield return commit;
                 }
-                if (commit.Id == localPointerPosition)
+                if (commit.Id == sourcePointerPosition)
                 {
                     yielding = true;
                 }
@@ -71,24 +71,32 @@ namespace AiurEventSyncer
 
     public class Commit<T>
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString("D");
         public T Item { get; set; }
     }
 
     public class Repository<T>
     {
         public InOutDatabase<Commit<T>> Commits { get; set; }
-        public List<IRemote<T>> Remotes { get; set; }
+        public List<IRemote<T>> Remotes { get; set; } = new List<IRemote<T>>();
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
             Commits = dbProvider;
         }
 
-        public void Pull(IRemote<T> remote)
+        public void Commit(T content)
         {
-            var remotePointerPositionId = remote.GetRemotePointerPositionId();
-            if (remotePointerPositionId == remote.LocalPointerPosition.Id)
+            Commits.Insert(new Commit<T>
+            {
+                Item = content
+            });
+        }
+
+        public void Pull(IRemote<T> remoteRecord)
+        {
+            var remotePointerPositionId = remoteRecord.GetRemotePointerPositionId();
+            if (remotePointerPositionId == remoteRecord.LocalPointerPosition?.Id)
             {
                 return;
             }
@@ -97,11 +105,11 @@ namespace AiurEventSyncer
                 return;
             }
 
-            var subtraction = remote.DownloadFrom(remote.LocalPointerPosition.Id);
+            var subtraction = remoteRecord.DownloadFrom(remoteRecord.LocalPointerPosition?.Id);
             foreach (var subtract in subtraction)
             {
                 Commits.Insert(subtract);
-                remote.LocalPointerPosition = subtract;
+                remoteRecord.LocalPointerPosition = subtract;
             }
         }
 

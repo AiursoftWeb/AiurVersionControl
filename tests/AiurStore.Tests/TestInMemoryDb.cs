@@ -1,4 +1,5 @@
 ﻿using AiurStore.Tests.TestDbs;
+using AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
@@ -15,11 +16,8 @@ namespace AiurStore.Tests
             fileStore.Insert("House");
             fileStore.Insert("Home");
             fileStore.Insert("Room");
-            var result = fileStore.Query().Where(t => t.StartsWith("H")).ToList();
 
-            Assert.AreEqual(result.Count, 2);
-            Assert.IsTrue(result.Any(t => t == "Home"));
-            Assert.IsTrue(result.Any(t => t == "House"));
+            TestExtends.AssertDb(fileStore, "House", "Home", "Room");
         }
     }
 }

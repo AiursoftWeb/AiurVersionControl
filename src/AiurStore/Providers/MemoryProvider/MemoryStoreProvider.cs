@@ -6,7 +6,7 @@ namespace AiurStore.Providers.MemoryProvider
 {
     public class MemoryStoreProvider : IStoreProvider
     {
-        private readonly ConcurrentBag<string> _store = new ConcurrentBag<string>();
+        private readonly ConcurrentQueue<string> _store = new ConcurrentQueue<string>();
 
         public void Drop()
         {
@@ -20,7 +20,7 @@ namespace AiurStore.Providers.MemoryProvider
 
         public void Insert(string newItem)
         {
-            _store.Add(newItem);
+            _store.Enqueue(newItem);
         }
     }
 }
