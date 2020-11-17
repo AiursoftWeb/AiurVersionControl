@@ -22,6 +22,17 @@ namespace AiurEventSyncer.Tests
         }
 
         [TestMethod]
+        public void SelfPullTest()
+        {
+            _demoRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
+            _demoRepo.Pull();
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+
+            _demoRepo.Pull();
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+        }
+
+        [TestMethod]
         public void MeaninglessPullTest()
         {
             var localRepo = new Repository<int>(new MemoryTestDb());
@@ -67,20 +78,20 @@ namespace AiurEventSyncer.Tests
             localRepo.Pull();
             TestExtends.AssertRepo(localRepo, 1, 2, 3);
 
-            localRepo.Commit(10);
+            localRepo.Commit(100);
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10);
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 100);
             TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
 
             _demoRepo.Commit(20);
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10);
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 100);
             TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10, 20);
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 100);
             TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20);
         }
 

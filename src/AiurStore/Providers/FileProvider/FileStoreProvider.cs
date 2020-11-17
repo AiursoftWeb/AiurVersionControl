@@ -1,6 +1,7 @@
 ﻿using AiurStore.Abstracts;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace AiurStore.Providers.FileProvider
 {
@@ -22,7 +23,7 @@ namespace AiurStore.Providers.FileProvider
             return File.ReadLines(path);
         }
 
-        public void Insert(string newItem)
+        public void Add(string newItem)
         {
             using var fileSteam = File.AppendText(path);
             fileSteam.WriteLine(newItem);
@@ -34,6 +35,17 @@ namespace AiurStore.Providers.FileProvider
             {
                 File.Delete(path);
             }
+        }
+
+        public void Insert(int index, string newItem)
+        {
+            if (!File.Exists(path))
+            {
+                File.Create(path);
+            }
+            var txtLines = File.ReadAllLines(path).ToList();
+            txtLines.Insert(index, newItem);
+            File.WriteAllLines(path, txtLines);
         }
     }
 }

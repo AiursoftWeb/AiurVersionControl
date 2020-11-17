@@ -6,7 +6,7 @@ namespace AiurStore.Providers.MemoryProvider
 {
     public class MemoryStoreProvider : IStoreProvider
     {
-        private readonly ConcurrentQueue<string> _store = new ConcurrentQueue<string>();
+        private readonly List<string> _store = new List<string>();
 
         public void Clear()
         {
@@ -18,9 +18,14 @@ namespace AiurStore.Providers.MemoryProvider
             return _store;
         }
 
-        public void Insert(string newItem)
+        public void Add(string newItem)
         {
-            _store.Enqueue(newItem);
+            _store.Add(newItem);
+        }
+
+        public void Insert(int index, string newItem)
+        {
+            _store.Insert(index, newItem);
         }
     }
 }

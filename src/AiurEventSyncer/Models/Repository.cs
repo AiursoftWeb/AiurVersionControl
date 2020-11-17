@@ -1,7 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Remotes;
 using AiurStore.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,11 +45,11 @@ namespace AiurEventSyncer.Models
                 {
                     if (localAfter.Id == subtract.Id)
                     {
-                        // Patch
+                        // Commit exsits locally.
                     }
                     else
                     {
-                        throw new InvalidOperationException();
+                        Commits.InsertAfter(t => t.Id == remoteRecord.LocalPointerPosition?.Id, subtract);
                     }
                 }
                 else

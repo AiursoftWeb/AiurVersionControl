@@ -11,12 +11,13 @@ namespace AiurStore.Tests
         public void BasicTest()
         {
             var fileStore = new MemoryTestDb();
-            fileStore.Drop();
+            fileStore.Clear();
             fileStore.Add("House");
             fileStore.Add("Home");
             fileStore.Add("Room");
+            fileStore.InsertAfter(t => t.StartsWith("Hom"), "Home2");
 
-            TestExtends.AssertDb(fileStore, "House", "Home", "Room");
+            TestExtends.AssertDb(fileStore, "House", "Home", "Home2", "Room");
         }
     }
 }

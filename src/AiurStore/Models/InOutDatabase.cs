@@ -23,12 +23,31 @@ namespace AiurStore.Models
 
         public void Add(T newObject)
         {
-            _options.Provider.Insert(JsonSerializer.Serialize(newObject));
+            _options.Provider.Add(JsonSerializer.Serialize(newObject));
         }
 
-        public void Drop()
+        public void Clear()
         {
             _options.Provider.Clear();
+        }
+
+        public void Insert(int index, T newObject)
+        {
+            _options.Provider.Insert(index, JsonSerializer.Serialize(newObject));
+        }
+
+        public void InsertAfter(Func<T, bool> predicate, T newObject)
+        {
+            int i = 0;
+            foreach (var item in this)
+            {
+                if (predicate(item))
+                {
+                    Insert(i + 1, newObject);
+                    return;
+                }
+                i++;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
