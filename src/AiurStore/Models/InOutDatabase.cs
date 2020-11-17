@@ -38,22 +38,24 @@ namespace AiurStore.Models
 
         public void InsertAfter(Func<T, bool> predicate, T newObject)
         {
-            var index = GetInsertIndex(predicate);
-            Insert(index, newObject);
+            if (GetInsertIndex(predicate, out int index))
+            {
+                Insert(index, newObject);
+            }
         }
 
-        private int GetInsertIndex(Func<T, bool> predicate)
+        private bool GetInsertIndex(Func<T, bool> predicate, out int index)
         {
-            int i = 0;
+            index = 1;
             foreach (var item in this)
             {
                 if (predicate(item))
                 {
-                    return i + 1;
+                    return true;
                 }
-                i++;
+                index++;
             }
-            return -1;
+            return false;
         }
 
         public IEnumerator<T> GetEnumerator()

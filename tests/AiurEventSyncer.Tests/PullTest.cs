@@ -1,7 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Tools;
-using AiurStore.Providers.MemoryProvider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AiurEventSyncer.Tests
