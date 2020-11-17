@@ -1,4 +1,5 @@
-﻿using AiurStore.Tests.TestDbs;
+﻿using AiurStore.Providers.MemoryProvider;
+using AiurStore.Tests.TestDbs;
 using AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,7 +11,7 @@ namespace AiurStore.Tests
         [TestMethod]
         public void BasicTest()
         {
-            var fileStore = new MemoryTestDb();
+            var fileStore = new MemoryAiurStoreDb<string>();
             fileStore.Clear();
             fileStore.Add("House");
             fileStore.Add("Home");

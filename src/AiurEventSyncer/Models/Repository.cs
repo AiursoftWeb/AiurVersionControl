@@ -1,6 +1,7 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
 using AiurStore.Models;
+using AiurStore.Providers.MemoryProvider;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,8 @@ namespace AiurEventSyncer.Models
     {
         public InOutDatabase<Commit<T>> Commits { get; }
         public List<IRemote<T>> Remotes { get; } = new List<IRemote<T>>();
+
+        public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {

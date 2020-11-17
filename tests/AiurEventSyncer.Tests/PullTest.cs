@@ -1,7 +1,7 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
-using AiurEventSyncer.Tests.TestDbs;
 using AiurEventSyncer.Tests.Tools;
+using AiurStore.Providers.MemoryProvider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AiurEventSyncer.Tests
@@ -14,7 +14,7 @@ namespace AiurEventSyncer.Tests
         [TestInitialize]
         public void GetBasicRepo()
         {
-            _demoRepo = new Repository<int>(new MemoryTestDb());
+            _demoRepo = new Repository<int>();
             _demoRepo.Commit(1);
             _demoRepo.Commit(2);
             _demoRepo.Commit(3);
@@ -35,7 +35,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public void MeaninglessPullTest()
         {
-            var localRepo = new Repository<int>(new MemoryTestDb());
+            var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
 
             localRepo.Pull();
@@ -49,7 +49,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public void MultiplePullTest()
         {
-            var localRepo = new Repository<int>(new MemoryTestDb());
+            var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
             TestExtends.AssertRepo(localRepo, 1, 2, 3);
@@ -73,7 +73,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public void PullWithLocalCommitTest()
         {
-            var localRepo = new Repository<int>(new MemoryTestDb());
+            var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
             TestExtends.AssertRepo(localRepo, 1, 2, 3);
@@ -98,7 +98,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public void PullWithManualCommitTest()
         {
-            var localRepo = new Repository<int>(new MemoryTestDb());
+            var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
             TestExtends.AssertRepo(localRepo, 1, 2, 3);
@@ -127,7 +127,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public void PullWithResetRemoteTest()
         {
-            var localRepo = new Repository<int>(new MemoryTestDb());
+            var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
             TestExtends.AssertRepo(localRepo, 1, 2, 3);
