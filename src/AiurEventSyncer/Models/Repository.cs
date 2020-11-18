@@ -2,7 +2,6 @@
 using AiurEventSyncer.Tools;
 using AiurStore.Models;
 using AiurStore.Providers.MemoryProvider;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,13 +38,9 @@ namespace AiurEventSyncer.Models
             foreach (var subtract in subtraction)
             {
                 var localAfter = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id).FirstOrDefault();
-                if (localAfter != null)
+                if (localAfter is not null)
                 {
-                    if (localAfter.Id == subtract.Id)
-                    {
-                        // Commit exists locally.
-                    }
-                    else
+                    if (localAfter.Id != subtract.Id)
                     {
                         Commits.InsertAfter(t => t.Id == remoteRecord.LocalPointer?.Id, subtract);
                     }
@@ -66,23 +61,20 @@ namespace AiurEventSyncer.Models
         public void Push(IRemote<T> remoteRecord)
         {
             var commitsToPush = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id);
-            remoteRecord.UploadFrom(remoteRecord.LocalPointer?.Id, commitsToPush);
+            var remotePointer = remoteRecord.UploadFrom(remoteRecord.LocalPointer?.Id, commitsToPush);
+            remoteRecord.LocalPointer = Commits.FirstOrDefault(t => t.Id == remotePointer);
         }
 
-        public void OnPushing(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public string OnPushing(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             foreach (var commit in commitsToPush)
             {
                 var localAfter = Commits.AfterCommitId(startPosition).FirstOrDefault();
-                if (localAfter != null)
+                if (localAfter is not null)
                 {
-                    if (commit.Id == localAfter.Id)
+                    if (commit.Id != localAfter.Id && Commits.Last().Id != commit.Id)
                     {
-                        // Commit exists locally.
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("You can't push because remote repo has some changes you don't have.");
+                        Commits.Add(commit);
                     }
                 }
                 else
@@ -91,6 +83,7 @@ namespace AiurEventSyncer.Models
                 }
                 startPosition = commit.Id;
             }
+            return startPosition;
         }
     }
 }

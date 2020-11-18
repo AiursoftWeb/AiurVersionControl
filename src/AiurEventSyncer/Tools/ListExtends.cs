@@ -7,7 +7,7 @@ namespace AiurEventSyncer.Tools
     {
         public static IEnumerable<T> After<T>(this IEnumerable<T> source, Func<T, bool> func)
         {
-            bool yielding = false;
+            var yielding = false;
             foreach (var item in source)
             {
                 if (yielding)

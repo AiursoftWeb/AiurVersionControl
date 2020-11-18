@@ -21,7 +21,7 @@ namespace AiurEventSyncer.Remotes
             throw new NotImplementedException();
         }
 
-        public void UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             throw new NotImplementedException();
         }

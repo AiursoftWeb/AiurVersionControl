@@ -7,6 +7,6 @@ namespace AiurEventSyncer.Abstract
     {
         public Commit<T> LocalPointer { get; set; }
         IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition);
-        void UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush);
+        string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush);
     }
 }

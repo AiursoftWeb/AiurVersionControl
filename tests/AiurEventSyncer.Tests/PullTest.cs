@@ -162,15 +162,15 @@ namespace AiurEventSyncer.Tests
             localRepo.Commits.Add(manual20SyncedCommit);
             _demoRepo.Commits.Add(manual20SyncedCommit);
             _demoRepo.Commits.Add(manual10SyncedCommit);
-            _demoRepo.Commit(30);
+            _demoRepo.Commit(300);
 
             TestExtends.AssertRepo(localRepo, 1, 2, 3, 10, 20);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 30);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 300);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 10, 30, 20);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 30);
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 10, 300, 20);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 300);
         }
     }
 }

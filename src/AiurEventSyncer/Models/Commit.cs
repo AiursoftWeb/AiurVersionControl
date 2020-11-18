@@ -6,5 +6,11 @@ namespace AiurEventSyncer.Models
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("D");
         public T Item { get; set; }
+        public DateTime Date { get; set; } = DateTime.UtcNow;
+
+        public override string ToString()
+        {
+            return $"{Item}";
+        }
     }
 }

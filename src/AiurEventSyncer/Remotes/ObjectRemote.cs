@@ -2,7 +2,6 @@
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AiurEventSyncer.Remotes
 {
@@ -22,9 +21,9 @@ namespace AiurEventSyncer.Remotes
             return _localRepository.Commits.AfterCommitId(sourcePointerPosition);
         }
 
-        public void UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
-            _localRepository.OnPushing(startPosition, commitsToPush);
+            return _localRepository.OnPushing(startPosition, commitsToPush);
         }
     }
 }
