@@ -13,16 +13,16 @@ namespace AiurEventSyncer.Tests
     [TestClass]
     public class MergeTest
     {
-        private Repository<int> _demoRepo;
+        private Repository<int> _localRepo;
 
         [TestInitialize]
         public void GetBasicRepo()
         {
-            _demoRepo = new Repository<int>();
-            _demoRepo.Commit(1);
-            _demoRepo.Commit(2);
-            _demoRepo.Commit(3);
-            _demoRepo.Assert(1, 2, 3);
+            _localRepo = new Repository<int>();
+            _localRepo.Commit(1);
+            _localRepo.Commit(2);
+            _localRepo.Commit(3);
+            _localRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
@@ -32,19 +32,19 @@ namespace AiurEventSyncer.Tests
             remoteRepo.Commit(20);
             remoteRepo.Assert(20);
 
-            _demoRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
-            _demoRepo.Pull();
+            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            _localRepo.Pull();
 
-            _demoRepo.Assert(20, 1, 2, 3);
+            _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20);
 
-            _demoRepo.Push();
+            _localRepo.Push();
 
-            _demoRepo.Assert(20, 1, 2, 3);
+            _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 1, 2, 3);
 
-            _demoRepo.Pull();
-            _demoRepo.Assert(20, 1, 2, 3);
+            _localRepo.Pull();
+            _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 1, 2, 3);
         }
     }
