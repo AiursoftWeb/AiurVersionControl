@@ -44,6 +44,22 @@ namespace AiurStore.Models
             }
         }
 
+        public IEnumerable<T> After(Func<T, bool> func)
+        {
+            var yielding = false;
+            foreach (var item in this)
+            {
+                if (yielding)
+                {
+                    yield return item;
+                }
+                if (func(item))
+                {
+                    yielding = true;
+                }
+            }
+        }
+
         private bool GetInsertIndex(Func<T, bool> predicate, out int index)
         {
             index = 1;

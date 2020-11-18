@@ -11,6 +11,7 @@ namespace AiurEventSyncer.Models
     {
         public InOutDatabase<Commit<T>> Commits { get; }
         public List<IRemote<T>> Remotes { get; } = new List<IRemote<T>>();
+        public Commit<T> Head => Commits.LastOrDefault();
 
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
@@ -42,7 +43,7 @@ namespace AiurEventSyncer.Models
                 {
                     if (localAfter.Id != subtract.Id)
                     {
-                        Commits.InsertAfter(t => t.Id == remoteRecord.LocalPointer?.Id, subtract);
+                        Commits.InsertAfterCommitId(remoteRecord.LocalPointer?.Id, subtract);
                     }
                 }
                 else

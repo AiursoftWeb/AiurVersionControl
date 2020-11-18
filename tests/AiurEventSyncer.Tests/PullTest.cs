@@ -17,7 +17,7 @@ namespace AiurEventSyncer.Tests
             _demoRepo.Commit(1);
             _demoRepo.Commit(2);
             _demoRepo.Commit(3);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+            _demoRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
@@ -25,10 +25,10 @@ namespace AiurEventSyncer.Tests
         {
             _demoRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             _demoRepo.Pull();
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+            _demoRepo.Assert(1, 2, 3);
 
             _demoRepo.Pull();
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+            _demoRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
@@ -38,11 +38,11 @@ namespace AiurEventSyncer.Tests
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
 
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
 
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
+            _demoRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
@@ -51,13 +51,13 @@ namespace AiurEventSyncer.Tests
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
 
             localRepo.Remotes.Clear();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
@@ -66,25 +66,25 @@ namespace AiurEventSyncer.Tests
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
 
             _demoRepo.Commit(5);
             _demoRepo.Commit(7);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 5, 7);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 5, 7);
+            localRepo.Assert(1, 2, 3, 5, 7);
+            _demoRepo.Assert(1, 2, 3, 5, 7);
 
             _demoRepo.Commit(9);
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 5, 7);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 5, 7, 9);
+            localRepo.Assert(1, 2, 3, 5, 7);
+            _demoRepo.Assert(1, 2, 3, 5, 7, 9);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 5, 7, 9);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 5, 7, 9);
+            localRepo.Assert(1, 2, 3, 5, 7, 9);
+            _demoRepo.Assert(1, 2, 3, 5, 7, 9);
         }
 
         [TestMethod]
@@ -93,24 +93,24 @@ namespace AiurEventSyncer.Tests
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
 
             localRepo.Commit(100);
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 100);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3, 100);
+            _demoRepo.Assert(1, 2, 3);
 
             _demoRepo.Commit(20);
             _demoRepo.Commit(30);
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 100);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 30);
+            localRepo.Assert(1, 2, 3, 100);
+            _demoRepo.Assert(1, 2, 3, 20, 30);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 30, 100);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 30);
+            localRepo.Assert(1, 2, 3, 20, 30, 100);
+            _demoRepo.Assert(1, 2, 3, 20, 30);
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace AiurEventSyncer.Tests
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
 
             var manualSyncedCommit = new Commit<int>
             {
@@ -128,18 +128,18 @@ namespace AiurEventSyncer.Tests
             localRepo.Commits.Add(manualSyncedCommit);
             _demoRepo.Commits.Add(manualSyncedCommit);
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 10);
+            localRepo.Assert(1, 2, 3, 10);
+            _demoRepo.Assert(1, 2, 3, 10);
 
             _demoRepo.Commit(20);
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 10, 20);
+            localRepo.Assert(1, 2, 3, 10);
+            _demoRepo.Assert(1, 2, 3, 10, 20);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10, 20);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 10, 20);
+            localRepo.Assert(1, 2, 3, 10, 20);
+            _demoRepo.Assert(1, 2, 3, 10, 20);
         }
 
         [TestMethod]
@@ -148,7 +148,7 @@ namespace AiurEventSyncer.Tests
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            localRepo.Assert(1, 2, 3);
 
             var manual10SyncedCommit = new Commit<int>
             {
@@ -164,13 +164,13 @@ namespace AiurEventSyncer.Tests
             _demoRepo.Commits.Add(manual10SyncedCommit);
             _demoRepo.Commit(300);
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10, 20);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 300);
+            localRepo.Assert(1, 2, 3, 10, 20);
+            _demoRepo.Assert(1, 2, 3, 20, 10, 300);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 10, 300, 20);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 300);
+            localRepo.Assert(1, 2, 3, 20, 10, 300, 20);
+            _demoRepo.Assert(1, 2, 3, 20, 10, 300);
         }
     }
 }
