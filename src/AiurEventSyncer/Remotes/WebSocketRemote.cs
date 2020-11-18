@@ -20,10 +20,5 @@ namespace AiurEventSyncer.Remotes
         {
             throw new NotImplementedException();
         }
-
-        public string GetRemotePointerPositionId()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -34,12 +34,6 @@ namespace AiurEventSyncer.Models
 
         public void Pull(IRemote<T> remoteRecord)
         {
-            var remotePointerPositionId = remoteRecord.GetRemotePointerPositionId();
-            if (remotePointerPositionId == remoteRecord.LocalPointerPosition?.Id)
-            {
-                // Remote repo unchanged.
-                return;
-            }
             var subtraction = remoteRecord.DownloadFrom(remoteRecord.LocalPointerPosition?.Id);
             foreach (var subtract in subtraction)
             {

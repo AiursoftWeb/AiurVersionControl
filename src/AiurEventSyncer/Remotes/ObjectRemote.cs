@@ -21,10 +21,5 @@ namespace AiurEventSyncer.Remotes
         {
             return _localRepository.Commits.AfterCommitId(sourcePointerPosition);
         }
-
-        public string GetRemotePointerPositionId()
-        {
-            return _localRepository.Commits.Last().Id;
-        }
     }
 }
