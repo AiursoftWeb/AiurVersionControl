@@ -2,11 +2,6 @@
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tests
 {
@@ -31,7 +26,7 @@ namespace AiurEventSyncer.Tests
             var remoteRepo = new Repository<int>();
             var remoteRecord = new ObjectRemote<int>(remoteRepo)
             {
-                AutoPush = true
+                AutoPushToIt = true
             };
             _localRepo.Remotes.Add(remoteRecord);
 
@@ -40,6 +35,8 @@ namespace AiurEventSyncer.Tests
 
             _localRepo.Commit(200);
             _localRepo.Commit(300);
+
+            _localRepo.Assert(1, 2, 3, 50, 200, 300);
             remoteRepo.Assert(1, 2, 3, 50, 200, 300);
         }
 
@@ -59,8 +56,9 @@ namespace AiurEventSyncer.Tests
 
             remoteRepo.Commit(200);
             remoteRepo.Commit(300);
-            localRepo.Assert(1, 2, 3, 50, 200, 300);
 
+            localRepo.Assert(1, 2, 3, 50, 200, 300);
+            remoteRepo.Assert(1, 2, 3, 50, 200, 300);
         }
     }
 }

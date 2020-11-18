@@ -10,7 +10,7 @@ namespace AiurEventSyncer.Remotes
     {
         private readonly Repository<T> _localRepository;
         public string Name { get; set; } = "Object Origin Default Name";
-        public bool AutoPush { get; set; }
+        public bool AutoPushToIt { get; set; }
 
         public Action OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }

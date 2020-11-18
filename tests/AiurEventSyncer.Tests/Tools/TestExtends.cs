@@ -1,5 +1,4 @@
 ﻿using AiurEventSyncer.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
 namespace AiurEventSyncer.Tests.Tools

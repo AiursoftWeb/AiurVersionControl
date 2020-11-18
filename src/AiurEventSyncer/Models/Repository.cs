@@ -28,7 +28,7 @@ namespace AiurEventSyncer.Models
                 Item = content
             });
             OnNewCommit?.Invoke();
-            foreach (var remote in Remotes.Where(t => t.AutoPush))
+            foreach (var remote in Remotes.Where(t => t.AutoPushToIt))
             {
                 Push(remote);
             }
