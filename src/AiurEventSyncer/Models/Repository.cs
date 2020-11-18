@@ -68,6 +68,7 @@ namespace AiurEventSyncer.Models
 
         public string OnPushing(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
+            string firstDiffPoint = null;
             foreach (var commit in commitsToPush)
             {
                 var localAfter = Commits.AfterCommitId(startPosition).FirstOrDefault();
@@ -75,6 +76,7 @@ namespace AiurEventSyncer.Models
                 {
                     if (commit.Id != localAfter.Id && Commits.Last().Id != commit.Id)
                     {
+                        firstDiffPoint ??= startPosition;
                         Commits.Add(commit);
                     }
                 }
@@ -84,7 +86,7 @@ namespace AiurEventSyncer.Models
                 }
                 startPosition = commit.Id;
             }
-            return startPosition;
+            return firstDiffPoint ?? startPosition;
         }
     }
 }

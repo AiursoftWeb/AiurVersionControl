@@ -8,13 +8,13 @@ namespace AiurEventSyncer.Remotes
     public class ObjectRemote<T> : IRemote<T>
     {
         private readonly Repository<T> _localRepository;
+        public string Name { get; set; } = "Object Origin Default Name";
+        public Commit<T> LocalPointer { get; set; }
 
         public ObjectRemote(Repository<T> localRepository)
         {
             _localRepository = localRepository;
         }
-
-        public Commit<T> LocalPointer { get; set; }
 
         public IEnumerable<Commit<T>> DownloadFrom(string sourcePointerPosition)
         {

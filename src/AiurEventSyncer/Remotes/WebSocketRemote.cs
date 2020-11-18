@@ -9,12 +9,13 @@ namespace AiurEventSyncer.Remotes
     {
         private readonly string _endpointUrl;
 
+        public string Name { get; set; } = "WebSocket Origin Default Name";
+        public Commit<T> LocalPointer { get; set; }
+
         public WebSocketRemote(string endpointUrl)
         {
             _endpointUrl = endpointUrl;
         }
-
-        public Commit<T> LocalPointer { get; set; }
 
         public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
         {
