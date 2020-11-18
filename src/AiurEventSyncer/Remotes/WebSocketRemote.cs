@@ -10,6 +10,8 @@ namespace AiurEventSyncer.Remotes
         private readonly string _endpointUrl;
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
+        public bool AutoPush { get; set; }
+        public Action OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
         public WebSocketRemote(string endpointUrl)

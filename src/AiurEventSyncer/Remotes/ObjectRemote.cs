@@ -1,6 +1,7 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
+using System;
 using System.Collections.Generic;
 
 namespace AiurEventSyncer.Remotes
@@ -9,11 +10,18 @@ namespace AiurEventSyncer.Remotes
     {
         private readonly Repository<T> _localRepository;
         public string Name { get; set; } = "Object Origin Default Name";
+        public bool AutoPush { get; set; }
+
+        public Action OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
         public ObjectRemote(Repository<T> localRepository)
         {
             _localRepository = localRepository;
+            _localRepository.OnNewCommit += () =>
+            {
+                OnRemoteChanged?.Invoke();
+            };
         }
 
         public IEnumerable<Commit<T>> DownloadFrom(string sourcePointerPosition)

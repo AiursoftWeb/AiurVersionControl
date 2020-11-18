@@ -2,6 +2,7 @@
 using AiurEventSyncer.Tools;
 using AiurStore.Models;
 using AiurStore.Providers.MemoryProvider;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace AiurEventSyncer.Models
         public InOutDatabase<Commit<T>> Commits { get; }
         public List<IRemote<T>> Remotes { get; } = new List<IRemote<T>>();
         public Commit<T> Head => Commits.LastOrDefault();
-
+        public Action OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
@@ -26,6 +27,20 @@ namespace AiurEventSyncer.Models
             {
                 Item = content
             });
+            OnNewCommit?.Invoke();
+            foreach (var remote in Remotes.Where(t => t.AutoPush))
+            {
+                Push(remote);
+            }
+        }
+
+        public void RegisterAutoPull(IRemote<T> remote)
+        {
+            this.Pull(remote);
+            remote.OnRemoteChanged += () =>
+            {
+                this.Pull(remote);
+            };
         }
 
         public void Pull()
