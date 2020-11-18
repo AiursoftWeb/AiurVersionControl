@@ -15,11 +15,16 @@ namespace AiurEventSyncer.Remotes
             _localRepository = localRepository;
         }
 
-        public Commit<T> LocalPointerPosition { get; set; }
+        public Commit<T> LocalPointer { get; set; }
 
         public IEnumerable<Commit<T>> DownloadFrom(string sourcePointerPosition)
         {
             return _localRepository.Commits.AfterCommitId(sourcePointerPosition);
+        }
+
+        public void UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        {
+            _localRepository.OnPushing(startPosition, commitsToPush);
         }
     }
 }

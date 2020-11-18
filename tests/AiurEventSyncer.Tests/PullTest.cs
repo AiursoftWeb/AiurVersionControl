@@ -21,7 +21,7 @@ namespace AiurEventSyncer.Tests
         }
 
         [TestMethod]
-        public void SelfPullTest()
+        public void PullSelfTest()
         {
             _demoRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             _demoRepo.Pull();
@@ -46,7 +46,22 @@ namespace AiurEventSyncer.Tests
         }
 
         [TestMethod]
-        public void MultiplePullTest()
+        public void PullWithResetRemoteTest()
+        {
+            var localRepo = new Repository<int>();
+            localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
+            localRepo.Pull();
+            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+
+            localRepo.Remotes.Clear();
+            localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
+            localRepo.Pull();
+
+            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+        }
+
+        [TestMethod]
+        public void PullMultipleTimesTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
@@ -62,6 +77,9 @@ namespace AiurEventSyncer.Tests
             TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 5, 7);
 
             _demoRepo.Commit(9);
+
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 5, 7);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 5, 7, 9);
 
             localRepo.Pull();
 
@@ -84,14 +102,15 @@ namespace AiurEventSyncer.Tests
             TestExtends.AssertRepo(_demoRepo, 1, 2, 3);
 
             _demoRepo.Commit(20);
+            _demoRepo.Commit(30);
 
             TestExtends.AssertRepo(localRepo, 1, 2, 3, 100);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 30);
 
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 100);
-            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20);
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 30, 100);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 30);
         }
 
         [TestMethod]
@@ -124,18 +143,34 @@ namespace AiurEventSyncer.Tests
         }
 
         [TestMethod]
-        public void PullWithResetRemoteTest()
+        public void PullWithDiffOrderCommitsTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
             localRepo.Pull();
             TestExtends.AssertRepo(localRepo, 1, 2, 3);
 
-            localRepo.Remotes.Clear();
-            localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
+            var manual10SyncedCommit = new Commit<int>
+            {
+                Item = 10
+            };
+            var manual20SyncedCommit = new Commit<int>
+            {
+                Item = 20
+            };
+            localRepo.Commits.Add(manual10SyncedCommit);
+            localRepo.Commits.Add(manual20SyncedCommit);
+            _demoRepo.Commits.Add(manual20SyncedCommit);
+            _demoRepo.Commits.Add(manual10SyncedCommit);
+            _demoRepo.Commit(30);
+
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 10, 20);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 30);
+
             localRepo.Pull();
 
-            TestExtends.AssertRepo(localRepo, 1, 2, 3);
+            TestExtends.AssertRepo(localRepo, 1, 2, 3, 20, 10, 30, 20);
+            TestExtends.AssertRepo(_demoRepo, 1, 2, 3, 20, 10, 30);
         }
     }
 }

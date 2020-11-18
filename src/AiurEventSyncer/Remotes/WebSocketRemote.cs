@@ -14,9 +14,14 @@ namespace AiurEventSyncer.Remotes
             _endpointUrl = endpointUrl;
         }
 
-        public Commit<T> LocalPointerPosition { get; set; }
+        public Commit<T> LocalPointer { get; set; }
 
         public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             throw new NotImplementedException();
         }
