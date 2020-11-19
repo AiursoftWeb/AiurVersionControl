@@ -27,10 +27,11 @@ namespace DummyWebApp.Controllers
             return Ok(new { Message = "Welcome!" });
         }
 
-        public IActionResult ReturnRepoDemo()
+        [Route("repo.are")]
+        public Task<IActionResult> ReturnRepoDemo()
         {
             var repo = _repoFactory.BuildRepo<LogItem>();
-            return this.Repository(repo);
+            return this.BuildWebActionResultAsync(repo);
         }
     }
 }

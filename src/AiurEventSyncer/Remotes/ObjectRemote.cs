@@ -25,9 +25,9 @@ namespace AiurEventSyncer.Remotes
             AutoPushToIt = autoPush;
         }
 
-        public IEnumerable<Commit<T>> DownloadFrom(string sourcePointerPosition)
+        public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
         {
-            return _fakeRemoteRepository.Commits.AfterCommitId(sourcePointerPosition);
+            return _fakeRemoteRepository.Commits.AfterCommitId(localPointerPosition);
         }
 
         public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
