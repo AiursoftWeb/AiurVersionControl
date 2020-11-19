@@ -13,7 +13,7 @@ namespace AiurStore.Tests.TestDbs
         public string Content { get; set; }
         public string Filter { get; set; }
     }
-    public class SqliteDbContext : DbContext
+    public class SqlDbContext : DbContext
     {
         public DbSet<InDbEntity> Records { get; set; }
 

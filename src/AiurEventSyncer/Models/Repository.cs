@@ -27,6 +27,11 @@ namespace AiurEventSyncer.Models
             {
                 Item = content
             });
+            TriggerOnNewCommit();
+        }
+
+        private void TriggerOnNewCommit()
+        {
             OnNewCommit?.Invoke();
             foreach (var remote in Remotes.Where(t => t.AutoPushToIt))
             {
@@ -84,6 +89,7 @@ namespace AiurEventSyncer.Models
         public string OnPushing(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             string firstDiffPoint = null;
+            var triggerOnNewCommit = false;
             foreach (var commit in commitsToPush)
             {
                 var localAfter = Commits.AfterCommitId(startPosition).FirstOrDefault();
@@ -93,13 +99,20 @@ namespace AiurEventSyncer.Models
                     {
                         firstDiffPoint ??= startPosition;
                         Commits.Add(commit);
+                        triggerOnNewCommit = true;
                     }
                 }
                 else
                 {
                     Commits.Add(commit);
+                    triggerOnNewCommit = true;
                 }
                 startPosition = commit.Id;
+            }
+
+            if (triggerOnNewCommit)
+            {
+                TriggerOnNewCommit();
             }
             return firstDiffPoint ?? startPosition;
         }

@@ -24,10 +24,7 @@ namespace AiurEventSyncer.Tests
         public void TestAutoPush()
         {
             var remoteRepo = new Repository<int>();
-            var remoteRecord = new ObjectRemote<int>(remoteRepo)
-            {
-                AutoPushToIt = true
-            };
+            var remoteRecord = new ObjectRemote<int>(remoteRepo, true);
             _localRepo.Remotes.Add(remoteRecord);
 
             _localRepo.Commit(50);

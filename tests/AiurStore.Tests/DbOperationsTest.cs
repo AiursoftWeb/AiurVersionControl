@@ -13,11 +13,11 @@ namespace AiurStore.Tests
     [TestClass]
     public class DbOperationsTest
     {
-        private SqliteDbContext dbContext;
+        private SqlDbContext dbContext;
         [TestInitialize]
         public void Init()
         {
-            dbContext = new SqliteDbContext();
+            dbContext = new SqlDbContext();
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
         }
@@ -27,7 +27,7 @@ namespace AiurStore.Tests
         [DataRow(typeof(MemoryAiurStoreDb<string>))]
         public void BasicTest(Type dbType)
         {
-            InOutDatabase<string> store = Activator.CreateInstance(dbType) as InOutDatabase<string>;
+            var store = Activator.CreateInstance(dbType) as InOutDatabase<string>;
             store.Clear();
             store.Add("House");
             store.Add("Home");
