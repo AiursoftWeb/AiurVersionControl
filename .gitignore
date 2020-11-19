@@ -4,3 +4,5 @@ obj
 Properties
 .suo
 TestResults
+*.db
+*.Development.*
