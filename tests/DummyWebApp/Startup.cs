@@ -12,6 +12,7 @@ using DummyWebApp.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DummyWebApp.Services;
 
 namespace DummyWebApp
 {
@@ -29,11 +30,13 @@ namespace DummyWebApp
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllersWithViews();
+            services.AddScoped<RepoFactory>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
+            app.UseWebSockets();
             app.UseRouting();
             app.UseEndpoints(endpoint => endpoint.MapDefaultControllerRoute());
         }

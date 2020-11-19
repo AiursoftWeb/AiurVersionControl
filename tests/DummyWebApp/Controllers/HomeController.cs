@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using AiurEventSyncer.WebExtends;
 using DummyWebApp.Data;
+using DummyWebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,17 +14,23 @@ namespace DummyWebApp.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly RepoFactory _repoFactory;
 
-        public HomeController(ApplicationDbContext dbContext)
+        public HomeController(
+            RepoFactory repoFactory)
         {
-            _dbContext = dbContext;
+            _repoFactory = repoFactory;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var books = await _dbContext.Books.ToListAsync();
-            return Ok(books);
+            return Ok(new { Message = "Welcome!" });
+        }
+
+        public IActionResult ReturnRepoDemo()
+        {
+            var repo = _repoFactory.BuildRepo<LogItem>();
+            return this.Repository(repo);
         }
     }
 }

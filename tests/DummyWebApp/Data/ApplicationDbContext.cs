@@ -6,10 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DummyWebApp.Data
 {
-    public class Book
+    public class LogItem
+    {
+        public string Message { get; set; }
+    }
+
+    public class InDbEntity
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Content { get; set; }
     }
 
     public class ApplicationDbContext : DbContext
@@ -19,6 +24,6 @@ namespace DummyWebApp.Data
         {
         }
 
-        public DbSet<Book> Books { get; set; }
+        public DbSet<InDbEntity> InDbEntities { get; set; }
     }
 }
