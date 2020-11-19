@@ -57,14 +57,35 @@ namespace AiurEventSyncer.Tests
         }
 
         [TestMethod]
+        public void DoubleWaySync()
+        {
+            var a = new Repository<int>();
+            var b = new Repository<int>();
+            a.AddAutoPullRemote(new ObjectRemote<int>(b, true));
+
+            a.Commit(5);
+            a.Assert(5);
+            b.Assert(5);
+
+            b.Commit(10);
+            a.Assert(5, 10);
+            b.Assert(5, 10);
+
+            a.Commit(100);
+            b.Commit(200);
+            a.Assert(5, 10, 100, 200);
+            b.Assert(5, 10, 100, 200);
+        }
+
+        [TestMethod]
         public void ComplicatedAutoTest()
         {
             //     B   D
-            //   /  \ / \
-            //  A    C    E
+            //    / \ / \
+            //   A   C   E
 
             var a = new Repository<int>();
-            var b = new Repository<int>();
+            var b = BookDbRepoFactory.BuildRepo<int>();
             var c = new Repository<int>();
             var d = new Repository<int>();
             var e = new Repository<int>();

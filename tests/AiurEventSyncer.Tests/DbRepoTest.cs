@@ -1,6 +1,7 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Models;
+using AiurEventSyncer.Tests.Tools;
 using AiurStore.Models;
 using AiurStore.Providers.DbQueryProvider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,32 +16,10 @@ namespace AiurEventSyncer.Tests
     [TestClass]
     public class DbRepoTest
     {
-        private SqlDbContext dbContext;
-        private InOutDatabase<Commit<Book>> store;
-        private Repository<Book> dbRepo;
-
-        [TestInitialize]
-        public void Init()
-        {
-            dbContext = new SqlDbContext();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-            store = DbQueryProviderTools.BuildFromDbSet<Commit<Book>>(
-                queryFactory: () => dbContext.Records.Select(t => t.Content),
-                addAction: (newItem) =>
-                {
-                    dbContext.Records.Add(new InDbEntity
-                    {
-                        Content = newItem
-                    });
-                    dbContext.SaveChanges();
-                });
-            dbRepo = new Repository<Book>(store);
-        }
-
         [TestMethod]
         public void PushToAndPullFrom()
         {
+            var dbRepo = BookDbRepoFactory.BuildRepo<Book>();
             var localRepo = new Repository<Book>();
             localRepo.Remotes.Add(new ObjectRemote<Book>(dbRepo, true));
 
