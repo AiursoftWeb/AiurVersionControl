@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AiurEventSyncer.WebExtends;
-using DummyWebApp.Data;
-using DummyWebApp.Services;
+using SampleWebApp.Data;
+using SampleWebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace DummyWebApp.Controllers
+namespace SampleWebApp.Controllers
 {
     public class HomeController : ControllerBase
     {

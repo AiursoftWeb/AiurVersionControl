@@ -1,12 +1,12 @@
 ﻿using AiurEventSyncer.Models;
 using AiurStore.Providers.DbQueryProvider;
-using DummyWebApp.Data;
+using SampleWebApp.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DummyWebApp.Services
+namespace SampleWebApp.Services
 {
     public class RepoFactory
     {

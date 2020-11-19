@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AiurEventSyncer.WebExtends\AiurEventSyncer.WebExtends.csproj" />
+    <ProjectReference Include="..\..\..\src\AiurEventSyncer.WebExtends\AiurEventSyncer.WebExtends.csproj" />
   </ItemGroup>
 
 </Project>
