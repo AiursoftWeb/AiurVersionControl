@@ -2,6 +2,10 @@
 using AiurEventSyncer.Models;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace AiurEventSyncer.Remotes
 {
@@ -21,12 +25,15 @@ namespace AiurEventSyncer.Remotes
 
         public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
         {
-            throw new NotImplementedException();
+            var json = new WebClient().DownloadString($"{_endpointUrl}?method=syncer-pull&{nameof(localPointerPosition)}={localPointerPosition}");
+            return JsonSerializer.Deserialize<List<Commit<T>>>(json);
         }
 
         public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
-            throw new NotImplementedException();
+            var task = new HttpClient().PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
+            var response = task.Result.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<string>(response);
         }
     }
 }
