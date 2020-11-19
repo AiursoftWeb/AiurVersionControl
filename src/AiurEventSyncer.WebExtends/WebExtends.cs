@@ -1,13 +1,14 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AiurEventSyncer.WebExtends
 {
@@ -24,7 +25,7 @@ namespace AiurEventSyncer.WebExtends
             {
                 string startPosition = request.Query[nameof(startPosition)];
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
-                var formObject = JsonConvert.DeserializeObject<List<Commit<T>>>(jsonForm);
+                var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm);
                 var uploadResult = mockRemote.UploadFrom(startPosition, formObject);
                 return controller.Ok(uploadResult);
             }

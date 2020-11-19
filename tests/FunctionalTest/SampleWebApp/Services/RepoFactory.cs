@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurStore.Providers.DbQueryProvider;
+using Microsoft.EntityFrameworkCore;
 using SampleWebApp.Data;
 using System;
 using System.Collections.Generic;

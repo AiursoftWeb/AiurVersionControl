@@ -33,7 +33,7 @@ namespace AiurEventSyncer.Remotes
         {
             var task = new HttpClient().PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
             var response = task.Result.Content.ReadAsStringAsync().Result;
-            return JsonSerializer.Deserialize<string>(response);
+            return response;
         }
     }
 }
