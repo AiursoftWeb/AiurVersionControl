@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AiurStore.Abstracts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,32 +9,29 @@ namespace AiurStore.Models
 {
     public abstract class InOutDatabase<T> : IEnumerable<T>
     {
-        private readonly InOutDbOptions _options;
+        public IStoreProvider Provider { get; set; }
         public InOutDatabase()
         {
-            _options = new InOutDbOptions();
-            this.OnConfiguring(_options);
-            if (_options.Provider == null)
-            {
-                throw new InvalidOperationException("No store service configured!");
-            }
+            var options = new InOutDbOptions();
+            this.OnConfiguring(options);
+            Provider = options.Provider;
         }
 
         protected abstract void OnConfiguring(InOutDbOptions options);
 
         public void Add(T newObject)
         {
-            _options.Provider.Add(JsonSerializer.Serialize(newObject));
+            Provider.Add(JsonSerializer.Serialize(newObject));
         }
 
         public void Clear()
         {
-            _options.Provider.Clear();
+            Provider.Clear();
         }
 
         public void Insert(int index, T newObject)
         {
-            _options.Provider.Insert(index, JsonSerializer.Serialize(newObject));
+            Provider.Insert(index, JsonSerializer.Serialize(newObject));
         }
 
         public void InsertAfter(Func<T, bool> predicate, T newObject)
@@ -76,7 +74,7 @@ namespace AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            return _options.Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t)).GetEnumerator();
+            return Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

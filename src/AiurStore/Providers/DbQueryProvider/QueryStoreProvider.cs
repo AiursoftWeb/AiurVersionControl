@@ -8,20 +8,20 @@ namespace AiurStore.Providers.DbQueryProvider
 {
     public class QueryStoreProvider : IStoreProvider
     {
-        private IQueryable<string> _query;
+        private Func<IQueryable<string>> _queryFactory;
         private Action<string> _add;
 
         public QueryStoreProvider(
-            IQueryable<string> query,
+            Func<IQueryable<string>> query,
             Action<string> add)
         {
-            _query = query;
+            _queryFactory = query;
             _add = add;
         }
 
         public IEnumerable<string> GetAll()
         {
-            return _query;
+            return _queryFactory();
         }
 
         public void Add(string newItem)

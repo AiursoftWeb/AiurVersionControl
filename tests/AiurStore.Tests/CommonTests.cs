@@ -1,6 +1,7 @@
 ﻿using AiurStore.Tests.TestDbs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 
 namespace AiurStore.Tests
 {
@@ -13,10 +14,12 @@ namespace AiurStore.Tests
             try
             {
                 var db = new BadDb();
+                db.ToList();
+                Assert.Fail();
             }
-            catch (InvalidOperationException e)
+            catch (Exception e)
             {
-                Assert.AreEqual(e.Message, "No store service configured!");
+                Assert.IsTrue(e.Message.StartsWith("Object reference not "));
             }
         }
     }
