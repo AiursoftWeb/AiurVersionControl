@@ -45,9 +45,7 @@ namespace AiurEventSyncer.Tests
             localRepo.Remotes.Add(new ObjectRemote<Book>(dbRepo, true));
 
             var localRepo2 = new Repository<Book>();
-            var remoteRecord = new ObjectRemote<Book>(dbRepo);
-            localRepo2.Remotes.Add(remoteRecord);
-            localRepo2.RegisterAutoPull(remoteRecord);
+            localRepo2.AddAutoPullRemote(new ObjectRemote<Book>(dbRepo));
 
             localRepo.Commit(new Book { Name = "Love" });
 

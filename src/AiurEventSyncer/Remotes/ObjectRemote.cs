@@ -32,7 +32,7 @@ namespace AiurEventSyncer.Remotes
 
         public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
-            return _fakeRemoteRepository.OnPushing(startPosition, commitsToPush);
+            return _fakeRemoteRepository.OnPushed(startPosition, commitsToPush);
         }
     }
 }

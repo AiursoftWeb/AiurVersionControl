@@ -42,9 +42,7 @@ namespace AiurEventSyncer.Tests
         {
             var remoteRepo = _localRepo;
             var localRepo = new Repository<int>();
-            var remoteRecord = new ObjectRemote<int>(remoteRepo);
-            localRepo.Remotes.Add(remoteRecord);
-            localRepo.RegisterAutoPull(remoteRecord);
+            localRepo.AddAutoPullRemote(new ObjectRemote<int>(remoteRepo));
 
             localRepo.Assert(1, 2, 3);
 
@@ -56,6 +54,31 @@ namespace AiurEventSyncer.Tests
 
             localRepo.Assert(1, 2, 3, 50, 200, 300);
             remoteRepo.Assert(1, 2, 3, 50, 200, 300);
+        }
+
+        [TestMethod]
+        public void ComplicatedAutoTest()
+        {
+            //     B   D
+            //   /  \ / \
+            //  A    C    E
+
+            var a = new Repository<int>();
+            var b = new Repository<int>();
+            var c = new Repository<int>();
+            var d = new Repository<int>();
+            var e = new Repository<int>();
+
+            a.Remotes.Add(new ObjectRemote<int>(b, true));
+            c.AddAutoPullRemote(new ObjectRemote<int>(b));
+            c.Remotes.Add(new ObjectRemote<int>(d, true));
+            e.AddAutoPullRemote(new ObjectRemote<int>(d));
+
+            a.Commit(5);
+            b.Assert(5);
+            c.Assert(5);
+            d.Assert(5);
+            e.Assert(5);
         }
     }
 }

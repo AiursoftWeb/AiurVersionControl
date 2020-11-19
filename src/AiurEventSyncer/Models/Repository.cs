@@ -39,8 +39,9 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        public void RegisterAutoPull(IRemote<T> remote)
+        public void AddAutoPullRemote(IRemote<T> remote)
         {
+            this.Remotes.Add(remote);
             this.Pull(remote);
             remote.OnRemoteChanged += () =>
             {
@@ -55,6 +56,7 @@ namespace AiurEventSyncer.Models
 
         public void Pull(IRemote<T> remoteRecord)
         {
+            var triggerOnNewCommit = false;
             var subtraction = remoteRecord.DownloadFrom(remoteRecord.LocalPointer?.Id);
             foreach (var subtract in subtraction)
             {
@@ -64,13 +66,19 @@ namespace AiurEventSyncer.Models
                     if (localAfter.Id != subtract.Id)
                     {
                         Commits.InsertAfterCommitId(remoteRecord.LocalPointer?.Id, subtract);
+                        triggerOnNewCommit = true;
                     }
                 }
                 else
                 {
                     Commits.Add(subtract);
+                    triggerOnNewCommit = true;
                 }
                 remoteRecord.LocalPointer = subtract;
+            }
+            if (triggerOnNewCommit)
+            {
+                TriggerOnNewCommit();
             }
         }
 
@@ -86,7 +94,7 @@ namespace AiurEventSyncer.Models
             remoteRecord.LocalPointer = Commits.FirstOrDefault(t => t.Id == remotePointer);
         }
 
-        public string OnPushing(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public string OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             string firstDiffPoint = null;
             var triggerOnNewCommit = false;
