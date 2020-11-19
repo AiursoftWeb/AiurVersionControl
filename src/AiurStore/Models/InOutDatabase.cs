@@ -1,9 +1,9 @@
 ﻿using AiurStore.Abstracts;
+using System.Text.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 
 namespace AiurStore.Models
 {
@@ -21,7 +21,7 @@ namespace AiurStore.Models
 
         public void Add(T newObject)
         {
-            Provider.Add(JsonSerializer.Serialize(newObject));
+            Provider.Add(JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
         }
 
         public void Clear()
@@ -31,7 +31,7 @@ namespace AiurStore.Models
 
         public void Insert(int index, T newObject)
         {
-            Provider.Insert(index, JsonSerializer.Serialize(newObject));
+            Provider.Insert(index, JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
         }
 
         public void InsertAfter(Func<T, bool> predicate, T newObject)
@@ -74,7 +74,7 @@ namespace AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            return Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t)).GetEnumerator();
+            return Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

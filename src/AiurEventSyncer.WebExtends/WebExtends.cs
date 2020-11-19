@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace AiurEventSyncer.WebExtends
 {
@@ -25,7 +24,7 @@ namespace AiurEventSyncer.WebExtends
             {
                 string startPosition = request.Query[nameof(startPosition)];
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
-                var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm);
+                var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 var uploadResult = mockRemote.UploadFrom(startPosition, formObject);
                 return controller.Ok(uploadResult);
             }
@@ -37,13 +36,12 @@ namespace AiurEventSyncer.WebExtends
             }
             else if (context.WebSockets.IsWebSocketRequest)
             {
-
+                return null;
             }
             else
             {
                 return new BadRequestResult();
             }
-            return null;
         }
     }
 }
