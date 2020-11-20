@@ -18,9 +18,10 @@ namespace AiurEventSyncer.Remotes
         public Action OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
-        public WebSocketRemote(string endpointUrl)
+        public WebSocketRemote(string endpointUrl, bool autoPush = false)
         {
             _endpointUrl = endpointUrl;
+            AutoPushToIt = autoPush;
         }
 
         public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)

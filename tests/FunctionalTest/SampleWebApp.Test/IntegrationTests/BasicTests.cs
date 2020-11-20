@@ -28,17 +28,14 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public void MyTest()
+        public void RealCommunication()
         {
             var repo = new Repository<LogItem>();
-            repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
+            repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are", true));
 
             repo.Commit(new LogItem { Message = "1" });
             repo.Commit(new LogItem { Message = "2" });
             repo.Commit(new LogItem { Message = "3" });
-
-            repo.Push();
-            repo.Push();
 
             var repo2 = new Repository<LogItem>();
             repo2.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
