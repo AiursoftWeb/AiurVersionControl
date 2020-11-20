@@ -19,11 +19,12 @@ namespace AiurEventSyncer.Remotes
         private readonly string _wsEndpointUrl;
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
-        public bool AutoPushToIt { get; set; }
+        public bool AutoPush { get; set; }
+        public bool AutoPull { get; set; }
         public Func<Task> OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
-        public WebSocketRemote(string endpointUrl, bool autoPush = false)
+        public WebSocketRemote(string endpointUrl, bool autoPush = false, bool autoPull = false)
         {
             _wsEndpointUrl = _endpointUrl = endpointUrl;
             var https = new Regex("^https://", RegexOptions.Compiled);
@@ -32,11 +33,15 @@ namespace AiurEventSyncer.Remotes
             _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
 
-            AutoPushToIt = autoPush;
-            Task.Factory.StartNew(Monitor);
+            AutoPush = autoPush;
+            AutoPull = autoPull;
+            if (autoPull)
+            {
+                Task.Factory.StartNew(MonitorRemoteChanges);
+            }
         }
 
-        public async Task Monitor()
+        public async Task MonitorRemoteChanges()
         {
             using var socket = new ClientWebSocket();
             await socket.ConnectAsync(new Uri(_wsEndpointUrl), CancellationToken.None);

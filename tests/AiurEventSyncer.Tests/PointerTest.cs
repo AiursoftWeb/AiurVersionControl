@@ -26,7 +26,7 @@ namespace AiurEventSyncer.Tests
         {
             var localRepo = new Repository<int>();
             var remote = new ObjectRemote<int>(_demoRepo);
-            localRepo.Remotes.Add(remote);
+            await localRepo.AddRemoteAsync(remote);
 
             Assert.IsNull(remote.LocalPointer);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
@@ -43,7 +43,7 @@ namespace AiurEventSyncer.Tests
             var remoteRepo = new Repository<int>();
             var localRepo = _demoRepo;
             var remote = new ObjectRemote<int>(remoteRepo);
-            localRepo.Remotes.Add(remote);
+            await localRepo.AddRemoteAsync(remote);
 
             Assert.IsNull(remote.LocalPointer);
             Assert.AreEqual(_demoRepo.Head.Item, 3);

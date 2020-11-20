@@ -12,12 +12,13 @@ namespace AiurEventSyncer.Remotes
     {
         private readonly Repository<T> _fakeRemoteRepository;
         public string Name { get; set; } = "Object Origin Default Name";
-        public bool AutoPushToIt { get; set; }
+        public bool AutoPush { get; set; }
+        public bool AutoPull { get; set; }
 
         public Func<Task> OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
-        public ObjectRemote(Repository<T> localRepository, bool autoPush = false)
+        public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
             _fakeRemoteRepository = localRepository;
             _fakeRemoteRepository.OnNewCommit += async () =>
@@ -27,7 +28,8 @@ namespace AiurEventSyncer.Remotes
                     await OnRemoteChanged();
                 }
             };
-            AutoPushToIt = autoPush;
+            AutoPush = autoPush;
+            AutoPull = autoPull;
         }
 
         public Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)

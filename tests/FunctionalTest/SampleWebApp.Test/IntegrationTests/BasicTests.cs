@@ -31,14 +31,14 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task RealCommunication()
         {
             var repo = new Repository<LogItem>();
-            repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are", true));
+            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true));
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
 
             var repo2 = new Repository<LogItem>();
-            repo2.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
+            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPull: true));
             await repo2.PullAsync();
             await repo2.PullAsync();
 
@@ -52,18 +52,18 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task RealAutoPull()
         {
             var repo = new Repository<LogItem>();
-            repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are", autoPush: true));
+            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true));
 
             var repo2 = new Repository<LogItem>();
-            await repo2.AddAutoPullRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
+            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPull: true));
 
-            await Task.Delay(100); // Wait for connected.
+            await Task.Delay(200); // Wait for connected.
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
 
-            await Task.Delay(100); // Wait for pulled.
+            await Task.Delay(500); // Wait for pulled.
 
             Assert.AreEqual(repo2.Commits.Count(), 3);
             Assert.AreEqual(repo2.Commits.ToArray()[0].Item.Message, "1");

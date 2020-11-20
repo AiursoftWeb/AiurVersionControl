@@ -10,7 +10,6 @@ namespace SampleWebApp.Controllers
     public class HomeController : ControllerBase
     {
         private readonly RepoFactory<LogItem> _repoFactory;
-        private static object _obj = new object();
 
         public HomeController(
             RepoFactory<LogItem> repoFactory)
@@ -23,7 +22,7 @@ namespace SampleWebApp.Controllers
             return Ok(new { Message = "Welcome!" });
         }
 
-        [Route("repo.are")]
+        [Route("repo.ares")]
         public Task<IActionResult> ReturnRepoDemo()
         {
             var repository = _repoFactory.BuildRepo();

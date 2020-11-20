@@ -24,7 +24,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public async Task PushSelfTest()
         {
-            _localRepo.Remotes.Add(new ObjectRemote<int>(_localRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(_localRepo));
 
             await _localRepo.PushAsync();
             _localRepo.Assert(1, 2, 3);
@@ -37,7 +37,7 @@ namespace AiurEventSyncer.Tests
         public async Task MeaninglessPushTest()
         {
             var remoteRepo = new Repository<int>();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
 
             await _localRepo.PushAsync();
             remoteRepo.Assert(1, 2, 3);
@@ -51,13 +51,13 @@ namespace AiurEventSyncer.Tests
         public async Task PushWithResetRemoteTest()
         {
             var remoteRepo = new Repository<int>();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
             await _localRepo.PushAsync();
             remoteRepo.Assert(1, 2, 3);
 
-            _localRepo.Remotes.Clear();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
-            await _localRepo.PushAsync();
+            var secondRemoteRecord = new ObjectRemote<int>(remoteRepo);
+            await _localRepo.AddRemoteAsync(secondRemoteRecord);
+            await _localRepo.PushAsync(secondRemoteRecord);
 
             remoteRepo.Assert(1, 2, 3);
         }
@@ -66,7 +66,7 @@ namespace AiurEventSyncer.Tests
         public async Task PushMultipleTimesTest()
         {
             var remoteRepo = new Repository<int>();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
             await _localRepo.PushAsync();
             remoteRepo.Assert(1, 2, 3);
 
@@ -93,7 +93,7 @@ namespace AiurEventSyncer.Tests
         public async Task PushWithLocalCommitTest()
         {
             var remoteRepo = new Repository<int>();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
             await _localRepo.PushAsync();
             remoteRepo.Assert(1, 2, 3);
 
@@ -119,7 +119,7 @@ namespace AiurEventSyncer.Tests
         public async Task PushWithManualCommitTest()
         {
             var remoteRepo = new Repository<int>();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
             await _localRepo.PushAsync();
             remoteRepo.Assert(1, 2, 3);
 
@@ -148,7 +148,7 @@ namespace AiurEventSyncer.Tests
         public async Task PushWithDiffOrderCommitsTest()
         {
             var remoteRepo = new Repository<int>();
-            _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
+            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
             await _localRepo.PushAsync();
             remoteRepo.Assert(1, 2, 3);
 

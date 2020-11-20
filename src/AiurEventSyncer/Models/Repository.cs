@@ -12,16 +12,25 @@ namespace AiurEventSyncer.Models
     public class Repository<T>
     {
         public InOutDatabase<Commit<T>> Commits { get; }
-        public List<IRemote<T>> Remotes { get; } = new List<IRemote<T>>();
+        public IEnumerable<IRemote<T>> Remotes => RemotesStore.AsReadOnly();
         public Commit<T> Head => Commits.LastOrDefault();
         public Func<Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
+
+        private List<IRemote<T>> RemotesStore = new List<IRemote<T>>();
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
             Commits = dbProvider;
         }
 
+        /// <summary>
+        /// Add a new commit to this repository.
+        /// Also will push to all remotes which are auto push.
+        /// Also for all other repositories which auto pull this one, will notify them.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
         public async Task CommitAsync(T content)
         {
             Commits.Add(new Commit<T>
@@ -37,17 +46,26 @@ namespace AiurEventSyncer.Models
             {
                 await OnNewCommit();
             }
-            await Task.WhenAll(Remotes.Where(t => t.AutoPushToIt).Select(t => PushAsync(t)));
+            await Task.WhenAll(Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t)));
         }
 
-        public async Task AddAutoPullRemoteAsync(IRemote<T> remote)
+        /// <summary>
+        /// Add a new remote repository to this.
+        /// If the remote requires auto pull, it will pull it immediatly, and also register the remote change event.
+        /// </summary>
+        /// <param name="remote"></param>
+        /// <returns></returns>
+        public async Task AddRemoteAsync(IRemote<T> remote)
         {
-            this.Remotes.Add(remote);
-            await this.PullAsync(remote);
-            remote.OnRemoteChanged += async () =>
+            this.RemotesStore.Add(remote);
+            if (remote.AutoPull)
             {
                 await this.PullAsync(remote);
-            };
+                remote.OnRemoteChanged += async () =>
+                {
+                    await this.PullAsync(remote);
+                };
+            }
         }
 
         public Task PullAsync()

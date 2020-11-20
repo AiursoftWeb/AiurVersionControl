@@ -8,7 +8,8 @@ namespace AiurEventSyncer.Abstract
     public interface IRemote<T>
     {
         public string Name { get; set; }
-        public bool AutoPushToIt { get; set; }
+        public bool AutoPush { get; set; }
+        public bool AutoPull { get; set; }
         public Func<Task> OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
         Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition);

@@ -25,8 +25,8 @@ namespace AiurEventSyncer.Tests
         public async Task TestAutoPush()
         {
             var remoteRepo = new Repository<int>();
-            var remoteRecord = new ObjectRemote<int>(remoteRepo, true);
-            _localRepo.Remotes.Add(remoteRecord);
+            var remoteRecord = new ObjectRemote<int>(remoteRepo, autoPush: true);
+            await _localRepo.AddRemoteAsync(remoteRecord);
 
             await _localRepo.CommitAsync(50);
             remoteRepo.Assert(1, 2, 3, 50);
@@ -43,7 +43,7 @@ namespace AiurEventSyncer.Tests
         {
             var remoteRepo = _localRepo;
             var localRepo = new Repository<int>();
-            await localRepo.AddAutoPullRemoteAsync(new ObjectRemote<int>(remoteRepo));
+            await localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo, autoPull: true));
 
             localRepo.Assert(1, 2, 3);
 
@@ -62,7 +62,7 @@ namespace AiurEventSyncer.Tests
         {
             var a = new Repository<int>();
             var b = new Repository<int>();
-            await a.AddAutoPullRemoteAsync(new ObjectRemote<int>(b, true));
+            await a.AddRemoteAsync(new ObjectRemote<int>(b, autoPush: true, autoPull: true));
 
             await a.CommitAsync(5);
             a.Assert(5);
@@ -91,10 +91,10 @@ namespace AiurEventSyncer.Tests
             var d = new Repository<int>();
             var e = new Repository<int>();
 
-            a.Remotes.Add(new ObjectRemote<int>(b, true));
-            await c.AddAutoPullRemoteAsync(new ObjectRemote<int>(b));
-            c.Remotes.Add(new ObjectRemote<int>(d, true));
-            await e.AddAutoPullRemoteAsync(new ObjectRemote<int>(d));
+            await a.AddRemoteAsync(new ObjectRemote<int>(b, true, false));
+            await c.AddRemoteAsync(new ObjectRemote<int>(b, false, true));
+            await c.AddRemoteAsync(new ObjectRemote<int>(d, true, false));
+            await e.AddRemoteAsync(new ObjectRemote<int>(d, false, true));
 
             await a.CommitAsync(5);
             b.Assert(5);
@@ -110,18 +110,18 @@ namespace AiurEventSyncer.Tests
             //    /       \
             //   sender    subscriber1,2,3
 
-            var sender = new Repository<int>();
+            var senderserver = new Repository<int>();
             var server = BookDbRepoFactory.BuildRepo<int>();
             var subscriber1 = new Repository<int>();
             var subscriber2 = new Repository<int>();
             var subscriber3 = new Repository<int>();
 
-            sender.Remotes.Add(new ObjectRemote<int>(server, true));
-            await subscriber1.AddAutoPullRemoteAsync(new ObjectRemote<int>(server));
-            await subscriber2.AddAutoPullRemoteAsync(new ObjectRemote<int>(server));
-            await subscriber3.AddAutoPullRemoteAsync(new ObjectRemote<int>(server));
+            await senderserver.AddRemoteAsync(new ObjectRemote<int>(server, true));
+            await subscriber1.AddRemoteAsync(new ObjectRemote<int>(server, false, true));
+            await subscriber2.AddRemoteAsync(new ObjectRemote<int>(server, false, true));
+            await subscriber3.AddRemoteAsync(new ObjectRemote<int>(server, false, true));
 
-            await sender.CommitAsync(5);
+            await senderserver.CommitAsync(5);
             server.Assert(5);
             subscriber1.Assert(5);
             subscriber2.Assert(5);
