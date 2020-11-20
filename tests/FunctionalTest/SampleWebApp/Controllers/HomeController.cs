@@ -9,12 +9,11 @@ namespace SampleWebApp.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly RepoFactory _repoFactory;
-        private static Repository<LogItem> repository;
+        private readonly RepoFactory<LogItem> _repoFactory;
         private static object _obj = new object();
 
         public HomeController(
-            RepoFactory repoFactory)
+            RepoFactory<LogItem> repoFactory)
         {
             _repoFactory = repoFactory;
         }
@@ -27,14 +26,7 @@ namespace SampleWebApp.Controllers
         [Route("repo.are")]
         public Task<IActionResult> ReturnRepoDemo()
         {
-            lock (_obj)
-            {
-                if (repository == null)
-                {
-#warning Use a singleton pool.
-                    repository = _repoFactory.BuildRepo<LogItem>();
-                }
-            }
+            var repository = _repoFactory.BuildRepo();
             return this.BuildWebActionResultAsync(repository);
         }
     }

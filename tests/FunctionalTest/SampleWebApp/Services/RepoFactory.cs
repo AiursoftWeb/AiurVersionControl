@@ -7,28 +7,30 @@ using System.Linq;
 
 namespace SampleWebApp.Services
 {
-    public class RepoFactory
+    public class RepoFactory<T>
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ApplicationDbContext _dbContext;
 
         public RepoFactory(
-            IServiceProvider serviceProvider)
+            ApplicationDbContext dbContext)
         {
-            _serviceProvider = serviceProvider;
+            _dbContext = dbContext;
         }
 
-        public Repository<T> BuildRepo<T>()
+        public Repository<T> BuildRepo()
         {
             var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>>(
-                queryFactory: () => _serviceProvider.GetRequiredService<ApplicationDbContext>().InDbEntities.Select(t => t.Content),
+                queryFactory: () =>
+                {
+                    return _dbContext.InDbEntities.Select(t => t.Content);
+                },
                 addAction: (newItem) =>
                 {
-                    var db = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-                    db.InDbEntities.Add(new InDbEntity
+                    _dbContext.InDbEntities.Add(new InDbEntity
                     {
                         Content = newItem
                     });
-                    db.SaveChanges();
+                    _dbContext.SaveChanges();
                 });
             return new Repository<T>(store);
         }

@@ -44,9 +44,16 @@ namespace AiurEventSyncer.WebExtends
                     await SendMessage(ws, "updated");
                 }
                 mockRemote.OnRemoteChanged += pushTask;
+                int count = repository.Commits.Count();
                 while (ws.State == WebSocketState.Open)
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(200);
+                    var newValue = repository.Commits.Count();
+                    if (count != newValue)
+                    {
+                        await pushTask();
+                        count = newValue;
+                    }
                 }
                 mockRemote.OnRemoteChanged -= pushTask;
                 return controller.Ok();
