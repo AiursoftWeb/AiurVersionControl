@@ -2,6 +2,7 @@
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tests
 {
@@ -11,17 +12,17 @@ namespace AiurEventSyncer.Tests
         private Repository<int> _demoRepo;
 
         [TestInitialize]
-        public void GetBasicRepo()
+        public async Task GetBasicRepo()
         {
             _demoRepo = new Repository<int>();
-            _demoRepo.Commit(1);
-            _demoRepo.Commit(2);
-            _demoRepo.Commit(3);
+            await _demoRepo.CommitAsync(1);
+            await _demoRepo.CommitAsync(2);
+            await _demoRepo.CommitAsync(3);
             _demoRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
-        public void TestPull()
+        public async Task TestPull()
         {
             var localRepo = new Repository<int>();
             var remote = new ObjectRemote<int>(_demoRepo);
@@ -30,14 +31,14 @@ namespace AiurEventSyncer.Tests
             Assert.IsNull(remote.LocalPointer);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
 
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
         }
 
         [TestMethod]
-        public void TestPush()
+        public async Task TestPush()
         {
             var remoteRepo = new Repository<int>();
             var localRepo = _demoRepo;
@@ -47,7 +48,7 @@ namespace AiurEventSyncer.Tests
             Assert.IsNull(remote.LocalPointer);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
 
-            localRepo.Push();
+            await localRepo.PushAsync();
 
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(_demoRepo.Head.Item, 3);

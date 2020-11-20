@@ -23,13 +23,13 @@ namespace AiurEventSyncer.WebExtends
                 string startPosition = request.Query[nameof(startPosition)];
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
                 var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                var uploadResult = mockRemote.UploadFrom(startPosition, formObject);
+                var uploadResult = await mockRemote.UploadFromAsync(startPosition, formObject);
                 return controller.Ok(uploadResult);
             }
             else if (request.Method == "GET" && method == "syncer-pull")
             {
                 string localPointerPosition = request.Query[nameof(localPointerPosition)];
-                var pullResult = mockRemote.DownloadFrom(localPointerPosition).ToList();
+                var pullResult = await mockRemote.DownloadFromAsync(localPointerPosition);
                 return controller.Ok(pullResult);
             }
             else if (context.WebSockets.IsWebSocketRequest)

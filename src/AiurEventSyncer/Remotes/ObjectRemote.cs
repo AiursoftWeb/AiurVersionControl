@@ -3,6 +3,8 @@ using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Remotes
 {
@@ -12,25 +14,29 @@ namespace AiurEventSyncer.Remotes
         public string Name { get; set; } = "Object Origin Default Name";
         public bool AutoPushToIt { get; set; }
 
-        public Action OnRemoteChanged { get; set; }
+        public Func<Task> OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false)
         {
             _fakeRemoteRepository = localRepository;
-            _fakeRemoteRepository.OnNewCommit += () =>
+            _fakeRemoteRepository.OnNewCommit += async () =>
             {
-                OnRemoteChanged?.Invoke();
+                if (OnRemoteChanged != null)
+                {
+                    await OnRemoteChanged();
+                }
             };
             AutoPushToIt = autoPush;
         }
 
-        public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
+        public Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
         {
-            return _fakeRemoteRepository.Commits.AfterCommitId(localPointerPosition);
+            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(localPointerPosition).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
+            return Task.FromResult(downloadResult);
         }
 
-        public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
         {
             return _fakeRemoteRepository.OnPushed(startPosition, commitsToPush);
         }

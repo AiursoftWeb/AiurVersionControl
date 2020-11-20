@@ -4,6 +4,7 @@ using AiurEventSyncer.Tests.Models;
 using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tests
 {
@@ -11,16 +12,16 @@ namespace AiurEventSyncer.Tests
     public class DbRepoTest
     {
         [TestMethod]
-        public void PushToAndPullFrom()
+        public async Task PushToAndPullFrom()
         {
             var dbRepo = BookDbRepoFactory.BuildRepo<Book>();
             var localRepo = new Repository<Book>();
             localRepo.Remotes.Add(new ObjectRemote<Book>(dbRepo, true));
 
             var localRepo2 = new Repository<Book>();
-            localRepo2.AddAutoPullRemote(new ObjectRemote<Book>(dbRepo));
+            await localRepo2.AddAutoPullRemoteAsync(new ObjectRemote<Book>(dbRepo));
 
-            localRepo.Commit(new Book { Name = "Love" });
+            await localRepo.CommitAsync(new Book { Name = "Love" });
 
             Assert.IsTrue(localRepo.Commits.FirstOrDefault().Item.Name == "Love");
             Assert.IsTrue(dbRepo.Commits.FirstOrDefault().Item.Name == "Love");

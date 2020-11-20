@@ -2,6 +2,7 @@
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tests
 {
@@ -11,114 +12,114 @@ namespace AiurEventSyncer.Tests
         private Repository<int> _demoRepo;
 
         [TestInitialize]
-        public void GetBasicRepo()
+        public async Task GetBasicRepo()
         {
             _demoRepo = new Repository<int>();
-            _demoRepo.Commit(1);
-            _demoRepo.Commit(2);
-            _demoRepo.Commit(3);
+            await _demoRepo.CommitAsync(1);
+            await _demoRepo.CommitAsync(2);
+            await _demoRepo.CommitAsync(3);
             _demoRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
-        public void PullSelfTest()
+        public async Task PullSelfTest()
         {
             _demoRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            _demoRepo.Pull();
+            await _demoRepo.PullAsync();
             _demoRepo.Assert(1, 2, 3);
 
-            _demoRepo.Pull();
-            _demoRepo.Assert(1, 2, 3);
-        }
-
-        [TestMethod]
-        public void MeaninglessPullTest()
-        {
-            var localRepo = new Repository<int>();
-            localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-
-            localRepo.Pull();
-            localRepo.Assert(1, 2, 3);
-
-            localRepo.Pull();
-            localRepo.Assert(1, 2, 3);
+            await _demoRepo.PullAsync();
             _demoRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
-        public void PullWithResetRemoteTest()
+        public async Task MeaninglessPullTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            localRepo.Pull();
+
+            await localRepo.PullAsync();
+            localRepo.Assert(1, 2, 3);
+
+            await localRepo.PullAsync();
+            localRepo.Assert(1, 2, 3);
+            _demoRepo.Assert(1, 2, 3);
+        }
+
+        [TestMethod]
+        public async Task PullWithResetRemoteTest()
+        {
+            var localRepo = new Repository<int>();
+            localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
+            await localRepo.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             localRepo.Remotes.Clear();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
-        public void PullMultipleTimesTest()
+        public async Task PullMultipleTimesTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            localRepo.Pull();
+            await localRepo.PullAsync();
             localRepo.Assert(1, 2, 3);
 
-            _demoRepo.Commit(5);
-            _demoRepo.Commit(7);
+            await _demoRepo.CommitAsync(5);
+            await _demoRepo.CommitAsync(7);
 
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3, 5, 7);
             _demoRepo.Assert(1, 2, 3, 5, 7);
 
-            _demoRepo.Commit(9);
+            await _demoRepo.CommitAsync(9);
 
             localRepo.Assert(1, 2, 3, 5, 7);
             _demoRepo.Assert(1, 2, 3, 5, 7, 9);
 
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3, 5, 7, 9);
             _demoRepo.Assert(1, 2, 3, 5, 7, 9);
         }
 
         [TestMethod]
-        public void PullWithLocalCommitTest()
+        public async Task PullWithLocalCommitTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            localRepo.Pull();
+            await localRepo.PullAsync();
             localRepo.Assert(1, 2, 3);
 
-            localRepo.Commit(100);
-            localRepo.Pull();
+            await localRepo.CommitAsync(100);
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3, 100);
             _demoRepo.Assert(1, 2, 3);
 
-            _demoRepo.Commit(20);
-            _demoRepo.Commit(30);
+            await _demoRepo.CommitAsync(20);
+            await _demoRepo.CommitAsync(30);
 
             localRepo.Assert(1, 2, 3, 100);
             _demoRepo.Assert(1, 2, 3, 20, 30);
 
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3, 20, 30, 100);
             _demoRepo.Assert(1, 2, 3, 20, 30);
         }
 
         [TestMethod]
-        public void PullWithManualCommitTest()
+        public async Task PullWithManualCommitTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            localRepo.Pull();
+            await localRepo.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             var manualSyncedCommit = new Commit<int>
@@ -131,23 +132,23 @@ namespace AiurEventSyncer.Tests
             localRepo.Assert(1, 2, 3, 10);
             _demoRepo.Assert(1, 2, 3, 10);
 
-            _demoRepo.Commit(20);
+            await _demoRepo.CommitAsync(20);
 
             localRepo.Assert(1, 2, 3, 10);
             _demoRepo.Assert(1, 2, 3, 10, 20);
 
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3, 10, 20);
             _demoRepo.Assert(1, 2, 3, 10, 20);
         }
 
         [TestMethod]
-        public void PullWithDiffOrderCommitsTest()
+        public async Task PullWithDiffOrderCommitsTest()
         {
             var localRepo = new Repository<int>();
             localRepo.Remotes.Add(new ObjectRemote<int>(_demoRepo));
-            localRepo.Pull();
+            await localRepo.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             var manual10SyncedCommit = new Commit<int>
@@ -162,12 +163,12 @@ namespace AiurEventSyncer.Tests
             localRepo.Commits.Add(manual20SyncedCommit);
             _demoRepo.Commits.Add(manual20SyncedCommit);
             _demoRepo.Commits.Add(manual10SyncedCommit);
-            _demoRepo.Commit(300);
+            await _demoRepo.CommitAsync(300);
 
             localRepo.Assert(1, 2, 3, 10, 20);
             _demoRepo.Assert(1, 2, 3, 20, 10, 300);
 
-            localRepo.Pull();
+            await localRepo.PullAsync();
 
             localRepo.Assert(1, 2, 3, 20, 10, 300, 20);
             _demoRepo.Assert(1, 2, 3, 20, 10, 300);

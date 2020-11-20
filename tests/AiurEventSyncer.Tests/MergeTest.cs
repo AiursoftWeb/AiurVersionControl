@@ -2,6 +2,7 @@
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tests
 {
@@ -11,59 +12,59 @@ namespace AiurEventSyncer.Tests
         private Repository<int> _localRepo;
 
         [TestInitialize]
-        public void GetBasicRepo()
+        public async Task BuildBasicRepo()
         {
             _localRepo = new Repository<int>();
-            _localRepo.Commit(1);
-            _localRepo.Commit(2);
-            _localRepo.Commit(3);
+            await _localRepo.CommitAsync(1);
+            await _localRepo.CommitAsync(2);
+            await _localRepo.CommitAsync(3);
             _localRepo.Assert(1, 2, 3);
         }
 
         [TestMethod]
-        public void TestPushWithDifferentTree()
+        public async Task TestPushWithDifferentTree()
         {
             var remoteRepo = new Repository<int>();
-            remoteRepo.Commit(20);
+            await remoteRepo.CommitAsync(20);
             remoteRepo.Assert(20);
 
             _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
 
-            _localRepo.Pull();
-            remoteRepo.Commit(50);
+            await _localRepo.PullAsync();
+            await remoteRepo.CommitAsync(50);
 
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50);
 
-            _localRepo.Push();
+            await _localRepo.PushAsync();
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
 
-            _localRepo.Pull();
+            await _localRepo.PullAsync();
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
         }
 
         [TestMethod]
-        public void TestPullWithDifferentTree()
+        public async Task TestPullWithDifferentTree()
         {
             var remoteRepo = new Repository<int>();
-            remoteRepo.Commit(20);
+            await remoteRepo.CommitAsync(20);
             remoteRepo.Assert(20);
 
             _localRepo.Remotes.Add(new ObjectRemote<int>(remoteRepo));
 
-            _localRepo.Pull();
-            remoteRepo.Commit(50);
+            await _localRepo.PullAsync();
+            await remoteRepo.CommitAsync(50);
 
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50);
 
-            _localRepo.Pull();
+            await _localRepo.PullAsync();
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50);
 
-            _localRepo.Push();
+            await _localRepo.PushAsync();
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
         }

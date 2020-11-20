@@ -5,6 +5,7 @@ using AiurStore.Providers.MemoryProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Models
 {
@@ -13,7 +14,7 @@ namespace AiurEventSyncer.Models
         public InOutDatabase<Commit<T>> Commits { get; }
         public List<IRemote<T>> Remotes { get; } = new List<IRemote<T>>();
         public Commit<T> Head => Commits.LastOrDefault();
-        public Action OnNewCommit { get; set; }
+        public Func<Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
@@ -21,43 +22,43 @@ namespace AiurEventSyncer.Models
             Commits = dbProvider;
         }
 
-        public void Commit(T content)
+        public async Task CommitAsync(T content)
         {
             Commits.Add(new Commit<T>
             {
                 Item = content
             });
-            TriggerOnNewCommit();
+            await TriggerOnNewCommit();
         }
 
-        private void TriggerOnNewCommit()
+        private async Task TriggerOnNewCommit()
         {
-            OnNewCommit?.Invoke();
-            foreach (var remote in Remotes.Where(t => t.AutoPushToIt))
+            if (OnNewCommit != null)
             {
-                Push(remote);
+                await OnNewCommit();
             }
+            await Task.WhenAll(Remotes.Where(t => t.AutoPushToIt).Select(t => PushAsync(t)));
         }
 
-        public void AddAutoPullRemote(IRemote<T> remote)
+        public async Task AddAutoPullRemoteAsync(IRemote<T> remote)
         {
             this.Remotes.Add(remote);
-            this.Pull(remote);
-            remote.OnRemoteChanged += () =>
+            await this.PullAsync(remote);
+            remote.OnRemoteChanged += async () =>
             {
-                this.Pull(remote);
+                await this.PullAsync(remote);
             };
         }
 
-        public void Pull()
+        public Task PullAsync()
         {
-            Pull(Remotes.First());
+            return PullAsync(Remotes.First());
         }
 
-        public void Pull(IRemote<T> remoteRecord)
+        public async Task PullAsync(IRemote<T> remoteRecord)
         {
             var triggerOnNewCommit = false;
-            var subtraction = remoteRecord.DownloadFrom(remoteRecord.LocalPointer?.Id);
+            var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.LocalPointer?.Id);
             foreach (var subtract in subtraction)
             {
                 var localAfter = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id).FirstOrDefault();
@@ -78,23 +79,23 @@ namespace AiurEventSyncer.Models
             }
             if (triggerOnNewCommit)
             {
-                TriggerOnNewCommit();
+                await TriggerOnNewCommit();
             }
         }
 
-        public void Push()
+        public Task PushAsync()
         {
-            Push(Remotes.First());
+            return PushAsync(Remotes.First());
         }
 
-        public void Push(IRemote<T> remoteRecord)
+        public async Task PushAsync(IRemote<T> remoteRecord)
         {
             var commitsToPush = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id);
-            var remotePointer = remoteRecord.UploadFrom(remoteRecord.LocalPointer?.Id, commitsToPush);
+            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.LocalPointer?.Id, commitsToPush.ToList());
             remoteRecord.LocalPointer = Commits.FirstOrDefault(t => t.Id == remotePointer);
         }
 
-        public string OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public async Task<string> OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             string firstDiffPoint = null;
             var triggerOnNewCommit = false;
@@ -120,7 +121,7 @@ namespace AiurEventSyncer.Models
 
             if (triggerOnNewCommit)
             {
-                TriggerOnNewCommit();
+                await TriggerOnNewCommit();
             }
             return firstDiffPoint ?? startPosition;
         }

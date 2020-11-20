@@ -28,19 +28,19 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public void RealCommunication()
+        public async Task RealCommunication()
         {
             var repo = new Repository<LogItem>();
             repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are", true));
 
-            repo.Commit(new LogItem { Message = "1" });
-            repo.Commit(new LogItem { Message = "2" });
-            repo.Commit(new LogItem { Message = "3" });
+            await repo.CommitAsync(new LogItem { Message = "1" });
+            await repo.CommitAsync(new LogItem { Message = "2" });
+            await repo.CommitAsync(new LogItem { Message = "3" });
 
             var repo2 = new Repository<LogItem>();
             repo2.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
-            repo2.Pull();
-            repo2.Pull();
+            await repo2.PullAsync();
+            await repo2.PullAsync();
 
             Assert.AreEqual(repo2.Commits.Count(), 3);
             Assert.AreEqual(repo2.Commits.ToArray()[0].Item.Message, "1");

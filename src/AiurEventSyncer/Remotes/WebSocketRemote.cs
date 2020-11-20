@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Remotes
 {
@@ -15,7 +16,7 @@ namespace AiurEventSyncer.Remotes
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
         public bool AutoPushToIt { get; set; }
-        public Action OnRemoteChanged { get; set; }
+        public Func<Task> OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
         public WebSocketRemote(string endpointUrl, bool autoPush = false)
@@ -24,16 +25,18 @@ namespace AiurEventSyncer.Remotes
             AutoPushToIt = autoPush;
         }
 
-        public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
+        public async Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
         {
-            var json = new WebClient().DownloadString($"{_endpointUrl}?method=syncer-pull&{nameof(localPointerPosition)}={localPointerPosition}");
+            var client = new HttpClient();
+            var json = await client.GetStringAsync($"{_endpointUrl}?method=syncer-pull&{nameof(localPointerPosition)}={localPointerPosition}");
             return JsonSerializer.Deserialize<List<Commit<T>>>(json, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
-        public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public async Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
         {
-            var task = new HttpClient().PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
-            var response = task.Result.Content.ReadAsStringAsync().Result;
+            var client = new HttpClient();
+            var result = await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
+            var response = await result.Content.ReadAsStringAsync();
             return response;
         }
     }
