@@ -26,7 +26,7 @@ namespace AiurEventSyncer.Remotes
         public IEnumerable<Commit<T>> DownloadFrom(string localPointerPosition)
         {
             var json = new WebClient().DownloadString($"{_endpointUrl}?method=syncer-pull&{nameof(localPointerPosition)}={localPointerPosition}");
-            return JsonSerializer.Deserialize<List<Commit<T>>>(json);
+            return JsonSerializer.Deserialize<List<Commit<T>>>(json, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
         public string UploadFrom(string startPosition, IEnumerable<Commit<T>> commitsToPush)
