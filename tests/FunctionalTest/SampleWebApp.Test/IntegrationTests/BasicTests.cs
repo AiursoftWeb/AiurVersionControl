@@ -4,45 +4,38 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleWebApp;
 using SampleWebApp.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SampleWebApp.Tests.IntegrationTests
 {
-    public class BasicTests : IClassFixture<SampleWebAppFactory<Startup>>
+    [TestClass]
+    public class BasicTests
     {
-        private readonly SampleWebAppFactory<Startup> _factory;
+        private IHost _server;
 
-        public BasicTests(SampleWebAppFactory<Startup> factory)
+        [TestInitialize]
+        public async Task CreateServer()
         {
-            _factory = factory;
+            _server = Program.BuildHost(null);
+            await _server.StartAsync();
         }
 
-        private void CreateServer(int port = 15000)
+        [TestCleanup]
+        public async Task CleanServer()
         {
-            Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseKestrel(options =>
-                    {
-                        options.ListenAnyIP(port);
-                    })
-                    .UseStartup<Startup>();
-                })
-                .Build()
-                .Reset<ApplicationDbContext>()
-                .Start();
+            await _server.StopAsync();
+            _server.Dispose();
         }
 
-        [Fact]
+        [TestMethod]
         public void MyTest()
         {
-            CreateServer();
             var repo = new Repository<LogItem>();
             repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
 
@@ -51,16 +44,17 @@ namespace SampleWebApp.Tests.IntegrationTests
             repo.Commit(new LogItem { Message = "3" });
 
             repo.Push();
+            repo.Push();
 
             var repo2 = new Repository<LogItem>();
             repo2.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
             repo2.Pull();
+            repo2.Pull();
 
-
-            Assert.True(repo2.Commits.Count() == 3);
-            Assert.True(repo2.Commits.ToArray()[0].Item.Message == "1");
-            Assert.True(repo2.Commits.ToArray()[1].Item.Message == "2");
-            Assert.True(repo2.Commits.ToArray()[2].Item.Message == "3");
+            Assert.AreEqual(repo2.Commits.Count(), 3);
+            Assert.AreEqual(repo2.Commits.ToArray()[0].Item.Message, "1");
+            Assert.AreEqual(repo2.Commits.ToArray()[1].Item.Message, "2");
+            Assert.AreEqual(repo2.Commits.ToArray()[2].Item.Message, "3");
         }
     }
 }

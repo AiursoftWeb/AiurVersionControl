@@ -16,17 +16,26 @@ namespace SampleWebApp
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args)
-                .Build()
-                .Reset<ApplicationDbContext>()
+            BuildHost(args)
                 .Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        public static IHost BuildHost(string[] args, int port = 15000)
+        {
+            return CreateHostBuilder(args, port)
+                .Build()
+                .Reset<ApplicationDbContext>();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args, int port)
         {
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseKestrel(options =>
+                    {
+                        options.ListenAnyIP(port);
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
         }
