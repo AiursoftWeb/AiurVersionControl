@@ -5,6 +5,11 @@ namespace SampleWebApp.Data
     public class LogItem
     {
         public string Message { get; set; }
+
+        public override string ToString()
+        {
+            return Message;
+        }
     }
 
     public class InDbEntity

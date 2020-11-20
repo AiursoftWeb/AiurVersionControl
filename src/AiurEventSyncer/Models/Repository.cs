@@ -68,6 +68,11 @@ namespace AiurEventSyncer.Models
             }
         }
 
+        /// <summary>
+        /// This will pull from the first remote. Not suggested if you have multiple remotes.
+        /// As for more details, please check the document for `PullAsync(IRemote<T> remoteRecord)`
+        /// </summary>
+        /// <returns></returns>
         public Task PullAsync()
         {
             return PullAsync(Remotes.First());
@@ -101,6 +106,11 @@ namespace AiurEventSyncer.Models
             }
         }
 
+        /// <summary>
+        /// This will push to the first remote. Not suggested if you have multiple remotes.
+        /// As for more details, please check the document for `PushAsync(IRemote<T> remoteRecord)`
+        /// </summary>
+        /// <returns></returns>
         public Task PushAsync()
         {
             return PushAsync(Remotes.First());
