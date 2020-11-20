@@ -1,10 +1,14 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.WebSockets;
+using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.WebExtends
@@ -34,12 +38,29 @@ namespace AiurEventSyncer.WebExtends
             }
             else if (context.WebSockets.IsWebSocketRequest)
             {
-                return null;
+                var ws = await context.WebSockets.AcceptWebSocketAsync();
+                async Task pushTask()
+                {
+                    await SendMessage(ws, "updated");
+                }
+                mockRemote.OnRemoteChanged += pushTask;
+                while (ws.State == WebSocketState.Open)
+                {
+                    await Task.Delay(5000);
+                }
+                mockRemote.OnRemoteChanged -= pushTask;
+                return controller.Ok();
             }
             else
             {
                 return new BadRequestResult();
             }
+        }
+
+        public static async Task SendMessage(WebSocket ws, string message)
+        {
+            var buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message));
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 }

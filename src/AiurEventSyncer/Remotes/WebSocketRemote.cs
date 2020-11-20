@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Net.WebSockets;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Remotes
@@ -13,6 +16,7 @@ namespace AiurEventSyncer.Remotes
     public class WebSocketRemote<T> : IRemote<T>
     {
         private readonly string _endpointUrl;
+        private readonly string _wsEndpointUrl;
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
         public bool AutoPushToIt { get; set; }
@@ -21,8 +25,37 @@ namespace AiurEventSyncer.Remotes
 
         public WebSocketRemote(string endpointUrl, bool autoPush = false)
         {
-            _endpointUrl = endpointUrl;
+            _wsEndpointUrl = _endpointUrl = endpointUrl;
+            var https = new Regex("^https://", RegexOptions.Compiled);
+            var http = new Regex("^http://", RegexOptions.Compiled);
+
+            _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
+            _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
+
             AutoPushToIt = autoPush;
+            Task.Factory.StartNew(Monitor);
+        }
+
+        public async Task Monitor()
+        {
+            using var socket = new ClientWebSocket();
+            await socket.ConnectAsync(new Uri(_wsEndpointUrl), CancellationToken.None);
+            var buffer = new ArraySegment<byte>(new byte[2048]);
+            while (true)
+            {
+                var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    break;
+                }
+                else
+                {
+                    if (OnRemoteChanged != null)
+                    {
+                        await OnRemoteChanged();
+                    }
+                }
+            }
         }
 
         public async Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
