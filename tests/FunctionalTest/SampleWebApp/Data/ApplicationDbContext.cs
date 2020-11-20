@@ -10,6 +10,11 @@ namespace SampleWebApp.Data
         {
             return Message;
         }
+
+        public override bool Equals(object obj)
+        {
+            return (obj as LogItem)?.Message == Message;
+        }
     }
 
     public class InDbEntity

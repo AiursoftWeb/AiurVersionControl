@@ -2,6 +2,7 @@
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SampleWebApp.Controllers;
 using SampleWebApp.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         {
             await _server.StopAsync();
             _server.Dispose();
+            HomeController._repo = null;
         }
 
         [TestMethod]
@@ -91,41 +93,60 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repoB = new Repository<LogItem>();
             await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
             await repoB.PullAsync();
+            Assert.AreEqual(repoA.Commits.Count(), 6);
             Assert.AreEqual(repoB.Commits.Count(), 6);
         }
 
         [TestMethod]
-        [DataRow(true)]
         [DataRow(false)]
         public async Task DoubleWayDataBinding(bool wait)
         {
             var repoA = new Repository<LogItem>();
-            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true) { Name = "A to server" });
 
             var repoB = new Repository<LogItem>();
-            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true) { Name = "B to server" });
 
-            await Task.Delay(200); // Wait for connected.
+            await Task.Delay(3000); // Wait for connected.
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
+            await Task.Delay(3000);
             await repoA.CommitAsync(new LogItem { Message = "2" });
-
-            if (wait)
-            {
-                await Task.Delay(500); // Wait for pulled.
-
-                Assert.AreEqual(repoA.Commits.Count(), 2);
-                Assert.AreEqual(repoB.Commits.Count(), 2);
-            }
-
+            await Task.Delay(3000);
             await repoB.CommitAsync(new LogItem { Message = "3" });
+            await Task.Delay(3000);
             await repoB.CommitAsync(new LogItem { Message = "4" });
+            await Task.Delay(3000);
 
-            await Task.Delay(5700); // Wait for pulled.
+            repoA.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" },
+                new LogItem { Message = "3" },
+                new LogItem { Message = "4" });
+            repoB.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" },
+                new LogItem { Message = "3" },
+                new LogItem { Message = "4" });
+        }
+    }
 
-
-            Assert.AreEqual(repoA.Commits.Count(), 4);
-            Assert.AreEqual(repoB.Commits.Count(), 4);
+    public static class TestExtends
+    {
+        public static void Assert<T>(this Repository<T> repo, params T[] array)
+        {
+            var commits = repo.Commits.ToArray();
+            if (commits.Count() != array.Length)
+            {
+                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+            }
+            for (int i = 0; i < commits.Count(); i++)
+            {
+                if (!commits[i].Item.Equals(array[i]))
+                {
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                }
+            }
         }
     }
 }

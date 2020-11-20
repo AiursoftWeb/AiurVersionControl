@@ -7,7 +7,6 @@ namespace AiurEventSyncer.Tests.Tools
 {
     public static class BookDbRepoFactory
     {
-
         public static SqlDbContext GetDbContext()
         {
             var _dbContext = new SqlDbContext();
@@ -18,17 +17,18 @@ namespace AiurEventSyncer.Tests.Tools
 
         public static Repository<T> BuildRepo<T>()
         {
-            var dbContext = GetDbContext();
-            var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>>(
-                queryFactory: () => dbContext.Records.Where(t => t.Type == typeof(T).Name).Select(t => t.Content),
-                addAction: (newItem) =>
+            var context = GetDbContext();
+            var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>, SqlDbContext>(
+                contextFactory: () => context,
+                queryFactory: (context) => context.Records.Where(t => t.Type == typeof(T).Name).Select(t => t.Content),
+                addAction: (newItem, context) =>
                 {
-                    dbContext.Records.Add(new InDbEntity
+                    context.Records.Add(new InDbEntity
                     {
                         Content = newItem,
                         Type = typeof(T).Name
                     });
-                    dbContext.SaveChanges();
+                    context.SaveChanges();
                 });
             return new Repository<T>(store);
         }

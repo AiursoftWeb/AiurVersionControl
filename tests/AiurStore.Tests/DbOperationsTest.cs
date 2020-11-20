@@ -40,22 +40,23 @@ namespace AiurStore.Tests
         [TestMethod]
         public void QueryDbTest()
         {
-            var store = DbQueryProviderTools.BuildFromDbSet<string>(
-                queryFactory: () => dbContext.Records.Where(t => t.Filter == "Demo Filter!").Select(t => t.Content),
-                addAction: (newItem) =>
+            var store = DbQueryProviderTools.BuildFromDbSet<string, SqlDbContext>(
+                contextFactory: () => dbContext,
+                queryFactory: (context) => context.Records.Where(t => t.Filter == "Demo Filter!").Select(t => t.Content),
+                addAction: (newItem, context) =>
                 {
-                    dbContext.Records.Add(new InDbEntity
+                    context.Records.Add(new InDbEntity
                     {
                         Content = newItem,
                         Filter = "Demo Filter!"
                     });
-                    dbContext.Records.Add(new InDbEntity
+                    context.Records.Add(new InDbEntity
                     {
                         Content = "Dirty item",
                         Filter = "Can't pass filter!"
                     });
-                    dbContext.SaveChanges();
-                });
+                    context.SaveChanges();
+                });;
             store.Add("House");
             store.Add("Home");
             store.Add("Room");

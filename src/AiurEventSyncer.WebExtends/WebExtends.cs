@@ -27,35 +27,29 @@ namespace AiurEventSyncer.WebExtends
                 string startPosition = request.Query[nameof(startPosition)];
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
                 var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                Console.WriteLine("[SERVER]: I was pushed!");
                 var uploadResult = await mockRemote.UploadFromAsync(startPosition, formObject);
                 return controller.Ok(uploadResult);
             }
             else if (request.Method == "GET" && method == "syncer-pull")
             {
                 string localPointerPosition = request.Query[nameof(localPointerPosition)];
+                Console.WriteLine("[SERVER]: I was pulled!");
                 var pullResult = await mockRemote.DownloadFromAsync(localPointerPosition);
                 return controller.Ok(pullResult);
             }
             else if (context.WebSockets.IsWebSocketRequest)
             {
                 var ws = await context.WebSockets.AcceptWebSocketAsync();
-                async Task pushTask()
+                mockRemote.OnRemoteChanged += async () =>
                 {
-                    await SendMessage(ws, "updated");
-                }
-                mockRemote.OnRemoteChanged += pushTask;
-                int count = repository.Commits.Count();
+                    Console.WriteLine($"[SERVER]: I was changed! Broadcasting to a remote...");
+                    await SendMessage(ws, "update");
+                };
                 while (ws.State == WebSocketState.Open)
                 {
-                    await Task.Delay(200);
-                    var newValue = repository.Commits.Count();
-                    if (count != newValue)
-                    {
-                        await pushTask();
-                        count = newValue;
-                    }
+                    await Task.Delay(1000);
                 }
-                mockRemote.OnRemoteChanged -= pushTask;
                 return controller.Ok();
             }
             else

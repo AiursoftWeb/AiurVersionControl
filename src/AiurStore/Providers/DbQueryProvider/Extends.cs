@@ -6,15 +6,23 @@ namespace AiurStore.Providers.DbQueryProvider
 {
     public static class DbQueryProviderTools
     {
-        public static void UseQueryStore(this InOutDbOptions options, Func<IQueryable<string>> queryFactory, Action<string> addAction)
+        public static void UseQueryStore<D>(this InOutDbOptions options, 
+            Func<D> contextFactory,
+            Func<D, IQueryable<string>> queryFactory,
+            Action<string, D> addAction)
         {
-            options.Provider = new QueryStoreProvider(queryFactory, addAction);
+            options.Provider = new QueryStoreProvider<D>(contextFactory, queryFactory, addAction);
         }
 
-        public static InOutDatabase<T> BuildFromDbSet<T>(Func<IQueryable<string>> queryFactory, Action<string> addAction)
+        public static InOutDatabase<T> BuildFromDbSet<T,D>(
+            Func<D> contextFactory,
+            Func<D, IQueryable<string>> queryFactory, 
+            Action<string, D> addAction) 
         {
-            var db = new DummyQueryDb<T>();
-            db.Provider = new QueryStoreProvider(queryFactory, addAction);
+            var db = new DummyQueryDb<T>
+            {
+                Provider = new QueryStoreProvider<D>(contextFactory, queryFactory, addAction)
+            };
             return db;
         }
     }

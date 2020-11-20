@@ -9,28 +9,33 @@ namespace SampleWebApp.Services
 {
     public class RepoFactory<T>
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public RepoFactory(
-            ApplicationDbContext dbContext)
+        public RepoFactory(IServiceScopeFactory scopeFactory)
         {
-            _dbContext = dbContext;
+            _scopeFactory = scopeFactory;
         }
 
         public Repository<T> BuildRepo()
         {
-            var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>>(
-                queryFactory: () =>
+            var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>, ApplicationDbContext>(
+                contextFactory: () => 
                 {
-                    return _dbContext.InDbEntities.Select(t => t.Content);
+                    var scope = _scopeFactory.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    return context;
                 },
-                addAction: (newItem) =>
+                queryFactory: (context) =>
                 {
-                    _dbContext.InDbEntities.Add(new InDbEntity
+                    return context.InDbEntities.Select(t => t.Content);
+                },
+                addAction: (newItem, context) =>
+                {
+                    context.InDbEntities.Add(new InDbEntity
                     {
                         Content = newItem
                     });
-                    _dbContext.SaveChanges();
+                    context.SaveChanges();
                 });
             return new Repository<T>(store);
         }

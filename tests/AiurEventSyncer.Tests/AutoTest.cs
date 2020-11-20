@@ -91,10 +91,10 @@ namespace AiurEventSyncer.Tests
             var d = new Repository<int>();
             var e = new Repository<int>();
 
-            await a.AddRemoteAsync(new ObjectRemote<int>(b, true, false));
-            await c.AddRemoteAsync(new ObjectRemote<int>(b, false, true));
-            await c.AddRemoteAsync(new ObjectRemote<int>(d, true, false));
-            await e.AddRemoteAsync(new ObjectRemote<int>(d, false, true));
+            await a.AddRemoteAsync(new ObjectRemote<int>(b, true, false) { Name ="a autopush b"});
+            await c.AddRemoteAsync(new ObjectRemote<int>(b, false, true) { Name = "c autopull b" });
+            await c.AddRemoteAsync(new ObjectRemote<int>(d, true, false) { Name = "c autopush d" });
+            await e.AddRemoteAsync(new ObjectRemote<int>(d, false, true) { Name = "e autopull d" });
 
             await a.CommitAsync(5);
             b.Assert(5);
