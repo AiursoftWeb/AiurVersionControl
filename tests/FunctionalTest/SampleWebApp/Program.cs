@@ -42,16 +42,9 @@ namespace SampleWebApp
             var services = scope.ServiceProvider;
             var logger = services.GetRequiredService<ILogger<TContext>>();
             var context = services.GetService<TContext>();
-            try
-            {
-                logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"An error occurred while migrating the database used on context {typeof(TContext).Name}");
-            }
+            logger.LogInformation($"Migrating database associated with context {typeof(TContext).Name}");
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
             return host;
         }
     }
