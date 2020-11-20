@@ -11,12 +11,14 @@ namespace SampleWebApp.Tests.IntegrationTests
     [TestClass]
     public class BasicTests
     {
+        private const int _port = 15151;
+        private readonly string _endpointUrl = $"http://localhost:{_port}/repo.ares";
         private IHost _server;
 
         [TestInitialize]
         public async Task CreateServer()
         {
-            _server = Program.BuildHost(null);
+            _server = Program.BuildHost(null, _port);
             await _server.StartAsync();
         }
 
@@ -28,18 +30,18 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public async Task RealCommunication()
+        public async Task BasicPushPull()
         {
             var repo = new Repository<LogItem>();
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true));
+            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
+            await repo.PushAsync();
 
             var repo2 = new Repository<LogItem>();
-            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPull: true));
-            await repo2.PullAsync();
+            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
             await repo2.PullAsync();
 
             Assert.AreEqual(repo2.Commits.Count(), 3);
@@ -49,13 +51,13 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public async Task RealAutoPull()
+        public async Task BasicAutoPull()
         {
             var repo = new Repository<LogItem>();
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true));
+            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
 
             var repo2 = new Repository<LogItem>();
-            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPull: true));
+            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPull: true));
 
             await Task.Delay(200); // Wait for connected.
 
@@ -75,7 +77,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task DoubleWaySync()
         {
             var repoA = new Repository<LogItem>();
-            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true, autoPull: true));
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
 
             await Task.WhenAll(
                 repoA.CommitAsync(new LogItem { Message = "1" }),
@@ -87,34 +89,39 @@ namespace SampleWebApp.Tests.IntegrationTests
             );
 
             var repoB = new Repository<LogItem>();
-            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares"));
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
             await repoB.PullAsync();
             Assert.AreEqual(repoB.Commits.Count(), 6);
         }
 
         [TestMethod]
-        public async Task DoubleWayDataBinding()
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task DoubleWayDataBinding(bool wait)
         {
             var repoA = new Repository<LogItem>();
-            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true, autoPull: true));
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
 
             var repoB = new Repository<LogItem>();
-            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.ares", autoPush: true, autoPull: true));
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
 
             await Task.Delay(200); // Wait for connected.
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
             await repoA.CommitAsync(new LogItem { Message = "2" });
 
-            //await Task.Delay(500); // Wait for connected.
+            if (wait)
+            {
+                await Task.Delay(500); // Wait for pulled.
 
-            //Assert.AreEqual(repoA.Commits.Count(), 2);
-            //Assert.AreEqual(repoB.Commits.Count(), 2);
+                Assert.AreEqual(repoA.Commits.Count(), 2);
+                Assert.AreEqual(repoB.Commits.Count(), 2);
+            }
 
             await repoB.CommitAsync(new LogItem { Message = "3" });
             await repoB.CommitAsync(new LogItem { Message = "4" });
 
-            await Task.Delay(5700); // Wait for connected.
+            await Task.Delay(5700); // Wait for pulled.
 
 
             Assert.AreEqual(repoA.Commits.Count(), 4);
