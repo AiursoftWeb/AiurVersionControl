@@ -52,19 +52,18 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task RealAutoPull()
         {
             var repo = new Repository<LogItem>();
-            var remoteTo = new WebSocketRemote<LogItem>("http://localhost:15000/repo.are", true);
-            repo.Remotes.Add(remoteTo);
+            repo.Remotes.Add(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are", autoPush: true));
 
             var repo2 = new Repository<LogItem>();
-            var remoteFrom = new WebSocketRemote<LogItem>("http://localhost:15000/repo.are");
-            await repo2.AddAutoPullRemoteAsync(remoteFrom);
-            await Task.Delay(3200);
+            await repo2.AddAutoPullRemoteAsync(new WebSocketRemote<LogItem>("http://localhost:15000/repo.are"));
+
+            await Task.Delay(100); // Wait for connected.
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
 
-            await Task.Delay(3400);
+            await Task.Delay(100); // Wait for pulled.
 
             Assert.AreEqual(repo2.Commits.Count(), 3);
             Assert.AreEqual(repo2.Commits.ToArray()[0].Item.Message, "1");
