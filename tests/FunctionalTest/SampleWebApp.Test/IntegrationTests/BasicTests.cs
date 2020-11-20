@@ -1,14 +1,8 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SampleWebApp;
 using SampleWebApp.Data;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

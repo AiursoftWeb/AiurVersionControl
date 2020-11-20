@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SampleWebApp.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SampleWebApp.Data;
+using System;
 
 namespace SampleWebApp
 {
@@ -32,10 +28,7 @@ namespace SampleWebApp
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseKestrel(options =>
-                    {
-                        options.ListenAnyIP(port);
-                    });
+                    webBuilder.UseUrls($"http://localhost:{port}");
                     webBuilder.UseStartup<Startup>();
                 });
         }

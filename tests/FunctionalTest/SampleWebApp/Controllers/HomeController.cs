@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using AiurEventSyncer.WebExtends;
+﻿using AiurEventSyncer.WebExtends;
+using Microsoft.AspNetCore.Mvc;
 using SampleWebApp.Data;
 using SampleWebApp.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace SampleWebApp.Controllers
 {
