@@ -15,9 +15,10 @@ namespace AiurEventSyncer.Models
         public InOutDatabase<Commit<T>> Commits { get; }
         public IEnumerable<IRemote<T>> Remotes => remotesStore.AsReadOnly();
         public Commit<T> Head => Commits.LastOrDefault();
-        public Func<Task> OnNewCommit { get; set; }
+        public Func<string, Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
+        private readonly List<string> localEvents = new List<string>();
         private readonly List<IRemote<T>> remotesStore = new List<IRemote<T>>();
         private readonly SemaphoreSlim readLock = new SemaphoreSlim(1, 1);
 
@@ -39,16 +40,16 @@ namespace AiurEventSyncer.Models
             {
                 Item = content
             });
-            Console.WriteLine($"New commit: {content} added locally!");
+            Console.WriteLine($"[LOCAL] New commit: {content} added locally! Now local have {Commits.Count()} commits.");
             await TriggerOnNewCommit();
         }
 
-        private async Task TriggerOnNewCommit(IRemote<T> except = null)
+        private async Task TriggerOnNewCommit(IRemote<T> except = null, string state = null)
         {
             if (OnNewCommit != null)
             {
                 Console.WriteLine("Some service subscribed this repo change event. Broadcasting.");
-                await OnNewCommit();
+                await OnNewCommit(state);
             }
             IEnumerable<Task> pushTasks = null;
             if (except == null)
@@ -84,10 +85,17 @@ namespace AiurEventSyncer.Models
             if (remote.AutoPull)
             {
                 await this.PullAsync(remote);
-                remote.OnRemoteChanged += async () =>
+                remote.OnRemoteChanged += async (str) =>
                 {
-                    Console.WriteLine("[MONITORING]: remote changed! I will pull now!");
-                    await this.PullAsync(remote);
+                    if (!localEvents.Any(t => t == str))
+                    {
+                        Console.WriteLine("[MONITORING]: remote changed! I will pull now!");
+                        await this.PullAsync(remote);
+                    }
+                    else
+                    {
+                        Console.WriteLine("[MONITORING]: remote changed by my event. Just skip!");
+                    }
                 };
             }
         }
@@ -112,6 +120,7 @@ namespace AiurEventSyncer.Models
                 var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.LocalPointer?.Id);
                 foreach (var subtract in subtraction)
                 {
+                    Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}' from remote: {remoteRecord.Name}. Will load.");
                     var localAfter = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id).FirstOrDefault();
                     if (localAfter is not null)
                     {
@@ -153,41 +162,51 @@ namespace AiurEventSyncer.Models
         {
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
             var commitsToPush = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id);
-            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.LocalPointer?.Id, commitsToPush.ToList());
+            var eventState = Guid.NewGuid().ToString("D");
+            localEvents.Add(eventState);
+            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.LocalPointer?.Id, commitsToPush.ToList(), eventState);
             remoteRecord.LocalPointer = Commits.FirstOrDefault(t => t.Id == remotePointer);
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer updated to: {remoteRecord.LocalPointer?.Item?.ToString()}");
         }
 
-        public async Task<string> OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public async Task<string> OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)
         {
-            string firstDiffPoint = null;
-            var triggerOnNewCommit = false;
-            foreach (var commit in commitsToPush)
+            await readLock.WaitAsync();
+            try
             {
-                Console.WriteLine($"New commit: {commit.Item} (pushed by other remote) is loaded. Adding to local commits.");
-                var localAfter = Commits.AfterCommitId(startPosition).FirstOrDefault();
-                if (localAfter is not null)
+                string firstDiffPoint = null;
+                var triggerOnNewCommit = false;
+                foreach (var commit in commitsToPush)
                 {
-                    if (commit.Id != localAfter.Id && Commits.Last().Id != commit.Id)
+                    Console.WriteLine($"New commit: {commit.Item} (pushed by other remote) is loaded. Adding to local commits.");
+                    var localAfter = Commits.AfterCommitId(startPosition).FirstOrDefault();
+                    if (localAfter is not null)
                     {
-                        firstDiffPoint ??= startPosition;
+                        if (commit.Id != localAfter.Id && Commits.Last().Id != commit.Id)
+                        {
+                            firstDiffPoint ??= startPosition;
+                            Commits.Add(commit);
+                            triggerOnNewCommit = true;
+                        }
+                    }
+                    else
+                    {
                         Commits.Add(commit);
                         triggerOnNewCommit = true;
                     }
+                    startPosition = commit.Id;
                 }
-                else
-                {
-                    Commits.Add(commit);
-                    triggerOnNewCommit = true;
-                }
-                startPosition = commit.Id;
-            }
 
-            if (triggerOnNewCommit)
-            {
-                await TriggerOnNewCommit();
+                if (triggerOnNewCommit)
+                {
+                    await TriggerOnNewCommit(pusher, state);
+                }
+                return firstDiffPoint ?? startPosition;
             }
-            return firstDiffPoint ?? startPosition;
+            finally
+            {
+                readLock.Release();
+            }
         }
     }
 }

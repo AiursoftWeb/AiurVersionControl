@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.WebSockets;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace AiurEventSyncer.Remotes
         public string Name { get; set; } = "WebSocket Origin Default Name";
         public bool AutoPush { get; set; }
         public bool AutoPull { get; set; }
-        public Func<Task> OnRemoteChanged { get; set; }
+        public Func<string, Task> OnRemoteChanged { get; set; }
         public Commit<T> LocalPointer { get; set; }
 
         public WebSocketRemote(string endpointUrl, bool autoPush = false, bool autoPull = false)
@@ -62,7 +63,11 @@ namespace AiurEventSyncer.Remotes
                     if (OnRemoteChanged != null)
                     {
                         Console.WriteLine($"[WebSocket Event] Remote '{Name}' repo changed!");
-                        await OnRemoteChanged();
+                        string message = Encoding.UTF8.GetString(
+                            buffer.Skip(buffer.Offset).Take(buffer.Count).ToArray())
+                            .Trim('\0')
+                            .Trim();
+                        await OnRemoteChanged(message);
                     }
                 }
             }
@@ -84,7 +89,7 @@ namespace AiurEventSyncer.Remotes
             return result;
         }
 
-        public async Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
+        public async Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
         {
             await readLock.WaitAsync();
             try
@@ -98,7 +103,7 @@ namespace AiurEventSyncer.Remotes
                     Console.WriteLine("[WARNING] Uploaded nothing!");
                 }
                 var client = new HttpClient();
-                var result = await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
+                var result = await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}&state={state}", JsonContent.Create(commitsToPush));
                 var response = await result.Content.ReadAsStringAsync();
                 return response;
             }

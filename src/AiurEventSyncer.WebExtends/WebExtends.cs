@@ -20,15 +20,16 @@ namespace AiurEventSyncer.WebExtends
             var context = controller.HttpContext;
             var request = context.Request;
             var method = request.Query["method"];
-            var mockRemote = new ObjectRemote<T>(repository);
+            var mockRemote = new ObjectRemote<T>(repository) { Name = "Server-side-fake-repo" };
 
             if (request.Method == "POST" && method == "syncer-push")
             {
+                string state = request.Query[nameof(state)];
                 string startPosition = request.Query[nameof(startPosition)];
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
                 var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 Console.WriteLine("[SERVER]: I was pushed!");
-                var uploadResult = await mockRemote.UploadFromAsync(startPosition, formObject);
+                var uploadResult = await mockRemote.UploadFromAsync(startPosition, formObject, state);
                 return controller.Ok(uploadResult);
             }
             else if (request.Method == "GET" && method == "syncer-pull")
@@ -41,10 +42,10 @@ namespace AiurEventSyncer.WebExtends
             else if (context.WebSockets.IsWebSocketRequest)
             {
                 var ws = await context.WebSockets.AcceptWebSocketAsync();
-                mockRemote.OnRemoteChanged += async () =>
+                mockRemote.OnRemoteChanged += async (str) =>
                 {
                     Console.WriteLine($"[SERVER]: I was changed! Broadcasting to a remote...");
-                    await SendMessage(ws, "update");
+                    await SendMessage(ws, str);
                 };
                 while (ws.State == WebSocketState.Open)
                 {

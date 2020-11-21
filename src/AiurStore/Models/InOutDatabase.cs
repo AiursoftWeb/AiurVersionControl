@@ -10,6 +10,7 @@ namespace AiurStore.Models
     public abstract class InOutDatabase<T> : IEnumerable<T>
     {
         public IStoreProvider Provider { get; set; }
+        private object _obj = new object();
         public InOutDatabase()
         {
             var options = new InOutDbOptions();
@@ -21,17 +22,26 @@ namespace AiurStore.Models
 
         public void Add(T newObject)
         {
-            Provider.Add(JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            lock (_obj)
+            {
+                Provider.Add(JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            }
         }
 
         public void Clear()
         {
-            Provider.Clear();
+            lock (_obj)
+            {
+                Provider.Clear();
+            }
         }
 
         public void Insert(int index, T newObject)
         {
-            Provider.Insert(index, JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            lock (_obj)
+            {
+                Provider.Insert(index, JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+            }
         }
 
         public void InsertAfter(Func<T, bool> predicate, T newObject)
@@ -44,16 +54,19 @@ namespace AiurStore.Models
 
         public IEnumerable<T> After(Func<T, bool> func)
         {
-            var yielding = false;
-            foreach (var item in this)
+            lock (_obj)
             {
-                if (yielding)
+                var yielding = false;
+                foreach (var item in this)
                 {
-                    yield return item;
-                }
-                if (func(item))
-                {
-                    yielding = true;
+                    if (yielding)
+                    {
+                        yield return item;
+                    }
+                    if (func(item))
+                    {
+                        yielding = true;
+                    }
                 }
             }
         }
