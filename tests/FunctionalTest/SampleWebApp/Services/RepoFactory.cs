@@ -19,7 +19,7 @@ namespace SampleWebApp.Services
         public Repository<T> BuildRepo()
         {
             var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>, ApplicationDbContext>(
-                contextFactory: () => 
+                contextFactory: () =>
                 {
                     var scope = _scopeFactory.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -37,7 +37,8 @@ namespace SampleWebApp.Services
                     });
                     context.SaveChanges();
                 });
-            return new Repository<T>(store);
+            return new Repository<T>();
+            //return new Repository<T>(store);
         }
     }
 }

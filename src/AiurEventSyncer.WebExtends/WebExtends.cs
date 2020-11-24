@@ -42,15 +42,17 @@ namespace AiurEventSyncer.WebExtends
             else if (context.WebSockets.IsWebSocketRequest)
             {
                 var ws = await context.WebSockets.AcceptWebSocketAsync();
+                Console.WriteLine($"[SERVER]: New Websocket client online! Status: '{ws.State}'");
                 mockRemote.OnRemoteChanged += async (str) =>
                 {
-                    Console.WriteLine($"[SERVER]: I was changed! Broadcasting to a remote...");
+                    Console.WriteLine("[SERVER]: I was changed! Broadcasting to a remote...");
                     await SendMessage(ws, str);
                 };
                 while (ws.State == WebSocketState.Open)
                 {
                     await Task.Delay(1000);
                 }
+                Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
                 return controller.Ok();
             }
             else

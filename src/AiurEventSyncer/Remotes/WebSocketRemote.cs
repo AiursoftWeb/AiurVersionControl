@@ -25,7 +25,7 @@ namespace AiurEventSyncer.Remotes
         public bool AutoPush { get; set; }
         public bool AutoPull { get; set; }
         public Func<string, Task> OnRemoteChanged { get; set; }
-        public Commit<T> LocalPointer { get; set; }
+        public string Position { get; set; }
 
         public WebSocketRemote(string endpointUrl, bool autoPush = false, bool autoPull = false)
         {
@@ -49,16 +49,12 @@ namespace AiurEventSyncer.Remotes
             Console.WriteLine("Preparing websocket connection for: " + this.Name);
             using var socket = new ClientWebSocket();
             await socket.ConnectAsync(new Uri(_wsEndpointUrl), CancellationToken.None);
-            Console.WriteLine("Websocket connected! " + this.Name);
+            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             var buffer = new ArraySegment<byte>(new byte[2048]);
             while (true)
             {
                 var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
-                if (result.MessageType == WebSocketMessageType.Close)
-                {
-                    break;
-                }
-                else
+                if (result.MessageType == WebSocketMessageType.Text)
                 {
                     if (OnRemoteChanged != null)
                     {
@@ -69,6 +65,11 @@ namespace AiurEventSyncer.Remotes
                             .Trim();
                         await OnRemoteChanged(message);
                     }
+                }
+                else
+                {
+                    Console.WriteLine($"[WebSocket Event] Remote wrong message. [{result.MessageType}].");
+                    break;
                 }
             }
         }

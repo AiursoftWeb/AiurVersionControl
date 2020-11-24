@@ -48,7 +48,7 @@ namespace AiurEventSyncer.Models
         {
             if (OnNewCommit != null)
             {
-                Console.WriteLine("Some service subscribed this repo change event. Broadcasting.");
+                Console.WriteLine("[LOCAL] Some service subscribed this repo change event. Broadcasting...");
                 await OnNewCommit(state);
             }
             IEnumerable<Task> pushTasks = null;
@@ -117,16 +117,16 @@ namespace AiurEventSyncer.Models
             try
             {
                 var triggerOnNewCommit = false;
-                var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.LocalPointer?.Id);
+                var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
                 foreach (var subtract in subtraction)
                 {
                     Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}' from remote: {remoteRecord.Name}. Will load.");
-                    var localAfter = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id).FirstOrDefault();
+                    var localAfter = Commits.AfterCommitId(remoteRecord.Position).FirstOrDefault();
                     if (localAfter is not null)
                     {
                         if (localAfter.Id != subtract.Id)
                         {
-                            Commits.InsertAfterCommitId(remoteRecord.LocalPointer?.Id, subtract);
+                            Commits.InsertAfterCommitId(remoteRecord.Position, subtract);
                             triggerOnNewCommit = true;
                         }
                     }
@@ -135,7 +135,7 @@ namespace AiurEventSyncer.Models
                         Commits.Add(subtract);
                         triggerOnNewCommit = true;
                     }
-                    remoteRecord.LocalPointer = subtract;
+                    remoteRecord.Position = subtract.Id;
                 }
                 if (triggerOnNewCommit)
                 {
@@ -161,12 +161,12 @@ namespace AiurEventSyncer.Models
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
-            var commitsToPush = Commits.AfterCommitId(remoteRecord.LocalPointer?.Id);
+            var commitsToPush = Commits.AfterCommitId(remoteRecord.Position);
             var eventState = Guid.NewGuid().ToString("D");
             localEvents.Add(eventState);
-            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.LocalPointer?.Id, commitsToPush.ToList(), eventState);
-            remoteRecord.LocalPointer = Commits.FirstOrDefault(t => t.Id == remotePointer);
-            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer updated to: {remoteRecord.LocalPointer?.Item?.ToString()}");
+            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush.ToList(), eventState);
+            remoteRecord.Position = remotePointer;
+            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer updated to: {remoteRecord.Position}");
         }
 
         public async Task<string> OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)

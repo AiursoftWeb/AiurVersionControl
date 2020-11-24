@@ -11,7 +11,7 @@ namespace AiurEventSyncer.Abstract
         public bool AutoPush { get; set; }
         public bool AutoPull { get; set; }
         public Func<string, Task> OnRemoteChanged { get; set; }
-        public Commit<T> LocalPointer { get; set; }
+        public string Position { get; set; }
         Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition);
         Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state);
     }

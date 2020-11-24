@@ -16,7 +16,7 @@ namespace AiurEventSyncer.Remotes
         public bool AutoPull { get; set; }
 
         public Func<string, Task> OnRemoteChanged { get; set; }
-        public Commit<T> LocalPointer { get; set; }
+        public string Position { get; set; }
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
