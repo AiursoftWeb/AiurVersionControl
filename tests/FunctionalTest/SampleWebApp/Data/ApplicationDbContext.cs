@@ -15,6 +15,11 @@ namespace SampleWebApp.Data
         {
             return (obj as LogItem)?.Message == Message;
         }
+
+        public override int GetHashCode()
+        {
+            return Message.GetHashCode();
+        }
     }
 
     public class InDbEntity

@@ -127,8 +127,8 @@ namespace AiurEventSyncer.Tests
             {
                 Item = 10
             };
-            remoteRepo.Commits.Add(manualSyncedCommit);
-            _localRepo.Commits.Add(manualSyncedCommit);
+            await remoteRepo.CommitObjectAsync(manualSyncedCommit);
+            await _localRepo.CommitObjectAsync(manualSyncedCommit);
 
             _localRepo.Assert(1, 2, 3, 10);
             remoteRepo.Assert(1, 2, 3, 10);
@@ -160,10 +160,10 @@ namespace AiurEventSyncer.Tests
             {
                 Item = 20
             };
-            remoteRepo.Commits.Add(manual10SyncedCommit);
-            remoteRepo.Commits.Add(manual20SyncedCommit);
-            _localRepo.Commits.Add(manual20SyncedCommit);
-            _localRepo.Commits.Add(manual10SyncedCommit);
+            await remoteRepo.CommitObjectAsync(manual10SyncedCommit);
+            await remoteRepo.CommitObjectAsync(manual20SyncedCommit);
+            await _localRepo.CommitObjectAsync(manual20SyncedCommit);
+            await _localRepo.CommitObjectAsync(manual10SyncedCommit);
             await _localRepo.CommitAsync(300);
 
             _localRepo.Assert(1, 2, 3, 20, 10, 300);

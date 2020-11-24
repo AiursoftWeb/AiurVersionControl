@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace AiurStore.Models
 {
-    public abstract class InOutDatabase<T> : IEnumerable<T>
+    public abstract class InOutDatabase<T> : IEnumerable<T>, IAfterable<T>
     {
         public IStoreProvider Provider { get; set; }
         private object _obj = new object();

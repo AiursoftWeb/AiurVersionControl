@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
+using AiurStore.Abstracts;
 using AiurStore.Models;
 using AiurStore.Providers.MemoryProvider;
 using System;
@@ -12,19 +13,20 @@ namespace AiurEventSyncer.Models
 {
     public class Repository<T>
     {
-        public InOutDatabase<Commit<T>> Commits { get; }
+        public IAfterable<Commit<T>> Commits => _commits;
         public IEnumerable<IRemote<T>> Remotes => remotesStore.AsReadOnly();
         public Commit<T> Head => Commits.LastOrDefault();
         public Func<string, Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
+        private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<string> localEvents = new List<string>();
         private readonly List<IRemote<T>> remotesStore = new List<IRemote<T>>();
         private readonly SemaphoreSlim readLock = new SemaphoreSlim(1, 1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
-            Commits = dbProvider;
+            _commits = dbProvider;
         }
 
         /// <summary>
@@ -34,13 +36,22 @@ namespace AiurEventSyncer.Models
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public async Task CommitAsync(T content)
+        public Task CommitAsync(T content)
         {
-            Commits.Add(new Commit<T>
-            {
-                Item = content
-            });
-            Console.WriteLine($"[LOCAL] New commit: {content} added locally! Now local have {Commits.Count()} commits.");
+            return CommitObjectAsync(new Commit<T> { Item = content });
+        }
+
+        /// <summary>
+        /// Add a new commit to this repository.
+        /// Also will push to all remotes which are auto push.
+        /// Also for all other repositories which auto pull this one, will notify them.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public async Task CommitObjectAsync(Commit<T> commitObject)
+        {
+            _commits.Add(commitObject);
+            Console.WriteLine($"[LOCAL] New commit: {commitObject.Item} added locally! Now local have {_commits.Count()} commits.");
             await TriggerOnNewCommit();
         }
 
@@ -121,18 +132,18 @@ namespace AiurEventSyncer.Models
                 foreach (var subtract in subtraction)
                 {
                     Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}' from remote: {remoteRecord.Name}. Will load.");
-                    var localAfter = Commits.AfterCommitId(remoteRecord.Position).FirstOrDefault();
+                    var localAfter = _commits.AfterCommitId(remoteRecord.Position).FirstOrDefault();
                     if (localAfter is not null)
                     {
                         if (localAfter.Id != subtract.Id)
                         {
-                            Commits.InsertAfterCommitId(remoteRecord.Position, subtract);
+                            _commits.InsertAfterCommitId(remoteRecord.Position, subtract);
                             triggerOnNewCommit = true;
                         }
                     }
                     else
                     {
-                        Commits.Add(subtract);
+                        _commits.Add(subtract);
                         triggerOnNewCommit = true;
                     }
                     remoteRecord.Position = subtract.Id;
@@ -161,7 +172,7 @@ namespace AiurEventSyncer.Models
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
-            var commitsToPush = Commits.AfterCommitId(remoteRecord.Position);
+            var commitsToPush = _commits.AfterCommitId(remoteRecord.Position);
             var eventState = Guid.NewGuid().ToString("D");
             localEvents.Add(eventState);
             var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush.ToList(), eventState);
@@ -179,19 +190,19 @@ namespace AiurEventSyncer.Models
                 foreach (var commit in commitsToPush)
                 {
                     Console.WriteLine($"New commit: {commit.Item} (pushed by other remote) is loaded. Adding to local commits.");
-                    var localAfter = Commits.AfterCommitId(startPosition).FirstOrDefault();
+                    var localAfter = _commits.AfterCommitId(startPosition).FirstOrDefault();
                     if (localAfter is not null)
                     {
-                        if (commit.Id != localAfter.Id && Commits.Last().Id != commit.Id)
+                        if (commit.Id != localAfter.Id && _commits.Last().Id != commit.Id)
                         {
                             firstDiffPoint ??= startPosition;
-                            Commits.Add(commit);
+                            _commits.Add(commit);
                             triggerOnNewCommit = true;
                         }
                     }
                     else
                     {
-                        Commits.Add(commit);
+                        _commits.Add(commit);
                         triggerOnNewCommit = true;
                     }
                     startPosition = commit.Id;
