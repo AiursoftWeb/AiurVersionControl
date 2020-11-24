@@ -22,7 +22,7 @@ namespace AiurEventSyncer.Models
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<string> _localEvents = new List<string>();
         private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
-        private readonly SemaphoreSlim _pullLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _commitAccessLock = new SemaphoreSlim(1, 1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -50,16 +50,16 @@ namespace AiurEventSyncer.Models
         /// <returns></returns>
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
-            await _pullLock.WaitAsync();
+            await _commitAccessLock.WaitAsync();
             try
             {
                 _commits.Add(commitObject);
             }
             finally
             {
-                _pullLock.Release();
+                _commitAccessLock.Release();
             }
-            Console.WriteLine($"[LOCAL] New commit: {commitObject.Item} added locally! Now local have {_commits.Count()} commits.");
+            Console.WriteLine($"[LOCAL] New commit: {commitObject.Item} added locally!");
             await TriggerOnNewCommit();
         }
 
@@ -131,10 +131,10 @@ namespace AiurEventSyncer.Models
 
         public async Task PullAsync(IRemote<T> remoteRecord)
         {
-            await _pullLock.WaitAsync();
             Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
             var triggerOnNewCommit = false;
             var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
+            await _commitAccessLock.WaitAsync();
             try
             {
                 foreach (var subtract in subtraction)
@@ -159,7 +159,7 @@ namespace AiurEventSyncer.Models
             }
             finally
             {
-                _pullLock.Release();
+                _commitAccessLock.Release();
             }
             if (triggerOnNewCommit)
             {
@@ -180,10 +180,19 @@ namespace AiurEventSyncer.Models
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
-            var commitsToPush = _commits.AfterCommitId(remoteRecord.Position);
+            List<Commit<T>> commitsToPush = null;
+            await _commitAccessLock.WaitAsync();
+            try
+            {
+                commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
+            }
+            finally
+            {
+                _commitAccessLock.Release();
+            }
             var eventState = Guid.NewGuid().ToString("D");
             _localEvents.Add(eventState);
-            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush.ToList(), eventState);
+            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush, eventState);
             remoteRecord.Position = remotePointer;
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer updated to: {remoteRecord.Position}");
         }
@@ -192,7 +201,7 @@ namespace AiurEventSyncer.Models
         {
             string firstDiffPoint = null;
             var triggerOnNewCommit = false;
-            await _pullLock.WaitAsync();
+            await _commitAccessLock.WaitAsync();
             try
             {
                 foreach (var commit in commitsToPush)
@@ -218,7 +227,7 @@ namespace AiurEventSyncer.Models
             }
             finally
             {
-                _pullLock.Release();
+                _commitAccessLock.Release();
             }
             if (triggerOnNewCommit)
             {

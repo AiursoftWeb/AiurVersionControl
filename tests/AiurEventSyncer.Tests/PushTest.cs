@@ -145,6 +145,44 @@ namespace AiurEventSyncer.Tests
         }
 
         [TestMethod]
+        public async Task PushWithManualSharedRangeTest()
+        {
+            var localRepo = new Repository<int>();
+            var remoteRepo = new Repository<int>();
+            await localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
+
+            await remoteRepo.CommitAsync(1);
+
+            var commit4 = new Commit<int>
+            {
+                Item = 4
+            };
+            await remoteRepo.CommitObjectAsync(commit4);
+            await localRepo.CommitObjectAsync(commit4);
+
+            var commit5 = new Commit<int>
+            {
+                Item = 5
+            };
+            await remoteRepo.CommitObjectAsync(commit5);
+            await localRepo.CommitObjectAsync(commit5);
+
+            var commit6 = new Commit<int>
+            {
+                Item = 6
+            };
+            await localRepo.CommitObjectAsync(commit6);
+
+            localRepo.Assert(4, 5, 6);
+            remoteRepo.Assert(1, 4, 5);
+
+            await localRepo.PushAsync();
+
+            localRepo.Assert(4, 5, 6);
+            remoteRepo.Assert(1, 4, 5, 6);
+        }
+
+        [TestMethod]
         public async Task PushWithDiffOrderCommitsTest()
         {
             var remoteRepo = new Repository<int>();
