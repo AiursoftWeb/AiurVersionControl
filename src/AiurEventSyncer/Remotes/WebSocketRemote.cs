@@ -112,7 +112,6 @@ namespace AiurEventSyncer.Remotes
             {
                 readLock.Release();
             }
-
         }
     }
 }
