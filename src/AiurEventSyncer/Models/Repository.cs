@@ -14,15 +14,15 @@ namespace AiurEventSyncer.Models
     public class Repository<T>
     {
         public IAfterable<Commit<T>> Commits => _commits;
-        public IEnumerable<IRemote<T>> Remotes => remotesStore.AsReadOnly();
+        public IEnumerable<IRemote<T>> Remotes => _remotesStore.AsReadOnly();
         public Commit<T> Head => Commits.LastOrDefault();
         public Func<string, Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly List<string> localEvents = new List<string>();
-        private readonly List<IRemote<T>> remotesStore = new List<IRemote<T>>();
-        private readonly SemaphoreSlim readLock = new SemaphoreSlim(1, 1);
+        private readonly List<string> _localEvents = new List<string>();
+        private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
+        private readonly SemaphoreSlim _pullLock = new SemaphoreSlim(1, 1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -92,13 +92,13 @@ namespace AiurEventSyncer.Models
         /// <returns></returns>
         public async Task AddRemoteAsync(IRemote<T> remote)
         {
-            this.remotesStore.Add(remote);
+            this._remotesStore.Add(remote);
             if (remote.AutoPull)
             {
                 await this.PullAsync(remote);
                 remote.OnRemoteChanged += async (str) =>
                 {
-                    if (!localEvents.Any(t => t == str))
+                    if (!_localEvents.Any(t => t == str))
                     {
                         Console.WriteLine("[MONITORING]: remote changed! I will pull now!");
                         await this.PullAsync(remote);
@@ -123,7 +123,7 @@ namespace AiurEventSyncer.Models
 
         public async Task PullAsync(IRemote<T> remoteRecord)
         {
-            await readLock.WaitAsync();
+            await _pullLock.WaitAsync();
             Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
             try
             {
@@ -155,7 +155,7 @@ namespace AiurEventSyncer.Models
             }
             finally
             {
-                readLock.Release();
+                _pullLock.Release();
             }
         }
 
@@ -174,7 +174,7 @@ namespace AiurEventSyncer.Models
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
             var commitsToPush = _commits.AfterCommitId(remoteRecord.Position);
             var eventState = Guid.NewGuid().ToString("D");
-            localEvents.Add(eventState);
+            _localEvents.Add(eventState);
             var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush.ToList(), eventState);
             remoteRecord.Position = remotePointer;
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer updated to: {remoteRecord.Position}");
@@ -182,7 +182,7 @@ namespace AiurEventSyncer.Models
 
         public async Task<string> OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)
         {
-            await readLock.WaitAsync();
+            await _pullLock.WaitAsync();
             try
             {
                 string firstDiffPoint = null;
@@ -216,7 +216,7 @@ namespace AiurEventSyncer.Models
             }
             finally
             {
-                readLock.Release();
+                _pullLock.Release();
             }
         }
     }
