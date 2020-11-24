@@ -84,6 +84,9 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repoA = new Repository<LogItem>();
             await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
 
+            var repoB = new Repository<LogItem>();
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
+
             await Task.WhenAll(
                 repoA.CommitAsync(new LogItem { Message = "1" }),
                 repoA.CommitAsync(new LogItem { Message = "2" }),
@@ -93,6 +96,8 @@ namespace SampleWebApp.Tests.IntegrationTests
                 repoA.CommitAsync(new LogItem { Message = "6" })
             );
 
+            await Task.Delay(1000);
+
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
@@ -101,6 +106,13 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "5" },
                 new LogItem { Message = "6" });
             repoA.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" },
+                new LogItem { Message = "3" },
+                new LogItem { Message = "4" },
+                new LogItem { Message = "5" },
+                new LogItem { Message = "6" });
+            repoB.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
                 new LogItem { Message = "3" },

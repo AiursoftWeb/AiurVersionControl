@@ -50,7 +50,15 @@ namespace AiurEventSyncer.Models
         /// <returns></returns>
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
-            _commits.Add(commitObject);
+            await _pullLock.WaitAsync();
+            try
+            {
+                _commits.Add(commitObject);
+            }
+            finally
+            {
+                _pullLock.Release();
+            }
             Console.WriteLine($"[LOCAL] New commit: {commitObject.Item} added locally! Now local have {_commits.Count()} commits.");
             await TriggerOnNewCommit();
         }
@@ -125,10 +133,10 @@ namespace AiurEventSyncer.Models
         {
             await _pullLock.WaitAsync();
             Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
+            var triggerOnNewCommit = false;
+            var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
             try
             {
-                var triggerOnNewCommit = false;
-                var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
                 foreach (var subtract in subtraction)
                 {
                     Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}' from remote: {remoteRecord.Name}. Will load.");
@@ -148,14 +156,14 @@ namespace AiurEventSyncer.Models
                     }
                     remoteRecord.Position = subtract.Id;
                 }
-                if (triggerOnNewCommit)
-                {
-                    await TriggerOnNewCommit(except: remoteRecord);
-                }
             }
             finally
             {
                 _pullLock.Release();
+            }
+            if (triggerOnNewCommit)
+            {
+                await TriggerOnNewCommit(except: remoteRecord);
             }
         }
 
@@ -182,11 +190,11 @@ namespace AiurEventSyncer.Models
 
         public async Task<string> OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)
         {
+            string firstDiffPoint = null;
+            var triggerOnNewCommit = false;
             await _pullLock.WaitAsync();
             try
             {
-                string firstDiffPoint = null;
-                var triggerOnNewCommit = false;
                 foreach (var commit in commitsToPush)
                 {
                     Console.WriteLine($"New commit: {commit.Item} (pushed by other remote) is loaded. Adding to local commits.");
@@ -207,17 +215,16 @@ namespace AiurEventSyncer.Models
                     }
                     startPosition = commit.Id;
                 }
-
-                if (triggerOnNewCommit)
-                {
-                    await TriggerOnNewCommit(pusher, state);
-                }
-                return firstDiffPoint ?? startPosition;
             }
             finally
             {
                 _pullLock.Release();
             }
+            if (triggerOnNewCommit)
+            {
+                await TriggerOnNewCommit(pusher, state);
+            }
+            return firstDiffPoint ?? startPosition;
         }
     }
 }

@@ -87,12 +87,18 @@ namespace AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            return Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })).GetEnumerator();
+            lock (_obj)
+            {
+                return Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })).GetEnumerator();
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            lock (_obj)
+            {
+                return GetEnumerator();
+            }
         }
     }
 }
