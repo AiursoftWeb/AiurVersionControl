@@ -56,7 +56,7 @@ namespace AiurStore.Tests
                         Filter = "Can't pass filter!"
                     });
                     context.SaveChanges();
-                });;
+                });
             store.Add("House");
             store.Add("Home");
             store.Add("Room");

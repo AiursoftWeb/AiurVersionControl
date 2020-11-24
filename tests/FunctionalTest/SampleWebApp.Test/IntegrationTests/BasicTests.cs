@@ -61,7 +61,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repo2 = new Repository<LogItem>();
             await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPull: true));
 
-            await Task.Delay(200); // Wait for connected.
+            await Task.Delay(1900); // Wait for connected.
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
