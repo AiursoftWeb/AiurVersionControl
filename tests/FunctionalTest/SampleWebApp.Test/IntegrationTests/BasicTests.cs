@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using System;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -167,6 +168,32 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "3" },
                 new LogItem { Message = "4" });
         }
+
+        [TestMethod]
+        public async Task MultiSync()
+        {
+            var repoA = new Repository<LogItem>();
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true){ Name = "A to server" });
+            var repoB = new Repository<LogItem>();
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true){ Name = "B to server" });
+
+            await Task.Delay(300); 
+            
+            await Task.WhenAll(
+                repoA.CommitAsync(new LogItem { Message = "1" }),
+                repoB.CommitAsync(new LogItem { Message = "2" }),
+                repoA.CommitAsync(new LogItem { Message = "3" }),
+                repoB.CommitAsync(new LogItem { Message = "4" }),
+                repoA.CommitAsync(new LogItem { Message = "5" }),
+                repoB.CommitAsync(new LogItem { Message = "6" })
+            );
+            
+            await Task.Delay(300); 
+            
+            Assert.AreEqual(HomeController._repo.Commits.Count(), 6);
+            Assert.AreEqual(repoA.Commits.Count(), 6);
+            Assert.AreEqual(repoB.Commits.Count(), 6);
+        }
     }
 
     public static class TestExtends
@@ -174,6 +201,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
             var commits = repo.Commits.ToArray();
+            Console.WriteLine(commits.Count());
             if (commits.Count() != array.Length)
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
