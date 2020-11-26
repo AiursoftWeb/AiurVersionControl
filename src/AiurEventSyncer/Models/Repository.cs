@@ -202,9 +202,19 @@ namespace AiurEventSyncer.Models
             string firstDiffPoint = null;
             var triggerOnNewCommit = false;
             await _commitAccessLock.WaitAsync();
+
+            var sharedRange = CommitsExtend.SharedRange(
+                _commits.AfterCommitId(startPosition).Select(t => t.Id).ToArray(),
+                commitsToPush.Select(t => t.Id).ToArray());
+            if (sharedRange > 0)
+            {
+                commitsToPush = commitsToPush.Skip(sharedRange).ToList();
+                startPosition = commitsToPush.FirstOrDefault()?.Id;
+            }
+            // 1,4,5
             try
             {
-                foreach (var commit in commitsToPush)
+                foreach (var commit in commitsToPush) // 4,5,6
                 {
                     Console.WriteLine($"New commit: {commit.Item} (pushed by other remote) is loaded. Adding to local commits.");
                     var localAfter = _commits.AfterCommitId(startPosition).FirstOrDefault();
