@@ -143,7 +143,7 @@ namespace AiurEventSyncer.Models
                     var localAfter = _commits.AfterCommitId(remoteRecord.Position).FirstOrDefault();
                     if (localAfter is not null)
                     {
-                        if (localAfter.Id != subtract.Id)
+                        if (localAfter.Id != subtract.Id && subtract.Id != remoteRecord.Position)
                         {
                             _commits.InsertAfterCommitId(remoteRecord.Position, subtract);
                             triggerOnNewCommit = true;
