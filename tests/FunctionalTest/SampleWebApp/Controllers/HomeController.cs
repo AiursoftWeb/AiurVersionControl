@@ -25,7 +25,7 @@ namespace SampleWebApp.Controllers
         }
 
         [Route("repo.ares")]
-        public Task<IActionResult> ReturnRepoDemo()
+        public Task<IActionResult> ReturnRepoDemo(string start)
         {
             lock (_obj)
             {
@@ -34,7 +34,7 @@ namespace SampleWebApp.Controllers
                     _repo = _repoFactory.BuildRepo();
                 }
             }
-            return this.BuildWebActionResultAsync(_repo);
+            return this.BuildWebActionResultAsync(_repo, start);
         }
     }
 }

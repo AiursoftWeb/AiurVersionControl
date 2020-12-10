@@ -35,8 +35,9 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task SingleCommit()
         {
             var repo = new Repository<LogItem>();
-            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true, true);
-            await repo.AddRemoteAsync(remote);
+            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true);
+            repo.AddRemote(remote);
+            await Task.Factory.StartNew(async () => await repo.PullAsync(true));
             await Task.Delay(300);
             await repo.CommitAsync(new LogItem { Message = "1" });
             await Task.Delay(300);
@@ -47,12 +48,13 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task ManualPushPull()
         {
             var repo = new Repository<LogItem>();
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
             await repo.PushAsync();
+            await Task.Delay(300);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -60,7 +62,7 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "3" });
 
             var repo2 = new Repository<LogItem>();
-            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+            repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
             await repo2.PullAsync();
 
             repo2.Assert(
@@ -73,17 +75,18 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task OnewayAutoPull()
         {
             var repo = new Repository<LogItem>();
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
+            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
 
             var repo2 = new Repository<LogItem>();
-            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPull: true));
-
+            repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
+            await Task.Factory.StartNew(async () => await repo2.PullAsync(true));
             await Task.Delay(300);
 
             await repo.CommitAsync(new LogItem { Message = "1" });
+            await Task.Delay(300);
             await repo.CommitAsync(new LogItem { Message = "2" });
+            await Task.Delay(300);
             await repo.CommitAsync(new LogItem { Message = "3" });
-
             await Task.Delay(300);
 
             repo.Assert(
@@ -100,10 +103,12 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task DoubleWaySync()
         {
             var repoA = new Repository<LogItem>();
-            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
+            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
+            await Task.Factory.StartNew(async () => await repoA.PullAsync(true));
 
             var repoB = new Repository<LogItem>();
-            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true));
+            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
+            await Task.Factory.StartNew(async () => await repoB.PullAsync(true));
 
             await Task.Delay(300);
 
@@ -148,10 +153,12 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task DoubleWayDataBinding()
         {
             var repoA = new Repository<LogItem>();
-            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true) { Name = "A to server" });
+            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "A to server" });
+            await Task.Factory.StartNew(async () => await repoA.PullAsync(true));
 
             var repoB = new Repository<LogItem>();
-            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true, autoPull: true) { Name = "B to server" });
+            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "B to server" });
+            await Task.Factory.StartNew(async () => await repoB.PullAsync(true));
 
             await Task.Delay(300);
 

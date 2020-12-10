@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
+using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,89 +18,62 @@ namespace AiurEventSyncer.Remotes
 {
     public class WebSocketRemote<T> : IRemote<T>
     {
-        private readonly string _endpointUrl;
         private readonly string _wsEndpointUrl;
-        private readonly SemaphoreSlim readLock = new SemaphoreSlim(1, 1);
+        private ClientWebSocket _ws;
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
         public bool AutoPush { get; set; }
-        public bool AutoPull { get; set; }
-        public Func<Task> OnRemoteChanged { get; set; }
         public string Position { get; set; }
 
-        public WebSocketRemote(string endpointUrl, bool autoPush = false, bool autoPull = false)
+        public WebSocketRemote(string endpointUrl, bool autoPush = false)
         {
-            _wsEndpointUrl = _endpointUrl = endpointUrl;
+            _wsEndpointUrl = endpointUrl;
             var https = new Regex("^https://", RegexOptions.Compiled);
             var http = new Regex("^http://", RegexOptions.Compiled);
 
             _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
+            _ws = new ClientWebSocket();
 
             AutoPush = autoPush;
-            AutoPull = autoPull;
-            if (autoPull)
-            {
-                Task.Factory.StartNew(MonitorRemoteChanges);
-            }
         }
 
-        public async Task MonitorRemoteChanges()
+        public async Task DownloadAndSaveTo( bool keepAlive, Repository<T> repository)
         {
             Console.WriteLine("Preparing websocket connection for: " + this.Name);
-            using var socket = new ClientWebSocket();
-            await socket.ConnectAsync(new Uri(_wsEndpointUrl), CancellationToken.None);
-            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
-            var buffer = new ArraySegment<byte>(new byte[2048]);
-            while (socket.State == WebSocketState.Open)
+            if (_ws.State == WebSocketState.Open)
             {
-                var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
-                if (result.MessageType == WebSocketMessageType.Text)
+                throw new InvalidOperationException("Can't pull because there is a alive pull already monitoring!");
+            }
+            await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None);
+            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
+            while (_ws.State == WebSocketState.Open)
+            {
+                var rawJson = await WebSocketExtends.GetMessage(_ws);
+                var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                await repository.OnPulled(commits, this);
+                if (!keepAlive)
                 {
-                    if (OnRemoteChanged != null)
-                    {
-                        Console.WriteLine($"[WebSocket Event] Remote '{Name}' repo changed!");
-                        await OnRemoteChanged();
-                    }
+                    await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
                 }
             }
         }
 
-        public async Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
+        public async Task UploadFromAsync(IReadOnlyList<Commit<T>> commitsToPush)
         {
-            var client = new HttpClient();
-            var json = await client.GetStringAsync($"{_endpointUrl}?method=syncer-pull&{nameof(localPointerPosition)}={localPointerPosition}");
-            var result = JsonSerializer.Deserialize<List<Commit<T>>>(json, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            foreach (var commit in result)
+            bool connected = true;
+            if (_ws.State != WebSocketState.Open)
             {
-                Console.WriteLine($"Downloaded a new commit from remote '{Name}': " + commit.Item.ToString());
+                connected = false;
+                _ws = new ClientWebSocket();
+                await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None);
             }
-            if (!result.Any())
+            var rawJson = JsonSerializer.Serialize(commitsToPush.ToList(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            await WebSocketExtends.SendMessage(_ws, rawJson);
+            if (!connected)
             {
-                Console.WriteLine("[WARNING] Downloaded nothing!");
+                await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
-            return result;
         }
-
-        public Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
-        {
-            if (!commitsToPush.Any())
-            {
-                Console.WriteLine("[WARNING] Uploaded nothing!");
-                return Task.CompletedTask;
-            }
-            foreach (var commit in commitsToPush)
-            {
-                Console.WriteLine("Uploading new commit: " + commit.Item.ToString());
-            }
-            var client = new HttpClient();
-            return client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
-        }
-    }
-
-    public class PushModel<T>
-    {
-        public string Start { get; set; }
-        public List<Commit<T>> Commits { get; set; }
     }
 }

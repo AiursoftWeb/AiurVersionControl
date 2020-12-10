@@ -21,6 +21,7 @@ namespace AiurEventSyncer.Models
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(3);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -50,23 +51,14 @@ namespace AiurEventSyncer.Models
             await Task.WhenAll(pushTasks);
         }
 
-        public async Task AddRemoteAsync(IRemote<T> remote)
+        public void AddRemote(IRemote<T> remote)
         {
             this._remotesStore.Add(remote);
-            if (remote.AutoPull)
-            {
-                await this.PullAsync(remote);
-                remote.OnRemoteChanged += async () =>
-                {
-                    Console.WriteLine("[MONITORING]: remote changed! I will pull now!");
-                    await this.PullAsync(remote);
-                };
-            }
         }
 
-        public Task PullAsync()
+        public Task PullAsync(bool keepAlive = false)
         {
-            return PullAsync(Remotes.First());
+            return PullAsync(Remotes.First(), keepAlive);
         }
 
         public Task PushAsync()
@@ -74,10 +66,18 @@ namespace AiurEventSyncer.Models
             return PushAsync(Remotes.First());
         }
 
-        public async Task PullAsync(IRemote<T> remoteRecord)
+        public async Task PullAsync(IRemote<T> remoteRecord,bool keepAlive = false)
         {
             Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
-            var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
+            await remoteRecord.DownloadAndSaveTo(keepAlive, this);
+        }
+
+        public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
+        {
+            await _semaphoreSlim.WaitAsync();
+            Console.WriteLine($"DEBUG!: POINTER: {remoteRecord.Position}");
+            Console.WriteLine($"DEBUG!: On Pulled: {string.Join(',', subtraction.Select(t => t.Item.ToString()))}");
+            Console.WriteLine($"DEBUG!: Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             foreach (var commit in subtraction)
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.Position);
@@ -87,6 +87,8 @@ namespace AiurEventSyncer.Models
                     await TriggerOnNewCommit(commit);
                 }
             }
+            Console.WriteLine($"DEBUG!: Finished pull. db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+            _semaphoreSlim.Release();
         }
 
         private bool OnPulledCommit(Commit<T> subtract, string position)
@@ -113,12 +115,13 @@ namespace AiurEventSyncer.Models
         {
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
             List<Commit<T>> commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
-            await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush);
+            await remoteRecord.UploadFromAsync(commitsToPush);
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed.");
         }
 
         public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
+            await _semaphoreSlim.WaitAsync();
             Console.WriteLine($"[REMOTE] New {commitsToPush.Count()} commits (pushed by other remote) are loaded. Adding to local commits.");
             foreach (var commit in commitsToPush) // 4,5,6
             {
@@ -129,6 +132,7 @@ namespace AiurEventSyncer.Models
                     await TriggerOnNewCommit(commit);
                 }
             }
+            _semaphoreSlim.Release();
         }
 
         private bool OnPushedCommit(Commit<T> subtract, string position)

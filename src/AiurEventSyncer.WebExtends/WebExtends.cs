@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
+using AiurEventSyncer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,51 +18,31 @@ namespace AiurEventSyncer.WebExtends
     {
         public static async Task<IActionResult> BuildWebActionResultAsync<T>(this ControllerBase controller, Repository<T> repository, string startPosition)
         {
-            var context = controller.HttpContext;
-            var request = context.Request;
-            var method = request.Query["method"];
-            //var mockRemote = new ObjectRemote<T>(repository) { Name = "Server-side-fake-repo" };
-
-            //if (request.Method == "POST" && method == "syncer-push")
-            //{
-            //    string startPosition = request.Query[nameof(startPosition)];
-            //    var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
-            //    var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            //    Console.WriteLine("[SERVER]: I was pushed!");
-            //    await mockRemote.UploadFromAsync(startPosition, formObject);
-            //    return controller.Ok();
-            //}
-            //else if (request.Method == "GET" && method == "syncer-pull")
-            //{
-            //    string localPointerPosition = request.Query[nameof(localPointerPosition)];
-            //    Console.WriteLine("[SERVER]: I was pulled!");
-            //    var pullResult = await mockRemote.DownloadFromAsync(localPointerPosition);
-            //    return controller.Ok(pullResult);
-            //}
-            if (context.WebSockets.IsWebSocketRequest)
+            if (controller.HttpContext.WebSockets.IsWebSocketRequest)
             {
-                var ws = await context.WebSockets.AcceptWebSocketAsync();
+                var ws = await controller.HttpContext.WebSockets.AcceptWebSocketAsync();
                 Console.WriteLine($"[SERVER]: New Websocket client online! Status: '{ws.State}'");
                 // Send pull result.
-                var pullResult = await new ObjectRemote<T>(repository).DownloadFromAsync(startPosition);
+                var pullResult = repository.Commits.AfterCommitId(startPosition).ToList();
                 await SendMessage(ws, JsonSerializer.Serialize(pullResult, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-
-                repository.OnNewCommit += async (commit) =>
+                async Task pushEvent(Commit<T> commit)
                 {
                     // Broadcast new commits.
-                    Console.WriteLine("[SERVER]: I was changed! Broadcasting to a remote...");
+                    Console.WriteLine($"[SERVER]: I was changed with: {commit.Item}! Broadcasting to a remote...");
                     await SendMessage(ws, JsonSerializer.Serialize(new List<Commit<T>> { commit }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-                };
+                }
+                repository.OnNewCommit += pushEvent;
                 while (ws.State == WebSocketState.Open)
                 {
                     // Waitting for pushed commits.
                     var rawJson = await GetMessage(ws);
                     Console.WriteLine("[SERVER]: I got a new push request.");
-                    var pushedCommits = JsonSerializer.Deserialize<PushModel<T>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                    await repository.OnPushed(pushedCommits.Start, pushedCommits.Commits);
+                    var pushedCommits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                    await repository.OnPushed(startPosition, pushedCommits);
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
-                return controller.Ok();
+                repository.OnNewCommit -= pushEvent;
+                return new EmptyResult();
             }
             else
             {
@@ -85,7 +66,14 @@ namespace AiurEventSyncer.WebExtends
                 return rawJson;
 
             }
-            throw new InvalidOperationException();
+            else if (wsResult.MessageType == WebSocketMessageType.Close)
+            {
+                return "[]";
+            }
+            else
+            {
+                throw new InvalidOperationException($"{wsResult.MessageType} is an invalid stage!");
+            }
         }
     }
 }

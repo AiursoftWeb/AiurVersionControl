@@ -13,38 +13,38 @@ namespace AiurEventSyncer.Remotes
         private readonly Repository<T> _fakeRemoteRepository;
         public string Name { get; set; } = "Object Origin Default Name";
         public bool AutoPush { get; set; }
-        public bool AutoPull { get; set; }
-
-        public Func<Task> OnRemoteChanged { get; set; }
         public string Position { get; set; }
 
-        public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
+        public ObjectRemote(Repository<T> localRepository, bool autoPush = false)
         {
             _fakeRemoteRepository = localRepository;
-            _fakeRemoteRepository.OnNewCommit += async (c) =>
-            {
-                if (OnRemoteChanged != null)
-                {
-                    await OnRemoteChanged();
-                }
-            };
             AutoPush = autoPush;
-            AutoPull = autoPull;
         }
 
-        public Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
-        {
-            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(localPointerPosition).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
-            return Task.FromResult(downloadResult);
-        }
-
-        public Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
+        public Task UploadFromAsync(IReadOnlyList<Commit<T>> commitsToPush)
         {
             if (commitsToPush.Any())
             {
-                return _fakeRemoteRepository.OnPushed(startPosition, commitsToPush);
+                return _fakeRemoteRepository.OnPushed(Position, commitsToPush);
             }
             return Task.CompletedTask;
+        }
+
+        public async Task DownloadAndSaveTo( bool keepAlive, Repository<T> repository)
+        {
+            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(Position).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
+            await repository.OnPulled(downloadResult, this);
+            if (keepAlive)
+            {
+                _fakeRemoteRepository.OnNewCommit += async (c) =>
+                {
+                    await repository.OnPulled(new List<Commit<T>>() { c }, this);
+                };
+                while (true)
+                {
+                    await Task.Delay(int.MaxValue);
+                }
+            }
         }
     }
 }
