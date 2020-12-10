@@ -107,7 +107,7 @@ namespace SampleWebApp.Tests.IntegrationTests
                 repoB.CommitAsync(new LogItem { Message = "6" })
             );
 
-            await Task.Delay(300);
+            await Task.Delay(1300);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },

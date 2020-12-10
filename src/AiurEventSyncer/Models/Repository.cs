@@ -62,7 +62,7 @@ namespace AiurEventSyncer.Models
             await TriggerOnNewCommit();
         }
 
-        private async Task TriggerOnNewCommit(IRemote<T> except = null)
+        private async Task TriggerOnNewCommit()
         {
             if (OnNewCommit != null)
             {
@@ -70,24 +70,12 @@ namespace AiurEventSyncer.Models
                 await OnNewCommit();
             }
             IEnumerable<Task> pushTasks = null;
-            if (except == null)
+            var remotes = Remotes.Where(t => t.AutoPush);
+            if (remotes.Any())
             {
-                var remotes = Remotes.Where(t => t.AutoPush);
-                if (remotes.Any())
-                {
-                    Console.WriteLine("Will auto push to all remote repos!");
-                }
-                pushTasks = remotes.Select(t => PushAsync(t));
+                Console.WriteLine("Will auto push to all remote repos!");
             }
-            else
-            {
-                var remotes = Remotes.Where(t => t != except).Where(t => t.AutoPush);
-                if (remotes.Any())
-                {
-                    Console.WriteLine("Will auto push to all repo except one!");
-                }
-                pushTasks = remotes.Select(t => PushAsync(t));
-            }
+            pushTasks = remotes.Select(t => PushAsync(t));
             await Task.WhenAll(pushTasks);
         }
 
@@ -155,8 +143,13 @@ namespace AiurEventSyncer.Models
             }
             if (triggerOnNewCommit)
             {
-                await TriggerOnNewCommit(except: remoteRecord);
+                await TriggerOnNewCommit();
             }
+        }
+
+        public async Task OnPulled()
+        {
+
         }
 
         /// <summary>
@@ -186,7 +179,7 @@ namespace AiurEventSyncer.Models
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer is: {remoteRecord.Position}");
         }
 
-        public async Task OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush)
+        public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             var triggerOnNewCommit = false;
             await _commitAccessLock.WaitAsync();
@@ -228,7 +221,7 @@ namespace AiurEventSyncer.Models
             }
             if (triggerOnNewCommit)
             {
-                await TriggerOnNewCommit(pusher);
+                await TriggerOnNewCommit();
             }
         }
     }

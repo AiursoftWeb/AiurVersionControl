@@ -40,7 +40,7 @@ namespace AiurEventSyncer.Remotes
 
         public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
         {
-            await _fakeRemoteRepository.OnPushed(this, startPosition, commitsToPush);
+            await _fakeRemoteRepository.OnPushed(startPosition, commitsToPush);
         }
     }
 }

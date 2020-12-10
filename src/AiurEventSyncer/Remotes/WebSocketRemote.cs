@@ -62,11 +62,6 @@ namespace AiurEventSyncer.Remotes
                         await OnRemoteChanged();
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"[WebSocket Event] Remote wrong message. [{result.MessageType}].");
-                    break;
-                }
             }
         }
 
@@ -98,9 +93,10 @@ namespace AiurEventSyncer.Remotes
                 if (!commitsToPush.Any())
                 {
                     Console.WriteLine("[WARNING] Uploaded nothing!");
+                    return;
                 }
                 var client = new HttpClient();
-                var result = await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
+                await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
             }
             finally
             {
