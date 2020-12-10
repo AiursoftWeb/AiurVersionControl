@@ -15,7 +15,7 @@ namespace AiurEventSyncer.WebExtends
 {
     public static class WebExtends
     {
-        public static async Task<IActionResult> BuildWebActionResultAsync<T>(this ControllerBase controller, Repository<T> repository)
+        public static async Task<IActionResult> BuildWebActionResultAsync<T>(this ControllerBase controller, Repository<T> repository, string startPosition)
         {
             var context = controller.HttpContext;
             var request = context.Request;
@@ -42,11 +42,15 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await context.WebSockets.AcceptWebSocketAsync();
                 Console.WriteLine($"[SERVER]: New Websocket client online! Status: '{ws.State}'");
+                // Send pull result.
+                var pullResult = await new ObjectRemote<T>(repository).DownloadFromAsync(startPosition);
+                await SendMessage(ws, JsonSerializer.Serialize(pullResult, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+
                 repository.OnNewCommit += async (commit) =>
                 {
                     // Broadcast new commits.
                     Console.WriteLine("[SERVER]: I was changed! Broadcasting to a remote...");
-                    await SendMessage(ws, JsonSerializer.Serialize(commit, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+                    await SendMessage(ws, JsonSerializer.Serialize(new List<Commit<T>> { commit }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
                 };
                 while (ws.State == WebSocketState.Open)
                 {

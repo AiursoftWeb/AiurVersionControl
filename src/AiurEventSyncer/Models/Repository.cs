@@ -21,7 +21,6 @@ namespace AiurEventSyncer.Models
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
-        private readonly SemaphoreSlim _commitAccessLock = new SemaphoreSlim(1, 1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
