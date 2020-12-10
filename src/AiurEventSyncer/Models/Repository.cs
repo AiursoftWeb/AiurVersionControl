@@ -176,7 +176,7 @@ namespace AiurEventSyncer.Models
                 _commitAccessLock.Release();
             }
             await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush);
-            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer is: {remoteRecord.Position}");
+            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed.");
         }
 
         public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)

@@ -32,6 +32,18 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
+        public async Task SingleCommit()
+        {
+            var repo = new Repository<LogItem>();
+            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true, true);
+            await repo.AddRemoteAsync(remote);
+            await Task.Delay(300);
+            await repo.CommitAsync(new LogItem { Message = "1" });
+            await Task.Delay(300);
+            Assert.IsNotNull(remote.Position);
+        }
+
+        [TestMethod]
         public async Task ManualPushPull()
         {
             var repo = new Repository<LogItem>();
