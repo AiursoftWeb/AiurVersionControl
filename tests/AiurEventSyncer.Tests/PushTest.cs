@@ -25,6 +25,7 @@ namespace AiurEventSyncer.Tests
         public async Task PushSelfTest()
         {
             await _localRepo.AddRemoteAsync(new ObjectRemote<int>(_localRepo));
+            _localRepo.Assert(1, 2, 3);
 
             await _localRepo.PushAsync();
             _localRepo.Assert(1, 2, 3);
@@ -179,7 +180,7 @@ namespace AiurEventSyncer.Tests
             await localRepo.PushAsync();
 
             localRepo.Assert(4, 5, 6);
-            remoteRepo.Assert(1, 4, 5, 6);
+            remoteRepo.Assert(1, 4, 5, 4, 6);
         }
 
         [TestMethod]
@@ -210,7 +211,7 @@ namespace AiurEventSyncer.Tests
             await _localRepo.PushAsync();
 
             _localRepo.Assert(1, 2, 3, 20, 10, 300);
-            remoteRepo.Assert(1, 2, 3, 10, 20, 10, 300);
+            remoteRepo.Assert(1, 2, 3, 10, 20, 20, 10, 300);
         }
     }
 }

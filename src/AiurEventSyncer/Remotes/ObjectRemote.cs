@@ -38,9 +38,9 @@ namespace AiurEventSyncer.Remotes
             return Task.FromResult(downloadResult);
         }
 
-        public Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
+        public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
         {
-            return _fakeRemoteRepository.OnPushed(this, startPosition, commitsToPush, state);
+            await _fakeRemoteRepository.OnPushed(this, startPosition, commitsToPush, state);
         }
     }
 }

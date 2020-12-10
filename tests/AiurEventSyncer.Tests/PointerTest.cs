@@ -50,6 +50,12 @@ namespace AiurEventSyncer.Tests
 
             await localRepo.PushAsync();
 
+            Assert.IsNull(remote.Position);
+            Assert.AreEqual(localRepo.Head.Item, 3);
+            Assert.AreEqual(_demoRepo.Head.Item, 3);
+
+            await localRepo.PullAsync();
+            Assert.IsNotNull(remote.Position);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
         }

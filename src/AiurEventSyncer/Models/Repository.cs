@@ -192,25 +192,23 @@ namespace AiurEventSyncer.Models
             }
             var eventState = Guid.NewGuid().ToString("D");
             _localEvents.Add(eventState);
-            var remotePointer = await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush, eventState);
-            remoteRecord.Position = remotePointer;
-            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer updated to: {remoteRecord.Position}");
+            await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush, eventState);
+            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer is: {remoteRecord.Position}");
         }
 
-        public async Task<string> OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)
+        public async Task OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)
         {
-            string firstDiffPoint = null;
             var triggerOnNewCommit = false;
             await _commitAccessLock.WaitAsync();
 
-            var sharedRange = CommitsExtend.SharedRange(
-                _commits.AfterCommitId(startPosition).Select(t => t.Id).ToArray(),
-                commitsToPush.Select(t => t.Id).ToArray());
-            if (sharedRange > 0)
-            {
-                commitsToPush = commitsToPush.Skip(sharedRange).ToList();
-                startPosition = commitsToPush.FirstOrDefault()?.Id;
-            }
+            //var sharedRange = CommitsExtend.SharedRange(
+            //    _commits.AfterCommitId(startPosition).Select(t => t.Id).ToArray(),
+            //    commitsToPush.Select(t => t.Id).ToArray());
+            //if (sharedRange > 0)
+            //{
+            //    commitsToPush = commitsToPush.Skip(sharedRange).ToList();
+            //    startPosition = commitsToPush.FirstOrDefault()?.Id;
+            //}
             // 1,4,5
             try
             {
@@ -220,9 +218,8 @@ namespace AiurEventSyncer.Models
                     var localAfter = _commits.AfterCommitId(startPosition).FirstOrDefault();
                     if (localAfter is not null)
                     {
-                        if (commit.Id != localAfter.Id && _commits.Last().Id != commit.Id)
+                        if (commit.Id != localAfter.Id)
                         {
-                            firstDiffPoint ??= startPosition;
                             _commits.Add(commit);
                             triggerOnNewCommit = true;
                         }
@@ -243,7 +240,6 @@ namespace AiurEventSyncer.Models
             {
                 await TriggerOnNewCommit(pusher, state);
             }
-            return firstDiffPoint ?? startPosition;
         }
     }
 }

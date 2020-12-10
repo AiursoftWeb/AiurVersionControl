@@ -29,8 +29,8 @@ namespace AiurEventSyncer.WebExtends
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
                 var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 Console.WriteLine("[SERVER]: I was pushed!");
-                var uploadResult = await mockRemote.UploadFromAsync(startPosition, formObject, state);
-                return controller.Ok(uploadResult);
+                await mockRemote.UploadFromAsync(startPosition, formObject, state);
+                return controller.Ok();
             }
             else if (request.Method == "GET" && method == "syncer-pull")
             {

@@ -90,7 +90,7 @@ namespace AiurEventSyncer.Remotes
             return result;
         }
 
-        public async Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
+        public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
         {
             await readLock.WaitAsync();
             try
@@ -105,8 +105,6 @@ namespace AiurEventSyncer.Remotes
                 }
                 var client = new HttpClient();
                 var result = await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}&state={state}", JsonContent.Create(commitsToPush));
-                var response = await result.Content.ReadAsStringAsync();
-                return response;
             }
             finally
             {
