@@ -15,17 +15,17 @@ namespace AiurEventSyncer.Remotes
         public bool AutoPush { get; set; }
         public bool AutoPull { get; set; }
 
-        public Func<string, Task> OnRemoteChanged { get; set; }
+        public Func<Task> OnRemoteChanged { get; set; }
         public string Position { get; set; }
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
             _fakeRemoteRepository = localRepository;
-            _fakeRemoteRepository.OnNewCommit += async (state) =>
+            _fakeRemoteRepository.OnNewCommit += async () =>
             {
                 if (OnRemoteChanged != null)
                 {
-                    await OnRemoteChanged(state);
+                    await OnRemoteChanged();
                 }
             };
             AutoPush = autoPush;
@@ -38,9 +38,9 @@ namespace AiurEventSyncer.Remotes
             return Task.FromResult(downloadResult);
         }
 
-        public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
+        public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
         {
-            await _fakeRemoteRepository.OnPushed(this, startPosition, commitsToPush, state);
+            await _fakeRemoteRepository.OnPushed(this, startPosition, commitsToPush);
         }
     }
 }

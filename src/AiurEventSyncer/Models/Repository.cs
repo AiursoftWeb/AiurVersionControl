@@ -16,11 +16,10 @@ namespace AiurEventSyncer.Models
         public IAfterable<Commit<T>> Commits => _commits;
         public IEnumerable<IRemote<T>> Remotes => _remotesStore.AsReadOnly();
         public Commit<T> Head => Commits.LastOrDefault();
-        public Func<string, Task> OnNewCommit { get; set; }
+        public Func<Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly List<string> _localEvents = new List<string>();
         private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
         private readonly SemaphoreSlim _commitAccessLock = new SemaphoreSlim(1, 1);
 
@@ -63,12 +62,12 @@ namespace AiurEventSyncer.Models
             await TriggerOnNewCommit();
         }
 
-        private async Task TriggerOnNewCommit(IRemote<T> except = null, string state = null)
+        private async Task TriggerOnNewCommit(IRemote<T> except = null)
         {
             if (OnNewCommit != null)
             {
                 Console.WriteLine("[LOCAL] Some service subscribed this repo change event. Broadcasting...");
-                await OnNewCommit(state);
+                await OnNewCommit();
             }
             IEnumerable<Task> pushTasks = null;
             if (except == null)
@@ -104,17 +103,10 @@ namespace AiurEventSyncer.Models
             if (remote.AutoPull)
             {
                 await this.PullAsync(remote);
-                remote.OnRemoteChanged += async (str) =>
+                remote.OnRemoteChanged += async () =>
                 {
-                    if (!_localEvents.Any(t => t == str))
-                    {
-                        Console.WriteLine("[MONITORING]: remote changed! I will pull now!");
-                        await this.PullAsync(remote);
-                    }
-                    else
-                    {
-                        Console.WriteLine("[MONITORING]: remote changed by my event. Just skip!");
-                    }
+                    Console.WriteLine("[MONITORING]: remote changed! I will pull now!");
+                    await this.PullAsync(remote);
                 };
             }
         }
@@ -190,13 +182,11 @@ namespace AiurEventSyncer.Models
             {
                 _commitAccessLock.Release();
             }
-            var eventState = Guid.NewGuid().ToString("D");
-            _localEvents.Add(eventState);
-            await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush, eventState);
+            await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush);
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed. Pointer is: {remoteRecord.Position}");
         }
 
-        public async Task OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush, string state)
+        public async Task OnPushed(IRemote<T> pusher, string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             var triggerOnNewCommit = false;
             await _commitAccessLock.WaitAsync();
@@ -238,7 +228,7 @@ namespace AiurEventSyncer.Models
             }
             if (triggerOnNewCommit)
             {
-                await TriggerOnNewCommit(pusher, state);
+                await TriggerOnNewCommit(pusher);
             }
         }
     }

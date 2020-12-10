@@ -24,12 +24,11 @@ namespace AiurEventSyncer.WebExtends
 
             if (request.Method == "POST" && method == "syncer-push")
             {
-                string state = request.Query[nameof(state)];
                 string startPosition = request.Query[nameof(startPosition)];
                 var jsonForm = await new StreamReader(request.Body).ReadToEndAsync();
                 var formObject = JsonSerializer.Deserialize<List<Commit<T>>>(jsonForm, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 Console.WriteLine("[SERVER]: I was pushed!");
-                await mockRemote.UploadFromAsync(startPosition, formObject, state);
+                await mockRemote.UploadFromAsync(startPosition, formObject);
                 return controller.Ok();
             }
             else if (request.Method == "GET" && method == "syncer-pull")
@@ -43,10 +42,10 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await context.WebSockets.AcceptWebSocketAsync();
                 Console.WriteLine($"[SERVER]: New Websocket client online! Status: '{ws.State}'");
-                mockRemote.OnRemoteChanged += async (str) =>
+                mockRemote.OnRemoteChanged += async () =>
                 {
                     Console.WriteLine("[SERVER]: I was changed! Broadcasting to a remote...");
-                    await SendMessage(ws, str);
+                    await SendMessage(ws, string.Empty);
                 };
                 while (ws.State == WebSocketState.Open)
                 {
