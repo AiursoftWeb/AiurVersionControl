@@ -21,7 +21,7 @@ namespace AiurEventSyncer.Remotes
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
             _fakeRemoteRepository = localRepository;
-            _fakeRemoteRepository.OnNewCommit += async () =>
+            _fakeRemoteRepository.OnNewCommit += async (c) =>
             {
                 if (OnRemoteChanged != null)
                 {
@@ -38,9 +38,13 @@ namespace AiurEventSyncer.Remotes
             return Task.FromResult(downloadResult);
         }
 
-        public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
+        public Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
         {
-            await _fakeRemoteRepository.OnPushed(startPosition, commitsToPush);
+            if (commitsToPush.Any())
+            {
+                return _fakeRemoteRepository.OnPushed(startPosition, commitsToPush);
+            }
+            return Task.CompletedTask;
         }
     }
 }

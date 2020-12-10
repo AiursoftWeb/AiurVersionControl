@@ -16,7 +16,7 @@ namespace AiurEventSyncer.Models
         public IAfterable<Commit<T>> Commits => _commits;
         public IEnumerable<IRemote<T>> Remotes => _remotesStore.AsReadOnly();
         public Commit<T> Head => Commits.LastOrDefault();
-        public Func<Task> OnNewCommit { get; set; }
+        public Func<Commit<T>, Task> OnNewCommit { get; set; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
@@ -28,63 +28,29 @@ namespace AiurEventSyncer.Models
             _commits = dbProvider;
         }
 
-        /// <summary>
-        /// Add a new commit to this repository.
-        /// Also will push to all remotes which are auto push.
-        /// Also for all other repositories which auto pull this one, will notify them.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
         public Task CommitAsync(T content)
         {
             return CommitObjectAsync(new Commit<T> { Item = content });
         }
 
-        /// <summary>
-        /// Add a new commit to this repository.
-        /// Also will push to all remotes which are auto push.
-        /// Also for all other repositories which auto pull this one, will notify them.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
-            await _commitAccessLock.WaitAsync();
-            try
-            {
-                _commits.Add(commitObject);
-            }
-            finally
-            {
-                _commitAccessLock.Release();
-            }
-            Console.WriteLine($"[LOCAL] New commit: {commitObject.Item} added locally!");
-            await TriggerOnNewCommit();
+            _commits.Add(commitObject);
+            await TriggerOnNewCommit(commitObject);
         }
 
-        private async Task TriggerOnNewCommit()
+        private async Task TriggerOnNewCommit(Commit<T> newCommit)
         {
+            Console.WriteLine($"[LOCAL] New commit: {newCommit.Item} added locally!");
             if (OnNewCommit != null)
             {
                 Console.WriteLine("[LOCAL] Some service subscribed this repo change event. Broadcasting...");
-                await OnNewCommit();
+                await OnNewCommit(newCommit);
             }
-            IEnumerable<Task> pushTasks = null;
-            var remotes = Remotes.Where(t => t.AutoPush);
-            if (remotes.Any())
-            {
-                Console.WriteLine("Will auto push to all remote repos!");
-            }
-            pushTasks = remotes.Select(t => PushAsync(t));
+            var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
             await Task.WhenAll(pushTasks);
         }
 
-        /// <summary>
-        /// Add a new remote repository to this.
-        /// If the remote requires auto pull, it will pull it immediatly, and also register the remote change event.
-        /// </summary>
-        /// <param name="remote"></param>
-        /// <returns></returns>
         public async Task AddRemoteAsync(IRemote<T> remote)
         {
             this._remotesStore.Add(remote);
@@ -99,130 +65,90 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        /// <summary>
-        /// This will pull from the first remote. Not suggested if you have multiple remotes.
-        /// As for more details, please check the document for `PullAsync(IRemote<T> remoteRecord)`
-        /// </summary>
-        /// <returns></returns>
         public Task PullAsync()
         {
             return PullAsync(Remotes.First());
         }
 
-        public async Task PullAsync(IRemote<T> remoteRecord)
-        {
-            Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
-            var triggerOnNewCommit = false;
-            var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
-            await _commitAccessLock.WaitAsync();
-            try
-            {
-                foreach (var subtract in subtraction)
-                {
-                    Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}' from remote: {remoteRecord.Name}. Will load.");
-                    var localAfter = _commits.AfterCommitId(remoteRecord.Position).FirstOrDefault();
-                    if (localAfter is not null)
-                    {
-                        if (localAfter.Id != subtract.Id)
-                        {
-                            _commits.InsertAfterCommitId(remoteRecord.Position, subtract);
-                            triggerOnNewCommit = true;
-                        }
-                    }
-                    else
-                    {
-                        _commits.Add(subtract);
-                        triggerOnNewCommit = true;
-                    }
-                    remoteRecord.Position = subtract.Id;
-                }
-            }
-            finally
-            {
-                _commitAccessLock.Release();
-            }
-            if (triggerOnNewCommit)
-            {
-                await TriggerOnNewCommit();
-            }
-        }
-
-        public async Task OnPulled()
-        {
-
-        }
-
-        /// <summary>
-        /// This will push to the first remote. Not suggested if you have multiple remotes.
-        /// As for more details, please check the document for `PushAsync(IRemote<T> remoteRecord)`
-        /// </summary>
-        /// <returns></returns>
         public Task PushAsync()
         {
             return PushAsync(Remotes.First());
         }
 
+        public async Task PullAsync(IRemote<T> remoteRecord)
+        {
+            Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
+            var subtraction = await remoteRecord.DownloadFromAsync(remoteRecord.Position);
+            foreach (var commit in subtraction)
+            {
+                var inserted = OnPulledCommit(commit, remoteRecord.Position);
+                remoteRecord.Position = commit.Id;
+                if (inserted)
+                {
+                    await TriggerOnNewCommit(commit);
+                }
+            }
+        }
+
+        private bool OnPulledCommit(Commit<T> subtract, string position)
+        {
+            Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}'. Will load.");
+            var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
+            if (localAfter is not null)
+            {
+                if (localAfter.Id != subtract.Id)
+                {
+                    _commits.InsertAfterCommitId(position, subtract);
+                    return true;
+                }
+            }
+            else
+            {
+                _commits.Add(subtract);
+                return true;
+            }
+            return false;
+        }
+
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
             Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
-            List<Commit<T>> commitsToPush = null;
-            await _commitAccessLock.WaitAsync();
-            try
-            {
-                commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
-            }
-            finally
-            {
-                _commitAccessLock.Release();
-            }
+            List<Commit<T>> commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
             await remoteRecord.UploadFromAsync(remoteRecord.Position, commitsToPush);
             Console.WriteLine($"Push remote '{remoteRecord.Name}' completed.");
         }
 
         public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
-            var triggerOnNewCommit = false;
-            await _commitAccessLock.WaitAsync();
-
-            //var sharedRange = CommitsExtend.SharedRange(
-            //    _commits.AfterCommitId(startPosition).Select(t => t.Id).ToArray(),
-            //    commitsToPush.Select(t => t.Id).ToArray());
-            //if (sharedRange > 0)
-            //{
-            //    commitsToPush = commitsToPush.Skip(sharedRange).ToList();
-            //    startPosition = commitsToPush.FirstOrDefault()?.Id;
-            //}
-            // 1,4,5
-            try
+            Console.WriteLine($"[REMOTE] New {commitsToPush.Count()} commits (pushed by other remote) are loaded. Adding to local commits.");
+            foreach (var commit in commitsToPush) // 4,5,6
             {
-                foreach (var commit in commitsToPush) // 4,5,6
+                var inserted = OnPushedCommit(commit, startPosition);
+                startPosition = commit.Id;
+                if (inserted)
                 {
-                    Console.WriteLine($"New commit: {commit.Item} (pushed by other remote) is loaded. Adding to local commits.");
-                    var localAfter = _commits.AfterCommitId(startPosition).FirstOrDefault();
-                    if (localAfter is not null)
-                    {
-                        if (commit.Id != localAfter.Id)
-                        {
-                            _commits.Add(commit);
-                            triggerOnNewCommit = true;
-                        }
-                    }
-                    else
-                    {
-                        _commits.Add(commit);
-                        triggerOnNewCommit = true;
-                    }
-                    startPosition = commit.Id;
+                    await TriggerOnNewCommit(commit);
                 }
             }
-            finally
+        }
+
+        private bool OnPushedCommit(Commit<T> subtract, string position)
+        {
+            Console.WriteLine($"[REMOTE] New commit: {subtract.Item} (pushed by other remote) is loaded. Adding to local commits.");
+            var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
+            if (localAfter is not null)
             {
-                _commitAccessLock.Release();
+                if (subtract.Id != localAfter.Id)
+                {
+                    _commits.Add(subtract);
+                    return true;
+                }
             }
-            if (triggerOnNewCommit)
+            else
             {
-                await TriggerOnNewCommit();
+                _commits.Add(subtract);
             }
+            return true;
         }
     }
 }

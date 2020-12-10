@@ -51,7 +51,7 @@ namespace AiurEventSyncer.Remotes
             await socket.ConnectAsync(new Uri(_wsEndpointUrl), CancellationToken.None);
             Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             var buffer = new ArraySegment<byte>(new byte[2048]);
-            while (true)
+            while (socket.State == WebSocketState.Open)
             {
                 var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
                 if (result.MessageType == WebSocketMessageType.Text)
@@ -81,27 +81,25 @@ namespace AiurEventSyncer.Remotes
             return result;
         }
 
-        public async Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
+        public Task UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush)
         {
-            await readLock.WaitAsync();
-            try
+            if (!commitsToPush.Any())
             {
-                foreach (var commit in commitsToPush)
-                {
-                    Console.WriteLine("Uploading new commit: " + commit.Item.ToString());
-                }
-                if (!commitsToPush.Any())
-                {
-                    Console.WriteLine("[WARNING] Uploaded nothing!");
-                    return;
-                }
-                var client = new HttpClient();
-                await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
+                Console.WriteLine("[WARNING] Uploaded nothing!");
+                return Task.CompletedTask;
             }
-            finally
+            foreach (var commit in commitsToPush)
             {
-                readLock.Release();
+                Console.WriteLine("Uploading new commit: " + commit.Item.ToString());
             }
+            var client = new HttpClient();
+            return client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}", JsonContent.Create(commitsToPush));
         }
+    }
+
+    public class PushModel<T>
+    {
+        public string Start { get; set; }
+        public List<Commit<T>> Commits { get; set; }
     }
 }
