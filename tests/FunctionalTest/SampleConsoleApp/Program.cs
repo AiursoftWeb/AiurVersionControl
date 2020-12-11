@@ -15,7 +15,7 @@ namespace SampleConsoleApp
             var endpointUrl = Console.ReadLine();
 
             var repo = new Repository<LogItem>();
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(endpointUrl, autoPush: true, autoPull: true));
+            repo.AddRemote(new WebSocketRemote<LogItem>(endpointUrl, true));
 
             while (true)
             {

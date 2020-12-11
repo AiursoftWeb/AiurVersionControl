@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
+using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,101 +18,57 @@ namespace AiurEventSyncer.Remotes
 {
     public class WebSocketRemote<T> : IRemote<T>
     {
-        private readonly string _endpointUrl;
         private readonly string _wsEndpointUrl;
-        private readonly SemaphoreSlim readLock = new SemaphoreSlim(1, 1);
+        private readonly ClientWebSocket _ws;
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
         public bool AutoPush { get; set; }
-        public bool AutoPull { get; set; }
-        public Func<string, Task> OnRemoteChanged { get; set; }
         public string Position { get; set; }
+        public Repository<T> ContextRepository { get; set; }
 
-        public WebSocketRemote(string endpointUrl, bool autoPush = false, bool autoPull = false)
+        public WebSocketRemote(string endpointUrl, bool autoPush = false)
         {
-            _wsEndpointUrl = _endpointUrl = endpointUrl;
+            _wsEndpointUrl = endpointUrl;
+            _ws = new ClientWebSocket();
             var https = new Regex("^https://", RegexOptions.Compiled);
             var http = new Regex("^http://", RegexOptions.Compiled);
-
             _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
-
             AutoPush = autoPush;
-            AutoPull = autoPull;
-            if (autoPull)
-            {
-                Task.Factory.StartNew(MonitorRemoteChanges);
-            }
-        }
 
-        public async Task MonitorRemoteChanges()
-        {
             Console.WriteLine("Preparing websocket connection for: " + this.Name);
-            using var socket = new ClientWebSocket();
-            await socket.ConnectAsync(new Uri(_wsEndpointUrl), CancellationToken.None);
+            _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None).Wait();
             Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
-            var buffer = new ArraySegment<byte>(new byte[2048]);
-            while (true)
-            {
-                var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
-                if (result.MessageType == WebSocketMessageType.Text)
-                {
-                    if (OnRemoteChanged != null)
-                    {
-                        Console.WriteLine($"[WebSocket Event] Remote '{Name}' repo changed!");
-                        string message = Encoding.UTF8.GetString(
-                            buffer.Skip(buffer.Offset).Take(buffer.Count).ToArray())
-                            .Trim('\0')
-                            .Trim();
-                        await OnRemoteChanged(message);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"[WebSocket Event] Remote wrong message. [{result.MessageType}].");
-                    break;
-                }
-            }
         }
 
-        public async Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
+        public async Task PullAndMonitor()
         {
-            var client = new HttpClient();
-            var json = await client.GetStringAsync($"{_endpointUrl}?method=syncer-pull&{nameof(localPointerPosition)}={localPointerPosition}");
-            var result = JsonSerializer.Deserialize<List<Commit<T>>>(json, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            foreach (var commit in result)
+            if (ContextRepository == null)
             {
-                Console.WriteLine($"Downloaded a new commit from remote '{Name}': " + commit.Item.ToString());
+                throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
-            if (!result.Any())
+            while (_ws.State == WebSocketState.Open)
             {
-                Console.WriteLine("[WARNING] Downloaded nothing!");
+                var rawJson = await WebSocketExtends.GetMessage(_ws);
+                var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                await ContextRepository.OnPulled(commits, this);
             }
-            return result;
+            throw new InvalidOperationException("Websocket dropped!");
         }
 
-        public async Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
+        public Task Pull()
         {
-            await readLock.WaitAsync();
-            try
+            throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
+        }
+
+        public async Task Push(IReadOnlyList<Commit<T>> commitsToPush)
+        {
+            if (_ws.State != WebSocketState.Open)
             {
-                foreach (var commit in commitsToPush)
-                {
-                    Console.WriteLine("Uploading new commit: " + commit.Item.ToString());
-                }
-                if (!commitsToPush.Any())
-                {
-                    Console.WriteLine("[WARNING] Uploaded nothing!");
-                }
-                var client = new HttpClient();
-                var result = await client.PostAsync($"{_endpointUrl}?method=syncer-push&{nameof(startPosition)}={startPosition}&state={state}", JsonContent.Create(commitsToPush));
-                var response = await result.Content.ReadAsStringAsync();
-                return response;
+                throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");
             }
-            finally
-            {
-                readLock.Release();
-            }
+            var rawJson = JsonSerializer.Serialize(commitsToPush.ToList(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            await WebSocketExtends.SendMessage(_ws, rawJson);
         }
     }
 }

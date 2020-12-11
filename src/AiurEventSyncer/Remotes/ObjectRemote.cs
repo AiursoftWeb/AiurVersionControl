@@ -14,33 +14,46 @@ namespace AiurEventSyncer.Remotes
         public string Name { get; set; } = "Object Origin Default Name";
         public bool AutoPush { get; set; }
         public bool AutoPull { get; set; }
-
-        public Func<string, Task> OnRemoteChanged { get; set; }
         public string Position { get; set; }
+        public Repository<T> ContextRepository { get; set; }
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
             _fakeRemoteRepository = localRepository;
-            _fakeRemoteRepository.OnNewCommit += async (state) =>
-            {
-                if (OnRemoteChanged != null)
-                {
-                    await OnRemoteChanged(state);
-                }
-            };
             AutoPush = autoPush;
             AutoPull = autoPull;
         }
 
-        public Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition)
+        public Task Push(IReadOnlyList<Commit<T>> commitsToPush)
         {
-            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(localPointerPosition).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
-            return Task.FromResult(downloadResult);
+            if (commitsToPush.Any())
+            {
+                return _fakeRemoteRepository.OnPushed(Position, commitsToPush);
+            }
+            return Task.CompletedTask;
         }
 
-        public Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state)
+        public async Task Pull()
         {
-            return _fakeRemoteRepository.OnPushed(this, startPosition, commitsToPush, state);
+            if (ContextRepository == null)
+            {
+                throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
+            }
+            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(Position).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
+            await ContextRepository.OnPulled(downloadResult, this);
+        }
+
+        public async Task PullAndMonitor()
+        {
+            if (AutoPull)
+            {
+                await Pull();
+                _fakeRemoteRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) =>
+                {
+                    await Pull();
+                };
+            }
+            await Task.Delay(int.MaxValue);
         }
     }
 }

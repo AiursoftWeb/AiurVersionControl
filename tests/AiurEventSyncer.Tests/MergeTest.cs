@@ -28,7 +28,7 @@ namespace AiurEventSyncer.Tests
             await remoteRepo.CommitAsync(20);
             remoteRepo.Assert(20);
 
-            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
+            _localRepo.AddRemote(new ObjectRemote<int>(remoteRepo));
 
             await _localRepo.PullAsync();
             await remoteRepo.CommitAsync(50);
@@ -41,6 +41,7 @@ namespace AiurEventSyncer.Tests
             remoteRepo.Assert(20, 50, 1, 2, 3);
 
             await _localRepo.PullAsync();
+            // 20,1,2,3
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
         }
@@ -52,7 +53,7 @@ namespace AiurEventSyncer.Tests
             await remoteRepo.CommitAsync(20);
             remoteRepo.Assert(20);
 
-            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
+            _localRepo.AddRemote(new ObjectRemote<int>(remoteRepo));
 
             await _localRepo.PullAsync();
             await remoteRepo.CommitAsync(50);

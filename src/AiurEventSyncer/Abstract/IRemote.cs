@@ -9,10 +9,10 @@ namespace AiurEventSyncer.Abstract
     {
         public string Name { get; set; }
         public bool AutoPush { get; set; }
-        public bool AutoPull { get; set; }
-        public Func<string, Task> OnRemoteChanged { get; set; }
         public string Position { get; set; }
-        Task<IReadOnlyList<Commit<T>>> DownloadFromAsync(string localPointerPosition);
-        Task<string> UploadFromAsync(string startPosition, IReadOnlyList<Commit<T>> commitsToPush, string state);
+        public Task PullAndMonitor();
+        public Repository<T> ContextRepository { get; set; }
+        Task Pull();
+        Task Push(IReadOnlyList<Commit<T>> commitsToPush);
     }
 }
