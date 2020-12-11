@@ -32,19 +32,6 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public async Task SingleCommit()
-        {
-            var repo = new Repository<LogItem>();
-            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true);
-            repo.AddRemote(remote);
-            await Task.Factory.StartNew(async () => await repo.PullAsync(true));
-            await Task.Delay(300);
-            await repo.CommitAsync(new LogItem { Message = "1" });
-            await Task.Delay(300);
-            Assert.IsNotNull(remote.Position);
-        }
-
-        [TestMethod]
         public async Task ManualPushPull()
         {
             var repo = new Repository<LogItem>();
@@ -72,6 +59,30 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
+        public async Task SimpleCommitWhilingPulling()
+        {
+            var repo = new Repository<LogItem>();
+            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true);
+            repo.AddRemote(remote);
+            await Task.Factory.StartNew(async () => await repo.PullAsync(true));
+            await Task.Delay(300);
+            await repo.CommitAsync(new LogItem { Message = "1" });
+            await repo.CommitAsync(new LogItem { Message = "2" });
+            await Task.Delay(300);
+            Assert.IsNotNull(remote.Position);
+
+            HomeController._repo.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" });
+
+            repo.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" });
+        }
+
+
+
+        [TestMethod]
         public async Task OnewayAutoPull()
         {
             var repo = new Repository<LogItem>();
@@ -80,8 +91,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repo2 = new Repository<LogItem>();
             repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
             await Task.Factory.StartNew(async () => await repo2.PullAsync(true));
-            await Task.Delay(300);
 
+            await Task.Delay(300);
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
@@ -104,58 +115,36 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public async Task DoubleWaySync()
+        public async Task OneCommitSync()
         {
-            var repoA = new Repository<LogItem>();
-            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
+            var repoA = new Repository<LogItem>() { Name = "Repo A"};
+            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "A to server" });
             await Task.Factory.StartNew(async () => await repoA.PullAsync(true));
 
-            var repoB = new Repository<LogItem>();
-            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
+            var repoB = new Repository<LogItem>() { Name = "Repo B" };
+            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "B to server" });
             await Task.Factory.StartNew(async () => await repoB.PullAsync(true));
 
-            await Task.Delay(300);
-
+            await Task.Delay(30);
             await repoA.CommitAsync(new LogItem { Message = "1" });
-            await repoA.CommitAsync(new LogItem { Message = "2" });
-            await repoA.CommitAsync(new LogItem { Message = "3" });
-            await repoB.CommitAsync(new LogItem { Message = "4" });
-            await repoB.CommitAsync(new LogItem { Message = "5" });
-            await repoB.CommitAsync(new LogItem { Message = "6" });
-
-            await Task.Delay(1300);
+            await Task.Delay(30);
 
             HomeController._repo.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" },
-                new LogItem { Message = "4" },
-                new LogItem { Message = "5" },
-                new LogItem { Message = "6" });
+                new LogItem { Message = "1" });
             repoA.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" },
-                new LogItem { Message = "4" },
-                new LogItem { Message = "5" },
-                new LogItem { Message = "6" });
+                new LogItem { Message = "1" });
             repoB.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" },
-                new LogItem { Message = "4" },
-                new LogItem { Message = "5" },
-                new LogItem { Message = "6" });
+                new LogItem { Message = "1" });
         }
 
         [TestMethod]
         public async Task DoubleWayDataBinding()
         {
-            var repoA = new Repository<LogItem>();
+            var repoA = new Repository<LogItem>() { Name = "Repo A" };
             repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "A to server" });
             await Task.Factory.StartNew(async () => await repoA.PullAsync(true));
 
-            var repoB = new Repository<LogItem>();
+            var repoB = new Repository<LogItem>() { Name = "Repo B" };
             repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "B to server" });
             await Task.Factory.StartNew(async () => await repoB.PullAsync(true));
 
@@ -163,30 +152,19 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
             await Task.Delay(300);
-            await repoA.CommitAsync(new LogItem { Message = "2" });
-            await Task.Delay(300);
-            await repoB.CommitAsync(new LogItem { Message = "3" });
-            await Task.Delay(300);
-            await repoB.CommitAsync(new LogItem { Message = "4" });
-
-            await Task.Delay(300);
+            await repoB.CommitAsync(new LogItem { Message = "2" });
+            await Task.Delay(3000);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" },
-                new LogItem { Message = "4" });
+                new LogItem { Message = "2" });
 
             repoA.Assert(
                 new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" },
-                new LogItem { Message = "4" });
+                new LogItem { Message = "2" });
             repoB.Assert(
                 new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" },
-                new LogItem { Message = "4" });
+                new LogItem { Message = "2" });
         }
     }
 

@@ -25,13 +25,14 @@ namespace AiurEventSyncer.WebExtends
                 // Send pull result.
                 var pullResult = repository.Commits.AfterCommitId(startPosition).ToList();
                 await SendMessage(ws, JsonSerializer.Serialize(pullResult, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-                async Task pushEvent(Commit<T> commit)
+                Func<Commit<T>, Task> pushEvent = async (Commit<T> commit) =>
                 {
                     // Broadcast new commits.
                     Console.WriteLine($"[SERVER]: I was changed with: {commit.Item}! Broadcasting to a remote...");
                     await SendMessage(ws, JsonSerializer.Serialize(new List<Commit<T>> { commit }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-                }
-                repository.OnNewCommit += pushEvent;
+                };
+                repository.OnNewCommitSubscribers.Add(pushEvent);
+                Console.WriteLine("[SERVER] New Websocket subscriber registered!");
                 while (ws.State == WebSocketState.Open)
                 {
                     // Waitting for pushed commits.
@@ -41,7 +42,7 @@ namespace AiurEventSyncer.WebExtends
                     await repository.OnPushed(startPosition, pushedCommits);
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
-                repository.OnNewCommit -= pushEvent;
+                repository.OnNewCommitSubscribers.Remove(pushEvent);
                 return new EmptyResult();
             }
             else

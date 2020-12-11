@@ -36,10 +36,10 @@ namespace AiurEventSyncer.Remotes
             await repository.OnPulled(downloadResult, this);
             if (keepAlive)
             {
-                _fakeRemoteRepository.OnNewCommit += async (c) =>
+                _fakeRemoteRepository.OnNewCommitSubscribers.Add(async (c) =>
                 {
                     await repository.OnPulled(new List<Commit<T>>() { c }, this);
-                };
+                });
                 while (true)
                 {
                     await Task.Delay(int.MaxValue);

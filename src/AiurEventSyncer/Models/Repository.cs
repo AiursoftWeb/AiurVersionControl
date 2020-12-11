@@ -4,7 +4,9 @@ using AiurStore.Abstracts;
 using AiurStore.Models;
 using AiurStore.Providers.MemoryProvider;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,14 +15,15 @@ namespace AiurEventSyncer.Models
 {
     public class Repository<T>
     {
+        public string Name { get; init; } = string.Empty;
         public IAfterable<Commit<T>> Commits => _commits;
-        public IEnumerable<IRemote<T>> Remotes => _remotesStore.AsReadOnly();
+        public IEnumerable<IRemote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
-        public Func<Commit<T>, Task> OnNewCommit { get; set; }
+        public List<Func<Commit<T>, Task>> OnNewCommitSubscribers { get; set; } = new List<Func<Commit<T>, Task>>();
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
+        private readonly ConcurrentBag<IRemote<T>> _remotesStore = new ConcurrentBag<IRemote<T>>();
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(3);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
@@ -41,12 +44,12 @@ namespace AiurEventSyncer.Models
 
         private async Task TriggerOnNewCommit(Commit<T> newCommit)
         {
-            Console.WriteLine($"[LOCAL] New commit: {newCommit.Item} added locally!");
-            if (OnNewCommit != null)
-            {
-                Console.WriteLine("[LOCAL] Some service subscribed this repo change event. Broadcasting...");
-                await OnNewCommit(newCommit);
-            }
+            Console.WriteLine($"[{Name}] New commit: {newCommit.Item} added locally!");
+            Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+            Console.WriteLine($"[{Name}] Broadcasting...");
+            var notiyTasks = OnNewCommitSubscribers.Select(t => t(newCommit));
+            await Task.WhenAll(notiyTasks);
+#warning Consider do the same time.
             var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
             await Task.WhenAll(pushTasks);
         }
@@ -68,16 +71,16 @@ namespace AiurEventSyncer.Models
 
         public async Task PullAsync(IRemote<T> remoteRecord,bool keepAlive = false)
         {
-            Console.WriteLine($"Pulling remote: {remoteRecord.Name}...");
+            Console.WriteLine($"[{Name}] Pulling remote: {remoteRecord.Name}...");
             await remoteRecord.DownloadAndSaveTo(keepAlive, this);
         }
 
         public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             await _semaphoreSlim.WaitAsync();
-            Console.WriteLine($"DEBUG!: POINTER: {remoteRecord.Position}");
-            Console.WriteLine($"DEBUG!: On Pulled: {string.Join(',', subtraction.Select(t => t.Item.ToString()))}");
-            Console.WriteLine($"DEBUG!: Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+            Console.WriteLine($"[{Name}] POINTER: {remoteRecord.Position}");
+            Console.WriteLine($"[{Name}] On Pulled: {string.Join(',', subtraction.Select(t => t.Item.ToString()))}");
+            Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             foreach (var commit in subtraction)
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.Position);
@@ -87,13 +90,12 @@ namespace AiurEventSyncer.Models
                     await TriggerOnNewCommit(commit);
                 }
             }
-            Console.WriteLine($"DEBUG!: Finished pull. db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             _semaphoreSlim.Release();
         }
 
         private bool OnPulledCommit(Commit<T> subtract, string position)
         {
-            Console.WriteLine($"[LOCAL] Pulled a new commit: '{subtract.Item}'. Will load.");
+            Console.WriteLine($"[{Name}] Pulled a new commit: '{subtract.Item}'. Will load.");
             var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
             if (localAfter is not null)
             {
@@ -113,16 +115,16 @@ namespace AiurEventSyncer.Models
 
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
-            Console.WriteLine($"Pushing remote: {remoteRecord.Name}...");
+            Console.WriteLine($"[{Name}]Pushing remote: {remoteRecord.Name}...");
             List<Commit<T>> commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
             await remoteRecord.UploadFromAsync(commitsToPush);
-            Console.WriteLine($"Push remote '{remoteRecord.Name}' completed.");
+            Console.WriteLine($"[{Name}]Push remote '{remoteRecord.Name}' completed.");
         }
 
         public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             await _semaphoreSlim.WaitAsync();
-            Console.WriteLine($"[REMOTE] New {commitsToPush.Count()} commits (pushed by other remote) are loaded. Adding to local commits.");
+            Console.WriteLine($"[{Name}] New {commitsToPush.Count()} commits (pushed by other remote) are loaded. Adding to local commits.");
             foreach (var commit in commitsToPush) // 4,5,6
             {
                 var inserted = OnPushedCommit(commit, startPosition);
@@ -137,7 +139,6 @@ namespace AiurEventSyncer.Models
 
         private bool OnPushedCommit(Commit<T> subtract, string position)
         {
-            Console.WriteLine($"[REMOTE] New commit: {subtract.Item} (pushed by other remote) is loaded. Adding to local commits.");
             var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
             if (localAfter is not null)
             {

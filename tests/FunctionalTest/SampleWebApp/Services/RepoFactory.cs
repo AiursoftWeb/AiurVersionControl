@@ -37,7 +37,11 @@ namespace SampleWebApp.Services
                     });
                     context.SaveChanges();
                 });
-            return new Repository<T>();
+#warning In Object and In DB>
+            return new Repository<T>
+            {
+                Name = "Web Server"
+            };
             //return new Repository<T>(store);
         }
     }
