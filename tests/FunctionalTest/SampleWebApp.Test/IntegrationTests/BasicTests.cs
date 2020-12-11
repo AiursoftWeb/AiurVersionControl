@@ -83,13 +83,17 @@ namespace SampleWebApp.Tests.IntegrationTests
             await Task.Delay(300);
 
             await repo.CommitAsync(new LogItem { Message = "1" });
-            await Task.Delay(300);
             await repo.CommitAsync(new LogItem { Message = "2" });
-            await Task.Delay(300);
             await repo.CommitAsync(new LogItem { Message = "3" });
             await Task.Delay(300);
 
+            Assert.AreEqual(null, repo.Remotes.First().Position);
+            Assert.AreNotEqual(null, repo2.Remotes.First().Position);
             repo.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" },
+                new LogItem { Message = "3" });
+            HomeController._repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
                 new LogItem { Message = "3" });
@@ -112,17 +116,12 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             await Task.Delay(300);
 
-            await Task.WhenAll(
-                repoA.CommitAsync(new LogItem { Message = "1" }),
-                repoA.CommitAsync(new LogItem { Message = "2" }),
-                repoA.CommitAsync(new LogItem { Message = "3" })
-            );
-
-            await Task.WhenAll(
-                repoB.CommitAsync(new LogItem { Message = "4" }),
-                repoB.CommitAsync(new LogItem { Message = "5" }),
-                repoB.CommitAsync(new LogItem { Message = "6" })
-            );
+            await repoA.CommitAsync(new LogItem { Message = "1" });
+            await repoA.CommitAsync(new LogItem { Message = "2" });
+            await repoA.CommitAsync(new LogItem { Message = "3" });
+            await repoB.CommitAsync(new LogItem { Message = "4" });
+            await repoB.CommitAsync(new LogItem { Message = "5" });
+            await repoB.CommitAsync(new LogItem { Message = "6" });
 
             await Task.Delay(1300);
 
@@ -163,8 +162,11 @@ namespace SampleWebApp.Tests.IntegrationTests
             await Task.Delay(300);
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
+            await Task.Delay(300);
             await repoA.CommitAsync(new LogItem { Message = "2" });
+            await Task.Delay(300);
             await repoB.CommitAsync(new LogItem { Message = "3" });
+            await Task.Delay(300);
             await repoB.CommitAsync(new LogItem { Message = "4" });
 
             await Task.Delay(300);

@@ -150,8 +150,9 @@ namespace AiurEventSyncer.Models
             else
             {
                 _commits.Add(subtract);
+                return true;
             }
-            return true;
+            return false;
         }
     }
 }
