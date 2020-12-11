@@ -42,7 +42,7 @@ namespace AiurEventSyncer.Models
             await TriggerOnNewCommits(new List<Commit<T>> { commitObject });
         }
 
-        private async Task TriggerOnNewCommits(List<Commit<T>> newCommits)
+        private async Task TriggerOnNewCommits(List<Commit<T>> newCommits, IRemote<T> except = null)
         {
             Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
@@ -51,7 +51,7 @@ namespace AiurEventSyncer.Models
             await Task.WhenAll(notiyTasks);
 #warning Consider do the same time.
             Console.WriteLine($"[{Name}] Auto pushing...");
-            var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
+            var pushTasks = Remotes.Where(t => t != except).Where(t => t.AutoPush).Select(t => PushAsync(t));
             await Task.WhenAll(pushTasks);
         }
 
@@ -95,7 +95,7 @@ namespace AiurEventSyncer.Models
             }
             if(newCommitsSaved.Any())
             {
-                await TriggerOnNewCommits(newCommitsSaved);
+                await TriggerOnNewCommits(newCommitsSaved, remoteRecord);
             }
             _semaphoreSlim.Release();
         }

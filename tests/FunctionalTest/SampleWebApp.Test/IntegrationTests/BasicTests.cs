@@ -142,18 +142,29 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             await Task.Delay(30);
             await repoA.CommitAsync(new LogItem { Message = "G" });
+            await Task.Delay(30);
+            await repoA.CommitAsync(new LogItem { Message = "H" });
+            await Task.Delay(30);
+            await repoB.CommitAsync(new LogItem { Message = "X" });
+            await Task.Delay(30);
             await repoB.CommitAsync(new LogItem { Message = "Z" });
             await Task.Delay(30);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
 
             repoA.Assert(
                 new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
             repoB.Assert(
                 new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
         }
     }

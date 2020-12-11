@@ -38,8 +38,8 @@ namespace AiurEventSyncer.WebExtends
                 {
                     // Waitting for pushed commits.
                     var rawJson = await GetMessage(ws);
-                    Console.WriteLine("[SERVER]: I got a new push request.");
                     var pushedCommits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                    Console.WriteLine($"[SERVER]: I got a new push request with commits: {string.Join(',', pushedCommits.Select(t => t.Item.ToString()))}.");
                     await repository.OnPushed(startPosition, pushedCommits);
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");

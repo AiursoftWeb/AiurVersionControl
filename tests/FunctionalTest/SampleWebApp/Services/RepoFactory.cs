@@ -40,7 +40,7 @@ namespace SampleWebApp.Services
 #warning In Object and In DB>
             return new Repository<T>
             {
-                Name = "Web Server"
+                Name = "SERVER"
             };
             //return new Repository<T>(store);
         }
