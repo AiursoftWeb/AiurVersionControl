@@ -19,7 +19,7 @@ namespace AiurEventSyncer.Models
         public IAfterable<Commit<T>> Commits => _commits;
         public IEnumerable<IRemote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
-        public List<Func<Commit<T>, Task>> OnNewCommitSubscribers { get; set; } = new List<Func<Commit<T>, Task>>();
+        public ConcurrentDictionary<DateTime, Func<Commit<T>, Task>> OnNewCommitSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<Commit<T>, Task>>();
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
@@ -47,7 +47,7 @@ namespace AiurEventSyncer.Models
             Console.WriteLine($"[{Name}] New commit: {newCommit.Item} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             Console.WriteLine($"[{Name}] Broadcasting...");
-            var notiyTasks = OnNewCommitSubscribers.Select(t => t(newCommit));
+            var notiyTasks = OnNewCommitSubscribers.Select(t => t.Value(newCommit));
             await Task.WhenAll(notiyTasks);
 #warning Consider do the same time.
             var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
@@ -56,12 +56,14 @@ namespace AiurEventSyncer.Models
 
         public void AddRemote(IRemote<T> remote)
         {
+            remote.ContextRepository = this;
+            Task.Factory.StartNew(remote.PullAndMonitor).Wait();
             this._remotesStore.Add(remote);
         }
 
-        public Task PullAsync(bool keepAlive = false)
+        public Task PullAsync()
         {
-            return PullAsync(Remotes.First(), keepAlive);
+            return PullAsync(Remotes.First());
         }
 
         public Task PushAsync()
@@ -69,10 +71,10 @@ namespace AiurEventSyncer.Models
             return PushAsync(Remotes.First());
         }
 
-        public async Task PullAsync(IRemote<T> remoteRecord,bool keepAlive = false)
+        public async Task PullAsync(IRemote<T> remoteRecord)
         {
             Console.WriteLine($"[{Name}] Pulling remote: {remoteRecord.Name}...");
-            await remoteRecord.DownloadAndSaveTo(keepAlive, this);
+            await remoteRecord.Pull();
         }
 
         public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
@@ -115,10 +117,10 @@ namespace AiurEventSyncer.Models
 
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
-            Console.WriteLine($"[{Name}]Pushing remote: {remoteRecord.Name}...");
+            Console.WriteLine($"[{Name}] Pushing remote: {remoteRecord.Name}...");
             List<Commit<T>> commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
-            await remoteRecord.UploadFromAsync(commitsToPush);
-            Console.WriteLine($"[{Name}]Push remote '{remoteRecord.Name}' completed.");
+            await remoteRecord.Push(commitsToPush);
+            Console.WriteLine($"[{Name}] Push remote '{remoteRecord.Name}' completed.");
         }
 
         public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)

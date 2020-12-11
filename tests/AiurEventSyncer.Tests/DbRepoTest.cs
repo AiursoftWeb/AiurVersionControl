@@ -19,8 +19,7 @@ namespace AiurEventSyncer.Tests
             localRepo.AddRemote(new ObjectRemote<Book>(dbRepo, true));
 
             var localRepo2 = new Repository<Book>();
-            localRepo2.AddRemote(new ObjectRemote<Book>(dbRepo, false));
-            await Task.Factory.StartNew(() => localRepo2.PullAsync(true));
+            localRepo2.AddRemote(new ObjectRemote<Book>(dbRepo, false, true));
 
             await localRepo.CommitAsync(new Book { Name = "Love" });
 

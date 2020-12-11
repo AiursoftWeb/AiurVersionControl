@@ -41,7 +41,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
             await repo.PushAsync();
-            await Task.Delay(300);
+            await Task.Delay(30);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -50,7 +50,7 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             var repo2 = new Repository<LogItem>();
             repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
-            await repo2.PullAsync();
+            await Task.Delay(30);
 
             repo2.Assert(
                 new LogItem { Message = "1" },
@@ -61,14 +61,13 @@ namespace SampleWebApp.Tests.IntegrationTests
         [TestMethod]
         public async Task SimpleCommitWhilingPulling()
         {
-            var repo = new Repository<LogItem>();
-            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true);
+            var repo = new Repository<LogItem>() { Name = "Test local repo" };
+            var remote = new WebSocketRemote<LogItem>(_endpointUrl, true) { Name = "Demo remote" };
             repo.AddRemote(remote);
-            await Task.Factory.StartNew(async () => await repo.PullAsync(true));
-            await Task.Delay(300);
+            await Task.Delay(30);
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
-            await Task.Delay(300);
+            await Task.Delay(30);
             Assert.IsNotNull(remote.Position);
 
             HomeController._repo.Assert(
@@ -80,25 +79,22 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "2" });
         }
 
-
-
         [TestMethod]
         public async Task OnewayAutoPull()
         {
             var repo = new Repository<LogItem>();
-            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true));
+            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl,  autoPush: true));
 
             var repo2 = new Repository<LogItem>();
             repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
-            await Task.Factory.StartNew(async () => await repo2.PullAsync(true));
 
-            await Task.Delay(300);
+            await Task.Delay(30);
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
-            await Task.Delay(300);
+            await Task.Delay(30);
 
-            Assert.AreEqual(null, repo.Remotes.First().Position);
+            Assert.AreNotEqual(null, repo.Remotes.First().Position);
             Assert.AreNotEqual(null, repo2.Remotes.First().Position);
             repo.Assert(
                 new LogItem { Message = "1" },
@@ -119,11 +115,9 @@ namespace SampleWebApp.Tests.IntegrationTests
         {
             var repoA = new Repository<LogItem>() { Name = "Repo A"};
             repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "A to server" });
-            await Task.Factory.StartNew(async () => await repoA.PullAsync(true));
 
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
             repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "B to server" });
-            await Task.Factory.StartNew(async () => await repoB.PullAsync(true));
 
             await Task.Delay(30);
             await repoA.CommitAsync(new LogItem { Message = "1" });
@@ -142,18 +136,14 @@ namespace SampleWebApp.Tests.IntegrationTests
         {
             var repoA = new Repository<LogItem>() { Name = "Repo A" };
             repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "A to server" });
-            await Task.Factory.StartNew(async () => await repoA.PullAsync(true));
 
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
             repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "B to server" });
-            await Task.Factory.StartNew(async () => await repoB.PullAsync(true));
 
-            await Task.Delay(300);
-
+            await Task.Delay(30);
             await repoA.CommitAsync(new LogItem { Message = "1" });
-            await Task.Delay(300);
             await repoB.CommitAsync(new LogItem { Message = "2" });
-            await Task.Delay(3000);
+            await Task.Delay(30);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -173,7 +163,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
             var commits = repo.Commits.ToArray();
-            if (commits.Count() != array.Length)
+            if (commits.Length != array.Length)
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
             }

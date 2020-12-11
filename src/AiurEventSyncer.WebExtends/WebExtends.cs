@@ -31,8 +31,9 @@ namespace AiurEventSyncer.WebExtends
                     Console.WriteLine($"[SERVER]: I was changed with: {commit.Item}! Broadcasting to a remote...");
                     await SendMessage(ws, JsonSerializer.Serialize(new List<Commit<T>> { commit }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
                 };
-                repository.OnNewCommitSubscribers.Add(pushEvent);
-                Console.WriteLine("[SERVER] New Websocket subscriber registered!");
+                var key = DateTime.UtcNow;
+                repository.OnNewCommitSubscribers[key]= pushEvent;
+                Console.WriteLine($"[SERVER] New Websocket subscriber registered! Current registers: {repository.OnNewCommitSubscribers.Count}.");
                 while (ws.State == WebSocketState.Open)
                 {
                     // Waitting for pushed commits.
@@ -42,7 +43,7 @@ namespace AiurEventSyncer.WebExtends
                     await repository.OnPushed(startPosition, pushedCommits);
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
-                repository.OnNewCommitSubscribers.Remove(pushEvent);
+                repository.OnNewCommitSubscribers.TryRemove(key, out _);
                 return new EmptyResult();
             }
             else

@@ -19,61 +19,56 @@ namespace AiurEventSyncer.Remotes
     public class WebSocketRemote<T> : IRemote<T>
     {
         private readonly string _wsEndpointUrl;
-        private ClientWebSocket _ws;
+        private readonly ClientWebSocket _ws;
 
         public string Name { get; set; } = "WebSocket Origin Default Name";
         public bool AutoPush { get; set; }
         public string Position { get; set; }
+        public Repository<T> ContextRepository { get; set; }
 
         public WebSocketRemote(string endpointUrl, bool autoPush = false)
         {
             _wsEndpointUrl = endpointUrl;
+            _ws = new ClientWebSocket();
             var https = new Regex("^https://", RegexOptions.Compiled);
             var http = new Regex("^http://", RegexOptions.Compiled);
-
             _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
-            _ws = new ClientWebSocket();
-
             AutoPush = autoPush;
+
+            Console.WriteLine("Preparing websocket connection for: " + this.Name);
+            _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None).Wait();
+            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
         }
 
-        public async Task DownloadAndSaveTo( bool keepAlive, Repository<T> repository)
+        public async Task PullAndMonitor()
         {
-            Console.WriteLine("Preparing websocket connection for: " + this.Name);
-            if (_ws.State == WebSocketState.Open)
+            if (ContextRepository == null)
             {
-                throw new InvalidOperationException("Can't pull because there is a alive pull already monitoring!");
+                throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
-            await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None);
-            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             while (_ws.State == WebSocketState.Open)
             {
                 var rawJson = await WebSocketExtends.GetMessage(_ws);
                 var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                await repository.OnPulled(commits, this);
-                if (!keepAlive)
-                {
-                    await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                }
+                await ContextRepository.OnPulled(commits, this);
             }
+            throw new InvalidOperationException("Websocket dropped!");
         }
 
-        public async Task UploadFromAsync(IReadOnlyList<Commit<T>> commitsToPush)
+        public Task Pull()
         {
-            bool connected = true;
+            throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
+        }
+
+        public async Task Push(IReadOnlyList<Commit<T>> commitsToPush)
+        {
             if (_ws.State != WebSocketState.Open)
             {
-                connected = false;
-                _ws = new ClientWebSocket();
-                await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None);
+                throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");
             }
             var rawJson = JsonSerializer.Serialize(commitsToPush.ToList(), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             await WebSocketExtends.SendMessage(_ws, rawJson);
-            if (!connected)
-            {
-                await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }
         }
     }
 }

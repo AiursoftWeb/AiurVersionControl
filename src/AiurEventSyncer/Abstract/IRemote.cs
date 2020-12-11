@@ -10,7 +10,9 @@ namespace AiurEventSyncer.Abstract
         public string Name { get; set; }
         public bool AutoPush { get; set; }
         public string Position { get; set; }
-        Task DownloadAndSaveTo(bool keepAlive, Repository<T> repository);
-        Task UploadFromAsync(IReadOnlyList<Commit<T>> commitsToPush);
+        public Task PullAndMonitor();
+        public Repository<T> ContextRepository { get; set; }
+        Task Pull();
+        Task Push(IReadOnlyList<Commit<T>> commitsToPush);
     }
 }

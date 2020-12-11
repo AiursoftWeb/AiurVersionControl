@@ -43,9 +43,7 @@ namespace AiurEventSyncer.Tests
         {
             var remoteRepo = _localRepo;
             var localRepo = new Repository<int>();
-            localRepo.AddRemote(new ObjectRemote<int>(remoteRepo));
-            await Task.Factory.StartNew(() => localRepo.PullAsync(true));
-            await Task.Delay(10);
+            localRepo.AddRemote(new ObjectRemote<int>(remoteRepo, autoPush: false, autoPull: true));
             localRepo.Assert(1, 2, 3);
 
             await remoteRepo.CommitAsync(50);
@@ -63,9 +61,7 @@ namespace AiurEventSyncer.Tests
         {
             var a = new Repository<int>();
             var b = new Repository<int>();
-            a.AddRemote(new ObjectRemote<int>(b, autoPush: true));
-            await Task.Factory.StartNew(() => a.PullAsync(true));
-            await Task.Delay(10);
+            a.AddRemote(new ObjectRemote<int>(b, autoPush: true, autoPull: true));
 
             await a.CommitAsync(5);
             a.Assert(5);
@@ -95,12 +91,9 @@ namespace AiurEventSyncer.Tests
             var e = new Repository<int>();
 
             a.AddRemote(new ObjectRemote<int>(b, true) { Name ="a autopush b"});
-            c.AddRemote(new ObjectRemote<int>(b, false) { Name = "c autopull b" });
-            await Task.Factory.StartNew(() => c.PullAsync(true));
+            c.AddRemote(new ObjectRemote<int>(b, false, true) { Name = "c autopull b" });
             c.AddRemote(new ObjectRemote<int>(d, true) { Name = "c autopush d" });
-            e.AddRemote(new ObjectRemote<int>(d, false) { Name = "e autopull d" });
-            await Task.Factory.StartNew(() => e.PullAsync(true));
-            await Task.Delay(10);
+            e.AddRemote(new ObjectRemote<int>(d, false, true) { Name = "e autopull d" });
 
             await a.CommitAsync(5);
             b.Assert(5);
@@ -123,13 +116,9 @@ namespace AiurEventSyncer.Tests
             var subscriber3 = new Repository<int>();
 
             senderserver.AddRemote(new ObjectRemote<int>(server, true));
-            subscriber1.AddRemote(new ObjectRemote<int>(server, false));
-            subscriber2.AddRemote(new ObjectRemote<int>(server, false));
-            subscriber3.AddRemote(new ObjectRemote<int>(server, false));
-            await Task.Factory.StartNew(() => subscriber1.PullAsync(true));
-            await Task.Factory.StartNew(() => subscriber2.PullAsync(true));
-            await Task.Factory.StartNew(() => subscriber3.PullAsync(true));
-            await Task.Delay(10);
+            subscriber1.AddRemote(new ObjectRemote<int>(server, false, true));
+            subscriber2.AddRemote(new ObjectRemote<int>(server, false, true));
+            subscriber3.AddRemote(new ObjectRemote<int>(server, false, true));
 
             await senderserver.CommitAsync(5);
             server.Assert(5);
