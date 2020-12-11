@@ -50,6 +50,7 @@ namespace AiurEventSyncer.Models
             var notiyTasks = OnNewCommitSubscribers.Select(t => t.Value(newCommit));
             await Task.WhenAll(notiyTasks);
 #warning Consider do the same time.
+            Console.WriteLine($"[{Name}] Auto pushing...");
             var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
             await Task.WhenAll(pushTasks);
         }
@@ -80,15 +81,14 @@ namespace AiurEventSyncer.Models
         public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             await _semaphoreSlim.WaitAsync();
-            Console.WriteLine($"[{Name}] POINTER: {remoteRecord.Position}");
-            Console.WriteLine($"[{Name}] On Pulled: {string.Join(',', subtraction.Select(t => t.Item.ToString()))}");
-            Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             foreach (var commit in subtraction)
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.Position);
+                Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
                 remoteRecord.Position = commit.Id;
                 if (inserted)
                 {
+                    Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just inserted: {commit.Item}.");
                     await TriggerOnNewCommit(commit);
                 }
             }
@@ -97,7 +97,7 @@ namespace AiurEventSyncer.Models
 
         private bool OnPulledCommit(Commit<T> subtract, string position)
         {
-            Console.WriteLine($"[{Name}] Pulled a new commit: '{subtract.Item}'. Will load.");
+            Console.WriteLine($"[{Name}] Pulled a new commit: '{subtract.Item}'. Will load to local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
             if (localAfter is not null)
             {

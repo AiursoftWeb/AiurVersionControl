@@ -141,20 +141,20 @@ namespace SampleWebApp.Tests.IntegrationTests
             repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl, autoPush: true) { Name = "B to server" });
 
             await Task.Delay(30);
-            await repoA.CommitAsync(new LogItem { Message = "1" });
-            await repoB.CommitAsync(new LogItem { Message = "2" });
+            await repoA.CommitAsync(new LogItem { Message = "G" });
+            await repoB.CommitAsync(new LogItem { Message = "Z" });
             await Task.Delay(30);
 
             HomeController._repo.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" });
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
 
             repoA.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" });
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
             repoB.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" });
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
         }
     }
 
