@@ -48,7 +48,7 @@ namespace AiurEventSyncer.Remotes
             if (AutoPull)
             {
                 await Pull();
-                _fakeRemoteRepository.OnNewCommitSubscribers[DateTime.UtcNow] = async (c) =>
+                _fakeRemoteRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) =>
                 {
                     await Pull();
                 };

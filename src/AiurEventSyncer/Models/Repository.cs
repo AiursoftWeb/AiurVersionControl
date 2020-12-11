@@ -19,7 +19,7 @@ namespace AiurEventSyncer.Models
         public IAfterable<Commit<T>> Commits => _commits;
         public IEnumerable<IRemote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
-        public ConcurrentDictionary<DateTime, Func<Commit<T>, Task>> OnNewCommitSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<Commit<T>, Task>>();
+        public ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>>();
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
@@ -39,15 +39,15 @@ namespace AiurEventSyncer.Models
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
             _commits.Add(commitObject);
-            await TriggerOnNewCommit(commitObject);
+            await TriggerOnNewCommits(new List<Commit<T>> { commitObject });
         }
 
-        private async Task TriggerOnNewCommit(Commit<T> newCommit)
+        private async Task TriggerOnNewCommits(List<Commit<T>> newCommits)
         {
-            Console.WriteLine($"[{Name}] New commit: {newCommit.Item} added locally!");
+            Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             Console.WriteLine($"[{Name}] Broadcasting...");
-            var notiyTasks = OnNewCommitSubscribers.Select(t => t.Value(newCommit));
+            var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits));
             await Task.WhenAll(notiyTasks);
 #warning Consider do the same time.
             Console.WriteLine($"[{Name}] Auto pushing...");
@@ -81,6 +81,7 @@ namespace AiurEventSyncer.Models
         public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             await _semaphoreSlim.WaitAsync();
+            var newCommitsSaved = new List<Commit<T>>();
             foreach (var commit in subtraction)
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.Position);
@@ -89,8 +90,12 @@ namespace AiurEventSyncer.Models
                 if (inserted)
                 {
                     Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just inserted: {commit.Item}.");
-                    await TriggerOnNewCommit(commit);
+                    newCommitsSaved.Add(commit);
                 }
+            }
+            if(newCommitsSaved.Any())
+            {
+                await TriggerOnNewCommits(newCommitsSaved);
             }
             _semaphoreSlim.Release();
         }
@@ -117,8 +122,8 @@ namespace AiurEventSyncer.Models
 
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
-            Console.WriteLine($"[{Name}] Pushing remote: {remoteRecord.Name}...");
             List<Commit<T>> commitsToPush = _commits.AfterCommitId(remoteRecord.Position).ToList();
+            Console.WriteLine($"[{Name}] Pushing remote: {remoteRecord.Name}... Pushing content: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))}");
             await remoteRecord.Push(commitsToPush);
             Console.WriteLine($"[{Name}] Push remote '{remoteRecord.Name}' completed.");
         }
@@ -126,6 +131,7 @@ namespace AiurEventSyncer.Models
         public async Task OnPushed(string startPosition, IEnumerable<Commit<T>> commitsToPush)
         {
             await _semaphoreSlim.WaitAsync();
+            var newCommitsSaved = new List<Commit<T>>();
             Console.WriteLine($"[{Name}] New {commitsToPush.Count()} commits (pushed by other remote) are loaded. Adding to local commits.");
             foreach (var commit in commitsToPush) // 4,5,6
             {
@@ -133,8 +139,12 @@ namespace AiurEventSyncer.Models
                 startPosition = commit.Id;
                 if (inserted)
                 {
-                    await TriggerOnNewCommit(commit);
+                    newCommitsSaved.Add(commit);
                 }
+            }
+            if(newCommitsSaved.Any())
+            {
+                await TriggerOnNewCommits(newCommitsSaved);
             }
             _semaphoreSlim.Release();
         }
