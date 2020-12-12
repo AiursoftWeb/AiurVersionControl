@@ -59,22 +59,25 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public async Task DoubleWaySync()
         {
-            var a = new Repository<int>();
-            var b = new Repository<int>();
-            a.AddRemote(new ObjectRemote<int>(b, autoPush: true, autoPull: true));
+            var a = new Repository<int>() { Name = "Repo A" };
+            var b = new Repository<int>() { Name = "Repo B" };
+            a.AddRemote(new ObjectRemote<int>(b, autoPush: true, autoPull: true) { Name = "A auto sync B." });
 
-            await a.CommitAsync(5);
-            a.Assert(5);
-            b.Assert(5);
+            //await a.CommitAsync(5);
+            //await Task.Delay(30);
+            //a.Assert(5);
+            //b.Assert(5);
 
-            await b.CommitAsync(10);
-            a.Assert(5, 10);
-            b.Assert(5, 10);
+            //await b.CommitAsync(10);
+            //await Task.Delay(30);
+            //a.Assert(5, 10);
+            //b.Assert(5, 10);
 
             await a.CommitAsync(100);
             await b.CommitAsync(200);
-            a.Assert(5, 10, 100, 200);
-            b.Assert(5, 10, 100, 200);
+            await Task.Delay(300);
+            a.Assert(100, 200);
+            b.Assert(100, 200);
         }
 
         [TestMethod]
@@ -90,12 +93,14 @@ namespace AiurEventSyncer.Tests
             var d = new Repository<int>();
             var e = new Repository<int>();
 
-            a.AddRemote(new ObjectRemote<int>(b, true) { Name ="a autopush b"});
+            a.AddRemote(new ObjectRemote<int>(b, true) { Name = "a autopush b" });
             c.AddRemote(new ObjectRemote<int>(b, false, true) { Name = "c autopull b" });
             c.AddRemote(new ObjectRemote<int>(d, true) { Name = "c autopush d" });
             e.AddRemote(new ObjectRemote<int>(d, false, true) { Name = "e autopull d" });
 
             await a.CommitAsync(5);
+
+            await Task.Delay(30);
             b.Assert(5);
             c.Assert(5);
             d.Assert(5);
@@ -121,6 +126,7 @@ namespace AiurEventSyncer.Tests
             subscriber3.AddRemote(new ObjectRemote<int>(server, false, true));
 
             await senderserver.CommitAsync(5);
+            await Task.Delay(30);
             server.Assert(5);
             subscriber1.Assert(5);
             subscriber2.Assert(5);

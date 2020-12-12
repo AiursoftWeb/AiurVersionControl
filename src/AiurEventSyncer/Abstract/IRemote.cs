@@ -14,6 +14,6 @@ namespace AiurEventSyncer.Abstract
         public Task StartPullAndMonitor();
         public Repository<T> ContextRepository { get; set; }
         Task Download();
-        Task Upload(IReadOnlyList<Commit<T>> commitsToPush);
+        Task Upload(List<Commit<T>> commitsToPush);
     }
 }

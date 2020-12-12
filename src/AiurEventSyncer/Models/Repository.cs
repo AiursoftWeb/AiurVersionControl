@@ -24,7 +24,8 @@ namespace AiurEventSyncer.Models
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly ConcurrentBag<IRemote<T>> _remotesStore = new ConcurrentBag<IRemote<T>>();
-        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _insertCommitLock = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _pushLock = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -46,13 +47,11 @@ namespace AiurEventSyncer.Models
         {
             Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-            Console.WriteLine($"[{Name}] Broadcasting...");
+            Console.WriteLine($"[{Name}] Broadcasting and auto pushing...");
             var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits));
-            await Task.WhenAll(notiyTasks);
-#warning Consider do the same time.
-            Console.WriteLine($"[{Name}] Auto pushing...");
             var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
-            await Task.WhenAll(pushTasks);
+            await Task.Factory.StartNew(async () => await Task.WhenAll(notiyTasks));
+            await Task.Factory.StartNew(async () => await Task.WhenAll(pushTasks));
         }
 
         public void AddRemote(IRemote<T> remote)
@@ -81,18 +80,18 @@ namespace AiurEventSyncer.Models
 
         public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
-            await _semaphoreSlim.WaitAsync();
+            await _insertCommitLock.WaitAsync();
             var newCommitsSaved = new List<Commit<T>>();
             var pushingPushPointer = false;
             foreach (var commit in subtraction)
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.HEAD);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-                remoteRecord.HEAD = commit.Id;
                 if(remoteRecord.HEAD == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
                 }
+                remoteRecord.HEAD = commit.Id;
                 if(pushingPushPointer == true)
                 {
                     remoteRecord.PushPointer = remoteRecord.HEAD;
@@ -102,12 +101,12 @@ namespace AiurEventSyncer.Models
                     newCommitsSaved.Add(commit);
                 }
             }
+            _insertCommitLock.Release();
             if (newCommitsSaved.Any())
             {
                 Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just pulled: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
                 await TriggerOnNewCommits(newCommitsSaved);
             }
-            _semaphoreSlim.Release();
         }
 
         private bool OnPulledCommit(Commit<T> subtract, string position)
@@ -132,6 +131,7 @@ namespace AiurEventSyncer.Models
 
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
+            await _pushLock.WaitAsync();
             var commitsToPush = _commits.AfterCommitId(remoteRecord.PushPointer).ToList();
             if (commitsToPush.Any())
             {
@@ -140,13 +140,14 @@ namespace AiurEventSyncer.Models
                 Console.WriteLine($"[{Name}] Push remote '{remoteRecord.Name}' completed.");
                 remoteRecord.PushPointer = commitsToPush.Last().Id;
             }
+            _pushLock.Release();
         }
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
         {
-            await _semaphoreSlim.WaitAsync();
+            await _insertCommitLock.WaitAsync();
             var newCommitsSaved = new List<Commit<T>>();
-            Console.WriteLine($"[{Name}] New {commitsToPush.Count()} commits (pushed by other remote) are loaded. Adding to local commits.");
+            Console.WriteLine($"[{Name}] New {commitsToPush.Count()} commits: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))} (pushed by other remote) are loaded. Adding to local commits.");
             foreach (var commit in commitsToPush) // 4,5,6
             {
                 var inserted = OnPushedCommit(commit, startPosition);
@@ -161,7 +162,7 @@ namespace AiurEventSyncer.Models
                 Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just by pushed with: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
                 await TriggerOnNewCommits(newCommitsSaved);
             }
-            _semaphoreSlim.Release();
+            _insertCommitLock.Release();
         }
 
         private bool OnPushedCommit(Commit<T> subtract, string position)

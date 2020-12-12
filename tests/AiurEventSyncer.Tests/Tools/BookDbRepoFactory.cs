@@ -19,7 +19,7 @@ namespace AiurEventSyncer.Tests.Tools
         {
             var context = GetDbContext();
             var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>, SqlDbContext>(
-                contextFactory: () => context,
+                contextFactory: () => new SqlDbContext(),
                 queryFactory: (context) => context.Records.Where(t => t.Type == typeof(T).Name).Select(t => t.Content),
                 addAction: (newItem, context) =>
                 {

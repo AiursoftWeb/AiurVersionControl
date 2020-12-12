@@ -4,6 +4,7 @@ using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Remotes
@@ -17,6 +18,7 @@ namespace AiurEventSyncer.Remotes
         public string HEAD { get; set; }
         public string PushPointer { get; set; }
         public Repository<T> ContextRepository { get; set; }
+        private readonly SemaphoreSlim _downloadLock = new SemaphoreSlim(1);
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
@@ -25,7 +27,7 @@ namespace AiurEventSyncer.Remotes
             AutoPull = autoPull;
         }
 
-        public Task Upload(IReadOnlyList<Commit<T>> commitsToPush)
+        public Task Upload(List<Commit<T>> commitsToPush)
         {
             if (commitsToPush.Any())
             {
@@ -40,8 +42,10 @@ namespace AiurEventSyncer.Remotes
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
+            await _downloadLock.WaitAsync();
             var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(HEAD).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
             await ContextRepository.OnPulled(downloadResult, this);
+            _downloadLock.Release();
         }
 
         public async Task StartPullAndMonitor()

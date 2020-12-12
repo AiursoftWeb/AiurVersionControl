@@ -75,13 +75,13 @@ namespace AiurEventSyncer.Remotes
             throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public async Task Upload(IReadOnlyList<Commit<T>> commitsToPush)
+        public async Task Upload(List<Commit<T>> commitsToPush)
         {
             if (_ws.State != WebSocketState.Open)
             {
                 throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");
             }
-            var model = new PushModel<T> { Commits = commitsToPush.ToList(), Start = PushPointer };
+            var model = new PushModel<T> { Commits = commitsToPush, Start = PushPointer };
             var rawJson = JsonSerializer.Serialize(model, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             await WebSocketExtends.SendMessage(_ws, rawJson);
         }

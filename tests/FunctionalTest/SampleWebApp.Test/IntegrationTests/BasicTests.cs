@@ -42,7 +42,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "3" });
             Assert.IsNotNull(repo.Remotes.First().PushPointer);
             await repo.PushAsync(); // Shall do nothing.
-            await Task.Delay(30);
+            await Task.Delay(50);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -67,7 +67,7 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
-            await Task.Delay(30);
+            await Task.Delay(50);
             Assert.IsNotNull(remote.HEAD);
 
             HomeController._repo.Assert(
@@ -91,14 +91,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
-            while (repo.Remotes.First().HEAD == null)
-            {
-                await Task.Delay(10);
-            }
-            while (repo2.Remotes.First().HEAD == null)
-            {
-                await Task.Delay(10);
-            }
+            await Task.Delay(50);
+#warning May fail!
             repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
@@ -123,7 +117,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
-            await Task.Delay(30);
+            await Task.Delay(50);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" });
