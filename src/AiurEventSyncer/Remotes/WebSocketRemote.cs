@@ -35,10 +35,6 @@ namespace AiurEventSyncer.Remotes
             var http = new Regex("^http://", RegexOptions.Compiled);
             _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
-
-            Console.WriteLine("Preparing websocket connection for: " + this.Name);
-            _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + HEAD), CancellationToken.None).Wait();
-            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
         }
 
         public async Task StartPullAndMonitor()
@@ -47,6 +43,9 @@ namespace AiurEventSyncer.Remotes
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
+            Console.WriteLine("Preparing websocket connection for: " + this.Name);
+            await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + HEAD), CancellationToken.None);
+            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             if (_ws.State == WebSocketState.Open)
             {
                 var rawJson = await WebSocketExtends.GetMessage(_ws);

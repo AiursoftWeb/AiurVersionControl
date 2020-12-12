@@ -24,7 +24,7 @@ namespace AiurEventSyncer.Models
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly ConcurrentBag<IRemote<T>> _remotesStore = new ConcurrentBag<IRemote<T>>();
-        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(3);
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -42,7 +42,7 @@ namespace AiurEventSyncer.Models
             await TriggerOnNewCommits(new List<Commit<T>> { commitObject });
         }
 
-        private async Task TriggerOnNewCommits(List<Commit<T>> newCommits, IRemote<T> except = null)
+        private async Task TriggerOnNewCommits(List<Commit<T>> newCommits)
         {
             Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
@@ -51,7 +51,7 @@ namespace AiurEventSyncer.Models
             await Task.WhenAll(notiyTasks);
 #warning Consider do the same time.
             Console.WriteLine($"[{Name}] Auto pushing...");
-            var pushTasks = Remotes.Where(t => t != except).Where(t => t.AutoPush).Select(t => PushAsync(t));
+            var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
             await Task.WhenAll(pushTasks);
         }
 
@@ -88,24 +88,24 @@ namespace AiurEventSyncer.Models
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.HEAD);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+                remoteRecord.HEAD = commit.Id;
                 if(remoteRecord.HEAD == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
                 }
-                remoteRecord.HEAD = commit.Id;
                 if(pushingPushPointer == true)
                 {
                     remoteRecord.PushPointer = remoteRecord.HEAD;
                 }
                 if (inserted)
                 {
-                    Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just inserted: {commit.Item}.");
                     newCommitsSaved.Add(commit);
                 }
             }
-            if(newCommitsSaved.Any())
+            if (newCommitsSaved.Any())
             {
-                await TriggerOnNewCommits(newCommitsSaved, remoteRecord);
+                Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just pulled: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
+                await TriggerOnNewCommits(newCommitsSaved);
             }
             _semaphoreSlim.Release();
         }
@@ -158,6 +158,7 @@ namespace AiurEventSyncer.Models
             }
             if (newCommitsSaved.Any())
             {
+                Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just by pushed with: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
                 await TriggerOnNewCommits(newCommitsSaved);
             }
             _semaphoreSlim.Release();

@@ -17,7 +17,11 @@ namespace AiurEventSyncer.Tests
             _demoRepo = new Repository<int>();
             await _demoRepo.CommitAsync(1);
             await _demoRepo.CommitAsync(2);
-            await _demoRepo.CommitAsync(3);
+            await _demoRepo.CommitObjectAsync(new Commit<int>
+            {
+                Id = "5e641147de8c4306b56d19c053122854",
+                Item = 3
+            });
             _demoRepo.Assert(1, 2, 3);
         }
 
@@ -47,10 +51,10 @@ namespace AiurEventSyncer.Tests
             var remoteRepo = new Repository<int>();
             var localRepo = _demoRepo;
             var remote = new ObjectRemote<int>(remoteRepo);
-             localRepo.AddRemote(remote);
+            localRepo.AddRemote(remote);
 
             Assert.AreEqual(remote.HEAD, null);
-            Assert.AreEqual(remote.PushPointer,null);
+            Assert.AreEqual(remote.PushPointer, null);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(remoteRepo.Head?.Item, null);
 
@@ -66,6 +70,44 @@ namespace AiurEventSyncer.Tests
             Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(remoteRepo.Head.Item, 3);
+        }
+
+        [TestMethod]
+        public async Task TestDrag()
+        {
+            var remoteRepo = new Repository<int>();
+            var localRepo = _demoRepo;
+            var remoteRecord = new ObjectRemote<int>(remoteRepo);
+            localRepo.AddRemote(remoteRecord);
+            await localRepo.PushAsync();
+            await localRepo.PullAsync();
+
+            var square1 = new Commit<int> { Item = 111 };
+            var square2 = new Commit<int> { Item = 222 };
+
+            await localRepo.CommitObjectAsync(square1);
+            await localRepo.PushAsync();
+
+            Assert.AreEqual(remoteRecord.PushPointer, square1.Id);
+            Assert.AreEqual(remoteRecord.HEAD, "5e641147de8c4306b56d19c053122854");
+
+            var tri1 = new Commit<int> { Item = 11111 };
+            var tri2 = new Commit<int> { Item = 22222 };
+
+            await localRepo.CommitObjectAsync(square2);
+            await remoteRepo.CommitObjectAsync(tri1);
+            await remoteRepo.CommitObjectAsync(tri2);
+
+            localRepo.Assert(1, 2, 3, 111, 222);
+            remoteRepo.Assert(1, 2, 3, 111, 11111,22222);
+
+            await localRepo.PullAsync();
+
+            localRepo.Assert(1, 2, 3, 111, 11111, 22222, 222);
+            remoteRepo.Assert(1, 2, 3, 111, 11111, 22222);
+
+            Assert.AreEqual(remoteRecord.PushPointer, tri2.Id);
+            Assert.AreEqual(remoteRecord.HEAD, tri2.Id);
         }
     }
 }
