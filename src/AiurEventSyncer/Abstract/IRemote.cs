@@ -9,10 +9,11 @@ namespace AiurEventSyncer.Abstract
     {
         public string Name { get; }
         public bool AutoPush { get; }
-        public string Position { get; set; }
-        public Task PullAndMonitor();
+        public string PushPointer { get; set; }
+        public string HEAD { get; set; }
+        public Task StartPullAndMonitor();
         public Repository<T> ContextRepository { get; set; }
-        Task Pull();
-        Task Push(IReadOnlyList<Commit<T>> commitsToPush);
+        Task Download();
+        Task Upload(IReadOnlyList<Commit<T>> commitsToPush);
     }
 }

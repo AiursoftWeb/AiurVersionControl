@@ -28,11 +28,15 @@ namespace AiurEventSyncer.Tests
             var remote = new ObjectRemote<int>(_demoRepo);
              localRepo.AddRemote(remote);
 
-            Assert.IsNull(remote.Position);
+            Assert.AreEqual(remote.HEAD, null);
+            Assert.AreEqual(remote.PushPointer, null);
+            Assert.AreEqual(localRepo.Head?.Item, null);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
 
             await localRepo.PullAsync();
 
+            Assert.IsNotNull(remote.HEAD);
+            Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
         }
@@ -45,19 +49,23 @@ namespace AiurEventSyncer.Tests
             var remote = new ObjectRemote<int>(remoteRepo);
              localRepo.AddRemote(remote);
 
-            Assert.IsNull(remote.Position);
-            Assert.AreEqual(_demoRepo.Head.Item, 3);
+            Assert.AreEqual(remote.HEAD, null);
+            Assert.AreEqual(remote.PushPointer,null);
+            Assert.AreEqual(localRepo.Head.Item, 3);
+            Assert.AreEqual(remoteRepo.Head?.Item, null);
 
             await localRepo.PushAsync();
 
-            Assert.IsNull(remote.Position);
+            Assert.AreEqual(remote.HEAD, null);
+            Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(_demoRepo.Head.Item, 3);
+            Assert.AreEqual(remoteRepo.Head.Item, 3);
 
             await localRepo.PullAsync();
-            Assert.IsNotNull(remote.Position);
+            Assert.IsNotNull(remote.HEAD);
+            Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(_demoRepo.Head.Item, 3);
+            Assert.AreEqual(remoteRepo.Head.Item, 3);
         }
     }
 }

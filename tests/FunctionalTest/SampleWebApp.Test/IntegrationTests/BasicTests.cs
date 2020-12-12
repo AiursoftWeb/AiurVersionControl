@@ -34,14 +34,16 @@ namespace SampleWebApp.Tests.IntegrationTests
         [TestMethod]
         public async Task ManualPushPull()
         {
-            var repo = new Repository<LogItem>();
-            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
+            var repo = new Repository<LogItem>() { Name = "Local Repo A" };
+            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A websocket to server"});
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
+            //await repo.CommitAsync(new LogItem { Message = "2" });
+            //await repo.CommitAsync(new LogItem { Message = "3" });
             await repo.PushAsync();
-            await Task.Delay(30);
+            await Task.Delay(300);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -68,7 +70,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await Task.Delay(30);
-            Assert.IsNotNull(remote.Position);
+            Assert.IsNotNull(remote.HEAD);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -94,8 +96,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "3" });
             await Task.Delay(300);
 
-            Assert.AreNotEqual(null, repo.Remotes.First().Position);
-            Assert.AreNotEqual(null, repo2.Remotes.First().Position);
+            Assert.AreNotEqual(null, repo.Remotes.First().HEAD);
+            Assert.AreNotEqual(null, repo2.Remotes.First().HEAD);
             repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
@@ -129,6 +131,40 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "1" });
             repoB.Assert(
                 new LogItem { Message = "1" });
+        }
+
+        [TestMethod]
+        public async Task DoubleWayDataBindingWithMultipleRemote()
+        {
+            var repoA = new Repository<LogItem>() { Name = "Repo A" };
+            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A to server" });
+
+            var repoB = new Repository<LogItem>() { Name = "Repo B" };
+            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
+
+            var repoC = new Repository<LogItem>() { Name = "Repo C" };
+            repoB.AddRemote(new ObjectRemote<LogItem>(repoC, autoPush: true) { Name = "B to C" });
+
+            await Task.Delay(30);
+            await repoA.CommitAsync(new LogItem { Message = "G" });
+            await Task.Delay(30);
+            await repoB.CommitAsync(new LogItem { Message = "Z" });
+            await Task.Delay(30);
+
+            HomeController._repo.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
+
+            repoA.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
+            repoB.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
+
+            repoC.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "Z" });
         }
 
         [TestMethod]
