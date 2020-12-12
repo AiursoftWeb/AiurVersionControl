@@ -21,12 +21,12 @@ namespace AiurEventSyncer.Remotes
         private readonly string _wsEndpointUrl;
         private readonly ClientWebSocket _ws;
 
-        public string Name { get; set; } = "WebSocket Origin Default Name";
-        public bool AutoPush { get; set; }
+        public string Name { get; init; } = "WebSocket Origin Default Name";
+        public bool AutoPush => true;
         public string Position { get; set; }
         public Repository<T> ContextRepository { get; set; }
 
-        public WebSocketRemote(string endpointUrl, bool autoPush = false)
+        public WebSocketRemote(string endpointUrl)
         {
             _wsEndpointUrl = endpointUrl;
             _ws = new ClientWebSocket();
@@ -34,7 +34,6 @@ namespace AiurEventSyncer.Remotes
             var http = new Regex("^http://", RegexOptions.Compiled);
             _wsEndpointUrl = https.Replace(_wsEndpointUrl, "wss://");
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
-            AutoPush = autoPush;
 
             Console.WriteLine("Preparing websocket connection for: " + this.Name);
             _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + Position), CancellationToken.None).Wait();

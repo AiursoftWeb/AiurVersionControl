@@ -7,8 +7,8 @@ namespace AiurEventSyncer.Abstract
 {
     public interface IRemote<T>
     {
-        public string Name { get; set; }
-        public bool AutoPush { get; set; }
+        public string Name { get; }
+        public bool AutoPush { get; }
         public string Position { get; set; }
         public Task PullAndMonitor();
         public Repository<T> ContextRepository { get; set; }

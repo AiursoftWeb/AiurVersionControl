@@ -11,9 +11,9 @@ namespace AiurEventSyncer.Remotes
     public class ObjectRemote<T> : IRemote<T>
     {
         private readonly Repository<T> _fakeRemoteRepository;
-        public string Name { get; set; } = "Object Origin Default Name";
-        public bool AutoPush { get; set; }
-        public bool AutoPull { get; set; }
+        public string Name { get; init; } = "Object Origin Default Name";
+        public bool AutoPush { get; init; }
+        public bool AutoPull { get; init; }
         public string Position { get; set; }
         public Repository<T> ContextRepository { get; set; }
 

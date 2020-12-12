@@ -15,7 +15,7 @@ namespace SampleConsoleApp
             var endpointUrl = Console.ReadLine();
 
             var repo = new Repository<LogItem>();
-            repo.AddRemote(new WebSocketRemote<LogItem>(endpointUrl, true));
+            repo.AddRemote(new WebSocketRemote<LogItem>(endpointUrl));
 
             while (true)
             {
@@ -34,12 +34,6 @@ namespace SampleConsoleApp
                         {
                             Message = DateTime.Now.ToString()
                         });
-                        break;
-                    case "pull":
-                        await repo.PullAsync();
-                        break;
-                    case "push":
-                        await repo.PushAsync();
                         break;
                 }
 

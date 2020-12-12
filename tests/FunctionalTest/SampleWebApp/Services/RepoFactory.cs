@@ -37,12 +37,10 @@ namespace SampleWebApp.Services
                     });
                     context.SaveChanges();
                 });
-#warning In Object and In DB>
-            return new Repository<T>
+            return new Repository<T>//(store)
             {
                 Name = "SERVER"
             };
-            //return new Repository<T>(store);
         }
     }
 }
