@@ -132,5 +132,30 @@ namespace AiurEventSyncer.Tests
             subscriber2.Assert(5);
             subscriber3.Assert(5);
         }
+
+        [TestMethod]
+        public async Task DropTest()
+        {
+            var senderserver = new Repository<int>();
+            var server = BookDbRepoFactory.BuildRepo<int>();
+            var subscriber = new Repository<int>();
+            await senderserver.AddRemoteAsync(new ObjectRemote<int>(server, true));
+
+            var remote = new ObjectRemote<int>(server, false, true);
+            await subscriber.AddRemoteAsync(remote);
+
+            await senderserver.CommitAsync(5);
+            await senderserver.CommitAsync(10);
+            await Task.Delay(30);
+            server.Assert(5, 10);
+            subscriber.Assert(5, 10);
+
+            await subscriber.DropRemoteAsync(remote);
+            await senderserver.CommitAsync(100);
+            await senderserver.CommitAsync(200);
+            await Task.Delay(30);
+            server.Assert(5, 10, 100, 200);
+            subscriber.Assert(5, 10);
+        }
     }
 }

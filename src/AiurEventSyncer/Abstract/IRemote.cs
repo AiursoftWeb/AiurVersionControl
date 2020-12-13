@@ -17,5 +17,6 @@ namespace AiurEventSyncer.Abstract
         public Repository<T> ContextRepository { get; set; }
         Task Download();
         Task Upload(List<Commit<T>> commitsToPush);
+        Task Unregister();
     }
 }

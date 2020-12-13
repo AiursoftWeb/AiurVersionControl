@@ -23,7 +23,7 @@ namespace AiurEventSyncer.Models
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly ConcurrentBag<IRemote<T>> _remotesStore = new ConcurrentBag<IRemote<T>>();
+        private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
         private readonly SemaphoreSlim _insertCommitLock = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
@@ -60,6 +60,20 @@ namespace AiurEventSyncer.Models
             _remotesStore.Add(remote);
         }
 
+        public async Task DropRemoteAsync(IRemote<T> remote)
+        {
+            if (!_remotesStore.Contains(remote))
+            {
+                throw new InvalidOperationException("Our remotes record doesn't contains the remote you want to drop.");
+            }
+            if (remote.ContextRepository != this)
+            {
+                throw new InvalidOperationException("Our remotes record you want to drop do not have a context for current repository.");
+            }
+            await remote.Unregister();
+            _remotesStore.Remove(remote);
+        }
+
         public Task PullAsync()
         {
             return PullAsync(Remotes.First());
@@ -85,12 +99,12 @@ namespace AiurEventSyncer.Models
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.HEAD);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-                if(remoteRecord.HEAD == remoteRecord.PushPointer)
+                if (remoteRecord.HEAD == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
                 }
                 remoteRecord.HEAD = commit.Id;
-                if(pushingPushPointer == true)
+                if (pushingPushPointer == true)
                 {
                     remoteRecord.PushPointer = remoteRecord.HEAD;
                 }

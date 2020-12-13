@@ -202,6 +202,39 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
         }
+
+        [TestMethod]
+        public async Task DropTest()
+        {
+            var sender = new Repository<LogItem>();
+            var subscriber = new Repository<LogItem>();
+            await sender.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+
+            var remote = new WebSocketRemote<LogItem>(_endpointUrl);
+            await subscriber.AddRemoteAsync(remote);
+
+            await sender.CommitAsync(new LogItem { Message = "G" });
+            await sender.CommitAsync(new LogItem { Message = "H" });
+            await Task.Delay(30);
+            sender.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+            await subscriber.DropRemoteAsync(remote);
+            await sender.CommitAsync(new LogItem { Message = "X" });
+            await sender.CommitAsync(new LogItem { Message = "Z" });
+            await Task.Delay(30);
+            sender.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+        }
     }
 
     public static class TestExtends

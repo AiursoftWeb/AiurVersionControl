@@ -64,6 +64,10 @@ namespace AiurEventSyncer.Remotes
             while (_ws.State == WebSocketState.Open)
             {
                 var commits = await _ws.GetObject<List<Commit<T>>>();
+                if (_ws.State != WebSocketState.Open)
+                {
+                    return;
+                }
                 await ContextRepository.OnPulled(commits, this);
             }
             throw new InvalidOperationException("Websocket dropped!");
@@ -82,6 +86,14 @@ namespace AiurEventSyncer.Remotes
             }
             var model = new PushModel<T> { Commits = commitsToPush, Start = PushPointer };
             await _ws.SendObject(model);
+        }
+
+        public async Task Unregister()
+        {
+            while (_ws.State == WebSocketState.Open)
+            {
+                await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            }
         }
     }
 
