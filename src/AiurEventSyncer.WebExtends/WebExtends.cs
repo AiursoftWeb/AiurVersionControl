@@ -3,6 +3,7 @@ using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tools;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -21,7 +22,7 @@ namespace AiurEventSyncer.WebExtends
                 // Send pull result.
                 var pullResult = repository.Commits.AfterCommitId(startPosition).ToList();
                 await ws.SendObject(pullResult);
-                Func<List<Commit<T>>, Task> pushEvent = async (List<Commit<T>> newCommits) =>
+                Func<ConcurrentBag<Commit<T>>, Task> pushEvent = async (ConcurrentBag<Commit<T>> newCommits) =>
                 {
                     // Broadcast new commits.
                     Console.WriteLine($"[SERVER]: I was changed with: {string.Join(',', newCommits.Select(t => t.Item.ToString()))}! Broadcasting to a remote...");

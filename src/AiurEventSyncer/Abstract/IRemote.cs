@@ -12,6 +12,7 @@ namespace AiurEventSyncer.Abstract
         public string PushPointer { get; set; }
         public string HEAD { get; set; }
         public SemaphoreSlim PushLock { get; }
+        public SemaphoreSlim PullLock { get; }
         public Task StartPullAndMonitor();
         public Repository<T> ContextRepository { get; set; }
         Task Download();

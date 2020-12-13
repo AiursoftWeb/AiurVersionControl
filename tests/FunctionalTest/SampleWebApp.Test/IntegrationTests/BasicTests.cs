@@ -32,34 +32,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public async Task ManualPushPull()
-        {
-            var repo = new Repository<LogItem>() { Name = "Local Repo A" };
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A websocket to server" });
-
-            await repo.CommitAsync(new LogItem { Message = "1" });
-            await repo.CommitAsync(new LogItem { Message = "2" });
-            await repo.CommitAsync(new LogItem { Message = "3" });
-            Assert.IsNotNull(repo.Remotes.First().PushPointer);
-            await repo.PushAsync(); // Shall do nothing.
-            await Task.Delay(50);
-
-            HomeController._repo.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" });
-
-            var repo2 = new Repository<LogItem>();
-            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
-
-            repo2.Assert(
-                new LogItem { Message = "1" },
-                new LogItem { Message = "2" },
-                new LogItem { Message = "3" });
-        }
-
-        [TestMethod]
-        public async Task SimpleCommitWhilingPulling()
+        public async Task SimpleCommitWithRemote()
         {
             var repo = new Repository<LogItem>() { Name = "Test local repo" };
             var remote = new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Demo remote" };
@@ -67,6 +40,7 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
+
             await Task.Delay(50);
             Assert.IsNotNull(remote.HEAD);
 
@@ -91,7 +65,6 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
-            await Task.Delay(50);
 
             repo.Assert(
                 new LogItem { Message = "1" },
@@ -117,7 +90,6 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
-            await Task.Delay(50);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" });
@@ -148,7 +120,6 @@ namespace SampleWebApp.Tests.IntegrationTests
             await senderserver.CommitAsync(new LogItem { Message = "H" });
             await senderserver.CommitAsync(new LogItem { Message = "X" });
             await senderserver.CommitAsync(new LogItem { Message = "Z" });
-            await Task.Delay(200);
 
             subscriber1.Assert(
                 new LogItem { Message = "G" },
@@ -170,6 +141,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             Assert.AreEqual(subscriber3.Head.Id, subscriber3.Remotes.First().PushPointer, subscriber3.Remotes.First().HEAD);
         }
 
+
         [TestMethod]
         public async Task DoubleWayDataBindingWithMultipleRemote()
         {
@@ -183,7 +155,6 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repoA.CommitAsync(new LogItem { Message = "H" });
             await repoA.CommitAsync(new LogItem { Message = "X" });
             await repoB.CommitAsync(new LogItem { Message = "Z" });
-            await Task.Delay(200);
 
             repoA.Assert(
                 new LogItem { Message = "G" },
@@ -215,7 +186,7 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             await sender.CommitAsync(new LogItem { Message = "G" });
             await sender.CommitAsync(new LogItem { Message = "H" });
-            await Task.Delay(30);
+
             sender.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
@@ -241,16 +212,27 @@ namespace SampleWebApp.Tests.IntegrationTests
     {
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
+            repo.WaitTill(array.Length, 9).Wait();
             var commits = repo.Commits.ToArray();
-            if (commits.Length != array.Length)
-            {
-                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
-            }
             for (int i = 0; i < commits.Count(); i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
-                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo '{repo.Name}' don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                }
+            }
+        }
+
+        private static async Task WaitTill<T>(this Repository<T> repo, int count, int maxWaitSeconds = 5)
+        {
+            int waitedTimes = 0;
+            while (repo.Commits.Count() < count)
+            {
+                await Task.Delay(10);
+                waitedTimes++;
+                if (waitedTimes / 100 >= maxWaitSeconds)
+                {
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {count} commits; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }
             }
         }

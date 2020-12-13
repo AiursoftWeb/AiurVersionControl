@@ -21,7 +21,7 @@ namespace AiurEventSyncer.Remotes
         public string PushPointer { get; set; }
         public Repository<T> ContextRepository { get; set; }
         public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
-
+        public SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         public WebSocketRemote(string endpointUrl)
         {
             _wsEndpointUrl = endpointUrl;
@@ -58,6 +58,7 @@ namespace AiurEventSyncer.Remotes
             while (_ws.State == WebSocketState.Open)
             {
                 var commits = await _ws.GetObject<List<Commit<T>>>();
+                Console.WriteLine($"[{Name}] Got some new websocket data. Telling repo to pull it...");
                 if (_ws.State != WebSocketState.Open)
                 {
                     return;
