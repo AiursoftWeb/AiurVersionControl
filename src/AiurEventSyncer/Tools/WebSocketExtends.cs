@@ -1,16 +1,14 @@
 ﻿using AiurStore.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tools
 {
-   public static  class WebSocketExtends
+    public static  class WebSocketExtends
     {
         public static async Task SendMessage(this WebSocket ws, string message)
         {

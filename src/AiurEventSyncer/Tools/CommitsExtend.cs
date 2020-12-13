@@ -1,7 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurStore.Abstracts;
 using AiurStore.Models;
-using System;
 using System.Collections.Generic;
 
 namespace AiurEventSyncer.Tools

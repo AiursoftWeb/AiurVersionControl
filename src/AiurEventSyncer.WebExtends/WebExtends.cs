@@ -46,31 +46,5 @@ namespace AiurEventSyncer.WebExtends
                 return new BadRequestResult();
             }
         }
-
-        //public static async Task SendMessage(WebSocket ws, string message)
-        //{
-        //    var buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message));
-        //    await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-        //}
-
-        //public static async Task<string> GetMessage(WebSocket ws)
-        //{
-        //    var buffer = new ArraySegment<byte>(new byte[2048]);
-        //    var wsResult = await ws.ReceiveAsync(buffer, CancellationToken.None);
-        //    if (wsResult.MessageType == WebSocketMessageType.Text)
-        //    {
-        //        var rawJson = Encoding.UTF8.GetString(buffer.Skip(buffer.Offset).Take(buffer.Count).ToArray()).Trim('\0').Trim();
-        //        return rawJson;
-
-        //    }
-        //    else if (wsResult.MessageType == WebSocketMessageType.Close)
-        //    {
-        //        return "[]";
-        //    }
-        //    else
-        //    {
-        //        throw new InvalidOperationException($"{wsResult.MessageType} is an invalid stage!");
-        //    }
-        //}
     }
 }
