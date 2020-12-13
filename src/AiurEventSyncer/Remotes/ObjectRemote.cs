@@ -17,6 +17,7 @@ namespace AiurEventSyncer.Remotes
         public bool AutoPull { get; init; }
         public string HEAD { get; set; }
         public string PushPointer { get; set; }
+        public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         public Repository<T> ContextRepository { get; set; }
         private readonly SemaphoreSlim _downloadLock = new SemaphoreSlim(1);
 

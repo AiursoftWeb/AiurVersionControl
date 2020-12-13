@@ -1,4 +1,5 @@
 ﻿using AiurStore.Abstracts;
+using AiurStore.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace AiurStore.Models
         {
             lock (_obj)
             {
-                Provider.Add(JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+                Provider.Add(JsonTools.Serialize(newObject));
             }
         }
 
@@ -40,7 +41,7 @@ namespace AiurStore.Models
         {
             lock (_obj)
             {
-                Provider.Insert(index, JsonSerializer.Serialize(newObject, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+                Provider.Insert(index, JsonTools.Serialize(newObject));
             }
         }
 
@@ -87,18 +88,12 @@ namespace AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            lock (_obj)
-            {
-                return Provider.GetAll().Select(t => JsonSerializer.Deserialize<T>(t, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })).GetEnumerator();
-            }
+            return Provider.GetAll().Select(t => JsonTools.Deserialize<T>(t)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            lock (_obj)
-            {
-                return GetEnumerator();
-            }
+            return GetEnumerator();
         }
     }
 }

@@ -63,21 +63,21 @@ namespace AiurEventSyncer.Tests
             var b = new Repository<int>() { Name = "Repo B" };
             a.AddRemote(new ObjectRemote<int>(b, autoPush: true, autoPull: true) { Name = "A auto sync B." });
 
-            //await a.CommitAsync(5);
-            //await Task.Delay(30);
-            //a.Assert(5);
-            //b.Assert(5);
+            await a.CommitAsync(5);
+            await Task.Delay(30);
+            a.Assert(5);
+            b.Assert(5);
 
-            //await b.CommitAsync(10);
-            //await Task.Delay(30);
-            //a.Assert(5, 10);
-            //b.Assert(5, 10);
+            await b.CommitAsync(10);
+            await Task.Delay(30);
+            a.Assert(5, 10);
+            b.Assert(5, 10);
 
             await a.CommitAsync(100);
             await b.CommitAsync(200);
             await Task.Delay(300);
-            a.Assert(100, 200);
-            b.Assert(100, 200);
+            a.Assert(5, 10, 100, 200);
+            b.Assert(5, 10, 100, 200);
         }
 
         [TestMethod]

@@ -26,6 +26,7 @@ namespace AiurEventSyncer.Remotes
         public string HEAD { get; set; }
         public string PushPointer { get; set; }
         public Repository<T> ContextRepository { get; set; }
+        public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
 
         public WebSocketRemote(string endpointUrl)
         {
@@ -48,8 +49,7 @@ namespace AiurEventSyncer.Remotes
             Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             if (_ws.State == WebSocketState.Open)
             {
-                var rawJson = await WebSocketExtends.GetMessage(_ws);
-                var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                var commits = await _ws.GetObject<List<Commit<T>>>();
                 await ContextRepository.OnPulled(commits, this);
                 await Task.Factory.StartNew(Monitor);
             }
@@ -63,8 +63,7 @@ namespace AiurEventSyncer.Remotes
         {
             while (_ws.State == WebSocketState.Open)
             {
-                var rawJson = await WebSocketExtends.GetMessage(_ws);
-                var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                var commits = await _ws.GetObject<List<Commit<T>>>();
                 await ContextRepository.OnPulled(commits, this);
             }
             throw new InvalidOperationException("Websocket dropped!");
@@ -82,8 +81,7 @@ namespace AiurEventSyncer.Remotes
                 throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");
             }
             var model = new PushModel<T> { Commits = commitsToPush, Start = PushPointer };
-            var rawJson = JsonSerializer.Serialize(model, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            await WebSocketExtends.SendMessage(_ws, rawJson);
+            await _ws.SendObject(model);
         }
     }
 

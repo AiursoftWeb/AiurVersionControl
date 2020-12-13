@@ -10,6 +10,7 @@ namespace AiurEventSyncer.Tests
     public class PointerTest
     {
         private Repository<int> _demoRepo;
+        private const string commit3Id = "5e641147de8c4306b56d19c053122854";
 
         [TestInitialize]
         public async Task GetBasicRepo()
@@ -19,7 +20,7 @@ namespace AiurEventSyncer.Tests
             await _demoRepo.CommitAsync(2);
             await _demoRepo.CommitObjectAsync(new Commit<int>
             {
-                Id = "5e641147de8c4306b56d19c053122854",
+                Id = commit3Id,
                 Item = 3
             });
             _demoRepo.Assert(1, 2, 3);
@@ -89,7 +90,7 @@ namespace AiurEventSyncer.Tests
             await localRepo.PushAsync();
 
             Assert.AreEqual(remoteRecord.PushPointer, square1.Id);
-            Assert.AreEqual(remoteRecord.HEAD, "5e641147de8c4306b56d19c053122854");
+            Assert.AreEqual(remoteRecord.HEAD, commit3Id);
 
             var tri1 = new Commit<int> { Item = 11111 };
             var tri2 = new Commit<int> { Item = 22222 };

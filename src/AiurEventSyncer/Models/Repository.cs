@@ -25,7 +25,6 @@ namespace AiurEventSyncer.Models
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly ConcurrentBag<IRemote<T>> _remotesStore = new ConcurrentBag<IRemote<T>>();
         private readonly SemaphoreSlim _insertCommitLock = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _pushLock = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -131,7 +130,7 @@ namespace AiurEventSyncer.Models
 
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
-            await _pushLock.WaitAsync();
+            await remoteRecord.PushLock.WaitAsync();
             var commitsToPush = _commits.AfterCommitId(remoteRecord.PushPointer).ToList();
             if (commitsToPush.Any())
             {
@@ -140,7 +139,7 @@ namespace AiurEventSyncer.Models
                 Console.WriteLine($"[{Name}] Push remote '{remoteRecord.Name}' completed.");
                 remoteRecord.PushPointer = commitsToPush.Last().Id;
             }
-            _pushLock.Release();
+            remoteRecord.PushLock.Release();
         }
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
