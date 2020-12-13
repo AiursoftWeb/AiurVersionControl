@@ -35,7 +35,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task ManualPushPull()
         {
             var repo = new Repository<LogItem>() { Name = "Local Repo A" };
-            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A websocket to server"});
+            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A websocket to server" });
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
@@ -50,7 +50,7 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "3" });
 
             var repo2 = new Repository<LogItem>();
-            repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
+            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
 
             repo2.Assert(
                 new LogItem { Message = "1" },
@@ -63,7 +63,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         {
             var repo = new Repository<LogItem>() { Name = "Test local repo" };
             var remote = new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Demo remote" };
-            repo.AddRemote(remote);
+            await repo.AddRemoteAsync(remote);
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
@@ -83,16 +83,16 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task OnewayAutoPull()
         {
             var repo = new Repository<LogItem>();
-            repo.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
+            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
 
             var repo2 = new Repository<LogItem>();
-            repo2.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl));
+            await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
 
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
             await repo.CommitAsync(new LogItem { Message = "3" });
             await Task.Delay(50);
-#warning May fail!
+
             repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
@@ -111,10 +111,10 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task OneCommitSync()
         {
             var repoA = new Repository<LogItem>() { Name = "Repo A" };
-            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A to server" });
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A to server" });
 
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
-            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
 
             await repoA.CommitAsync(new LogItem { Message = "1" });
             await Task.Delay(50);
@@ -131,10 +131,10 @@ namespace SampleWebApp.Tests.IntegrationTests
         public async Task DoubleWayDataBindingWithMultipleRemote()
         {
             var repoA = new Repository<LogItem>() { Name = "Repo A" };
-            repoA.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A to server" });
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A to server" });
 
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
-            repoB.AddRemote(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
 
             await repoA.CommitAsync(new LogItem { Message = "G" });
             await repoA.CommitAsync(new LogItem { Message = "H" });

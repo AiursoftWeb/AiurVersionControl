@@ -53,12 +53,11 @@ namespace AiurEventSyncer.Models
             await Task.Factory.StartNew(async () => await Task.WhenAll(pushTasks));
         }
 
-        public void AddRemote(IRemote<T> remote)
+        public async Task AddRemoteAsync(IRemote<T> remote)
         {
             remote.ContextRepository = this;
-            remote.StartPullAndMonitor().Wait();
-#warning make async!
-            this._remotesStore.Add(remote);
+            await remote.StartPullAndMonitor();
+            _remotesStore.Add(remote);
         }
 
         public Task PullAsync()

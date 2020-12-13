@@ -16,10 +16,10 @@ namespace AiurEventSyncer.Tests
         {
             var dbRepo = BookDbRepoFactory.BuildRepo<Book>();
             var localRepo = new Repository<Book>();
-            localRepo.AddRemote(new ObjectRemote<Book>(dbRepo, true));
+            await localRepo.AddRemoteAsync(new ObjectRemote<Book>(dbRepo, true));
 
             var localRepo2 = new Repository<Book>();
-            localRepo2.AddRemote(new ObjectRemote<Book>(dbRepo, false, true));
+            await localRepo2.AddRemoteAsync(new ObjectRemote<Book>(dbRepo, false, true));
 
             await localRepo.CommitAsync(new Book { Name = "Love" });
             await Task.Delay(30);
