@@ -84,10 +84,12 @@ namespace AiurEventSyncer.Remotes
 
         public async Task Unregister()
         {
+            await PushLock.WaitAsync();
             while (_ws.State == WebSocketState.Open)
             {
                 await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
+            PushLock.Release();
         }
     }
 
