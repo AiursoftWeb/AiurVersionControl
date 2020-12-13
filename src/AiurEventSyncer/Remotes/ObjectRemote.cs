@@ -17,8 +17,10 @@ namespace AiurEventSyncer.Remotes
         public bool AutoPull { get; init; }
         public string HEAD { get; set; }
         public string PushPointer { get; set; }
+        public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         public Repository<T> ContextRepository { get; set; }
         private readonly SemaphoreSlim _downloadLock = new SemaphoreSlim(1);
+        private readonly DateTime _key = DateTime.UtcNow;
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
         {
@@ -53,11 +55,17 @@ namespace AiurEventSyncer.Remotes
             if (AutoPull)
             {
                 await Download();
-                _fakeRemoteRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) =>
+                _fakeRemoteRepository.OnNewCommitsSubscribers[_key] = async (c) =>
                 {
                     await Download();
                 };
             }
+        }
+
+        public Task Unregister()
+        {
+            _fakeRemoteRepository.OnNewCommitsSubscribers.TryRemove(_key, out _);
+            return Task.CompletedTask;
         }
     }
 }

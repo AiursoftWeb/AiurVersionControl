@@ -3,13 +3,7 @@ using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +20,7 @@ namespace AiurEventSyncer.Remotes
         public string HEAD { get; set; }
         public string PushPointer { get; set; }
         public Repository<T> ContextRepository { get; set; }
+        public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
 
         public WebSocketRemote(string endpointUrl)
         {
@@ -48,8 +43,7 @@ namespace AiurEventSyncer.Remotes
             Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             if (_ws.State == WebSocketState.Open)
             {
-                var rawJson = await WebSocketExtends.GetMessage(_ws);
-                var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                var commits = await _ws.GetObject<List<Commit<T>>>();
                 await ContextRepository.OnPulled(commits, this);
                 await Task.Factory.StartNew(Monitor);
             }
@@ -63,8 +57,11 @@ namespace AiurEventSyncer.Remotes
         {
             while (_ws.State == WebSocketState.Open)
             {
-                var rawJson = await WebSocketExtends.GetMessage(_ws);
-                var commits = JsonSerializer.Deserialize<List<Commit<T>>>(rawJson, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                var commits = await _ws.GetObject<List<Commit<T>>>();
+                if (_ws.State != WebSocketState.Open)
+                {
+                    return;
+                }
                 await ContextRepository.OnPulled(commits, this);
             }
             throw new InvalidOperationException("Websocket dropped!");
@@ -82,8 +79,17 @@ namespace AiurEventSyncer.Remotes
                 throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");
             }
             var model = new PushModel<T> { Commits = commitsToPush, Start = PushPointer };
-            var rawJson = JsonSerializer.Serialize(model, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-            await WebSocketExtends.SendMessage(_ws, rawJson);
+            await _ws.SendObject(model);
+        }
+
+        public async Task Unregister()
+        {
+            await PushLock.WaitAsync();
+            while (_ws.State == WebSocketState.Open)
+            {
+                await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            }
+            PushLock.Release();
         }
     }
 

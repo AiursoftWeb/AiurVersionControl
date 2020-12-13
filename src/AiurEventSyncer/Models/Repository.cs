@@ -6,7 +6,6 @@ using AiurStore.Providers.MemoryProvider;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,9 +22,8 @@ namespace AiurEventSyncer.Models
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly ConcurrentBag<IRemote<T>> _remotesStore = new ConcurrentBag<IRemote<T>>();
+        private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
         private readonly SemaphoreSlim _insertCommitLock = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _pushLock = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
         {
@@ -54,12 +52,25 @@ namespace AiurEventSyncer.Models
             await Task.Factory.StartNew(async () => await Task.WhenAll(pushTasks));
         }
 
-        public void AddRemote(IRemote<T> remote)
+        public async Task AddRemoteAsync(IRemote<T> remote)
         {
             remote.ContextRepository = this;
-            remote.StartPullAndMonitor().Wait();
-#warning make async!
-            this._remotesStore.Add(remote);
+            await remote.StartPullAndMonitor();
+            _remotesStore.Add(remote);
+        }
+
+        public async Task DropRemoteAsync(IRemote<T> remote)
+        {
+            if (!_remotesStore.Contains(remote))
+            {
+                throw new InvalidOperationException("Our remotes record doesn't contains the remote you want to drop.");
+            }
+            if (remote.ContextRepository != this)
+            {
+                throw new InvalidOperationException("Our remotes record you want to drop do not have a context for current repository.");
+            }
+            await remote.Unregister();
+            _remotesStore.Remove(remote);
         }
 
         public Task PullAsync()
@@ -87,12 +98,12 @@ namespace AiurEventSyncer.Models
             {
                 var inserted = OnPulledCommit(commit, remoteRecord.HEAD);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-                if(remoteRecord.HEAD == remoteRecord.PushPointer)
+                if (remoteRecord.HEAD == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
                 }
                 remoteRecord.HEAD = commit.Id;
-                if(pushingPushPointer == true)
+                if (pushingPushPointer == true)
                 {
                     remoteRecord.PushPointer = remoteRecord.HEAD;
                 }
@@ -131,7 +142,7 @@ namespace AiurEventSyncer.Models
 
         public async Task PushAsync(IRemote<T> remoteRecord)
         {
-            await _pushLock.WaitAsync();
+            await remoteRecord.PushLock.WaitAsync();
             var commitsToPush = _commits.AfterCommitId(remoteRecord.PushPointer).ToList();
             if (commitsToPush.Any())
             {
@@ -140,7 +151,7 @@ namespace AiurEventSyncer.Models
                 Console.WriteLine($"[{Name}] Push remote '{remoteRecord.Name}' completed.");
                 remoteRecord.PushPointer = commitsToPush.Last().Id;
             }
-            _pushLock.Release();
+            remoteRecord.PushLock.Release();
         }
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)

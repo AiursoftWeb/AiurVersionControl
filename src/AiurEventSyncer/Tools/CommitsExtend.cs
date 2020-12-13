@@ -1,7 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurStore.Abstracts;
 using AiurStore.Models;
-using System;
 using System.Collections.Generic;
 
 namespace AiurEventSyncer.Tools
@@ -27,40 +26,6 @@ namespace AiurEventSyncer.Tools
             {
                 source.InsertAfter(t => t.Id == sourcePointerPosition, newCommit);
             }
-        }
-
-        private static readonly long x = 131;
-        private static readonly long y = (long)(1e9 + 7);
-
-        public static int SharedRange(string[] endWithShared, string[] startWithShared)
-        {
-            if (endWithShared.Length == 0 || startWithShared.Length == 0)
-            {
-                return 0;
-            }
-            long a = 0, b = 0, c = 1;
-            int j = endWithShared.Length - 1;
-
-            int pos = 0;
-
-            for (int i = 0; i < startWithShared.Length; i++)
-            {
-                if (j < 0) break;
-
-                a = ((a * x % y) + (Math.Abs(startWithShared[i].GetHashCode()) % y)) % y;
-                b = (b + c * (Math.Abs(endWithShared[j].GetHashCode()) % y) % y) % y;
-
-                if (a == b)
-                {
-                    pos = i + 1;
-                }
-
-                c = c * x % y;
-                j--;
-
-            }
-
-            return pos;
         }
     }
 }
