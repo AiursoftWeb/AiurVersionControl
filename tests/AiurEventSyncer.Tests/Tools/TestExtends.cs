@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tests.Tools
 {
@@ -7,16 +8,27 @@ namespace AiurEventSyncer.Tests.Tools
     {
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
+            repo.WaitTill(array.Length, 9).Wait();
             var commits = repo.Commits.ToArray();
-            if (commits.Count() != array.Length)
-            {
-                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
-            }
             for (int i = 0; i < commits.Count(); i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
-                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo '{repo.Name}' don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                }
+            }
+        }
+
+        private static async Task WaitTill<T>(this Repository<T> repo, int count, int maxWaitSeconds = 5)
+        {
+            int waitedTimes = 0;
+            while (repo.Commits.Count() < count)
+            {
+                await Task.Delay(10);
+                waitedTimes++;
+                if (waitedTimes / 100 >= maxWaitSeconds)
+                {
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {count} commits; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }
             }
         }

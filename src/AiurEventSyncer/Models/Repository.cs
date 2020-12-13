@@ -33,16 +33,13 @@ namespace AiurEventSyncer.Models
         public IEnumerable<IRemote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
         public ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>>();
-        public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
         private readonly SemaphoreSlim _insertCommitLock = new SemaphoreSlim(1);
 
-        public Repository(InOutDatabase<Commit<T>> dbProvider)
-        {
-            _commits = dbProvider;
-        }
+        public Repository(InOutDatabase<Commit<T>> dbProvider) { _commits = dbProvider; }
+        public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         public Task CommitAsync(T content)
         {
@@ -51,7 +48,9 @@ namespace AiurEventSyncer.Models
 
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
+            await _insertCommitLock.WaitAsync();
             _commits.Add(commitObject);
+            _insertCommitLock.Release();
             await TriggerOnNewCommits(new ConcurrentBag<Commit<T>> { commitObject });
         }
 
@@ -105,6 +104,7 @@ namespace AiurEventSyncer.Models
 
         public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
+            Console.WriteLine($"[{Name}] Loading on pulled commits {string.Join(',', subtraction.Select(t => t.Item.ToString()))} from remote: {remoteRecord.Name}");
             await remoteRecord.PullLock.WaitAsync();
             var newCommitsSaved = new ConcurrentBag<Commit<T>>();
             var pushingPushPointer = false;

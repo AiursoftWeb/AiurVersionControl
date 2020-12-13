@@ -1,6 +1,7 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tools;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Concurrent;
@@ -11,13 +12,13 @@ using System.Threading.Tasks;
 
 namespace AiurEventSyncer.WebExtends
 {
-    public static class WebExtends
+    public class ActionBuilder
     {
-        public static async Task<IActionResult> BuildWebActionResultAsync<T>(this ControllerBase controller, Repository<T> repository, string startPosition)
+        public async Task<IActionResult> BuildWebActionResultAsync<T>(WebSocketManager websocket, Repository<T> repository, string startPosition)
         {
-            if (controller.HttpContext.WebSockets.IsWebSocketRequest)
+            if (websocket.IsWebSocketRequest)
             {
-                var ws = await controller.HttpContext.WebSockets.AcceptWebSocketAsync();
+                var ws = await websocket.AcceptWebSocketAsync();
                 Console.WriteLine($"[SERVER]: New Websocket client online! Status: '{ws.State}'");
                 // Send pull result.
                 var pullResult = repository.Commits.AfterCommitId(startPosition).ToList();

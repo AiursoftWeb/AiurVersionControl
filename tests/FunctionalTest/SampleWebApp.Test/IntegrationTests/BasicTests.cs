@@ -143,13 +143,13 @@ namespace SampleWebApp.Tests.IntegrationTests
 
 
         [TestMethod]
-        public async Task DoubleWayDataBindingWithMultipleRemote()
+        public async Task DoubleWayDataBinding()
         {
             var repoA = new Repository<LogItem>() { Name = "Repo A" };
-            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "A to server" });
+            await repoA.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Connction to server for Repo A" });
 
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
-            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
+            await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Connection to server for Repo B" });
 
             await repoA.CommitAsync(new LogItem { Message = "G" });
             await repoA.CommitAsync(new LogItem { Message = "H" });

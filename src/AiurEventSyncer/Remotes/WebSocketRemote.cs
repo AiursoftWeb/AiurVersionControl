@@ -57,10 +57,12 @@ namespace AiurEventSyncer.Remotes
         {
             while (_ws.State == WebSocketState.Open)
             {
+                Console.WriteLine($"[{Name}] Now is in monitoring mode.");
                 var commits = await _ws.GetObject<List<Commit<T>>>();
                 Console.WriteLine($"[{Name}] Got some new websocket data. Telling repo to pull it...");
                 if (_ws.State != WebSocketState.Open)
                 {
+                    Console.WriteLine($"[{Name}] WARNING! Websocket state: {_ws.State} is not connected! Will stop monitoring!");
                     return;
                 }
                 await ContextRepository.OnPulled(commits, this);

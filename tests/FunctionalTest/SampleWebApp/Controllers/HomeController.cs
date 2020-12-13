@@ -34,7 +34,7 @@ namespace SampleWebApp.Controllers
                     _repo = _repoFactory.BuildRepo();
                 }
             }
-            return this.BuildWebActionResultAsync(_repo, start);
+            return new ActionBuilder().BuildWebActionResultAsync(HttpContext.WebSockets, _repo, start);
         }
     }
 }
