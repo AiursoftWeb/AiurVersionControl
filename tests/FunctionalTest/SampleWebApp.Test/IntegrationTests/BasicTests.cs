@@ -128,6 +128,49 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
+        public async Task DistributeTest()
+        {
+            //     server
+            //    /       \
+            //   sender    subscriber1,2,3
+
+            var senderserver = new Repository<LogItem>();
+            var subscriber1 = new Repository<LogItem>();
+            var subscriber2 = new Repository<LogItem>();
+            var subscriber3 = new Repository<LogItem>();
+
+            await senderserver.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+            await subscriber1.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+            await subscriber2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+            await subscriber3.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+
+            await senderserver.CommitAsync(new LogItem { Message = "G" });
+            await senderserver.CommitAsync(new LogItem { Message = "H" });
+            await senderserver.CommitAsync(new LogItem { Message = "X" });
+            await senderserver.CommitAsync(new LogItem { Message = "Z" });
+            await Task.Delay(30);
+
+            subscriber1.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+            subscriber2.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+            subscriber3.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+            Assert.AreEqual(subscriber1.Head.Id, subscriber1.Remotes.First().PushPointer, subscriber1.Remotes.First().HEAD);
+            Assert.AreEqual(subscriber2.Head.Id, subscriber2.Remotes.First().PushPointer, subscriber2.Remotes.First().HEAD);
+            Assert.AreEqual(subscriber3.Head.Id, subscriber3.Remotes.First().PushPointer, subscriber3.Remotes.First().HEAD);
+        }
+
+        [TestMethod]
         public async Task DoubleWayDataBindingWithMultipleRemote()
         {
             var repoA = new Repository<LogItem>() { Name = "Repo A" };
