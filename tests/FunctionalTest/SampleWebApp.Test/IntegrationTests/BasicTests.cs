@@ -183,7 +183,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repoA.CommitAsync(new LogItem { Message = "H" });
             await repoA.CommitAsync(new LogItem { Message = "X" });
             await repoB.CommitAsync(new LogItem { Message = "Z" });
-            await Task.Delay(50);
+            await Task.Delay(200);
 
             repoA.Assert(
                 new LogItem { Message = "G" },
