@@ -30,7 +30,10 @@ namespace AiurEventSyncer.Tests.Tools
                     });
                     context.SaveChanges();
                 });
-            return new Repository<T>(store);
+            return new Repository<T>(store)
+            {
+                Name = "Server"
+            };
         }
     }
 }

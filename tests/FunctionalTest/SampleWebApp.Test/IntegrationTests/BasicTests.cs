@@ -148,7 +148,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await senderserver.CommitAsync(new LogItem { Message = "H" });
             await senderserver.CommitAsync(new LogItem { Message = "X" });
             await senderserver.CommitAsync(new LogItem { Message = "Z" });
-            await Task.Delay(30);
+            await Task.Delay(200);
 
             subscriber1.Assert(
                 new LogItem { Message = "G" },
