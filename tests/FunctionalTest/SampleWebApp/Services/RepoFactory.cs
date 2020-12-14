@@ -36,7 +36,7 @@ namespace SampleWebApp.Services
                     });
                     context.SaveChanges();
                 });
-            return new Repository<T>//(store)
+            return new Repository<T>(store)
             {
                 Name = "SERVER"
             };

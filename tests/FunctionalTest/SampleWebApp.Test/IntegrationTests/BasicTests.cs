@@ -156,22 +156,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repoA.CommitAsync(new LogItem { Message = "X" });
             await repoB.CommitAsync(new LogItem { Message = "Z" });
 
-            repoA.Assert(
-                new LogItem { Message = "G" },
-                new LogItem { Message = "H" },
-                new LogItem { Message = "X" },
-                new LogItem { Message = "Z" });
-            repoB.Assert(
-                new LogItem { Message = "G" },
-                new LogItem { Message = "H" },
-                new LogItem { Message = "X" },
-                new LogItem { Message = "Z" });
-
-            HomeController._repo.Assert(
-                new LogItem { Message = "G" },
-                new LogItem { Message = "H" },
-                new LogItem { Message = "X" },
-                new LogItem { Message = "Z" });
+            repoA.AssertEqual(repoB, 4);
+            repoA.AssertEqual(HomeController._repo, 4);
         }
 
         [TestMethod]
@@ -210,6 +196,24 @@ namespace SampleWebApp.Tests.IntegrationTests
 
     public static class TestExtends
     {
+        public static void AssertEqual<T>(this Repository<T> repo, Repository<T> repo2, int expectedCount)
+        {
+            repo.WaitTill(expectedCount, 9).Wait();
+            repo2.WaitTill(expectedCount, 9).Wait();
+            var commits = repo.Commits.ToArray();
+            var commit2s = repo2.Commits.ToArray();
+            if (commits.Count() != commit2s.Count() || commits.Count() != expectedCount)
+            {
+                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo '{repo.Name}' don't match! Expected: {string.Join(',', commit2s.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+            }
+            for (int i = 0; i < commits.Count(); i++)
+            {
+                if (!commits[i].Id.Equals(commit2s[i].Id))
+                {
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo '{repo.Name}' don't match! Expected: {string.Join(',', commit2s.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                }
+            }
+        }
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
             repo.WaitTill(array.Length, 9).Wait();

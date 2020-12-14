@@ -57,7 +57,7 @@ namespace AiurEventSyncer.Remotes
                 await ContextRepository.PullAsync(this);
                 _fakeRemoteRepository.OnNewCommitsSubscribers[_key] = async (c) =>
                 {
-                    await ContextRepository.PullAsync(this);
+                    await ContextRepository.OnPulled(c.ToList(), this);
                 };
             }
         }
