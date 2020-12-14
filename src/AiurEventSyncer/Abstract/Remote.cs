@@ -51,7 +51,10 @@ namespace AiurEventSyncer.Abstract
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             var downloadResult = await Download(PullPointer);
-            await ContextRepository.OnPulled(downloadResult, this);
+            if(downloadResult.Any())
+            {
+                await ContextRepository.OnPulled(downloadResult, this);
+            }
             PullLock.Release();
         }
 
@@ -59,17 +62,23 @@ namespace AiurEventSyncer.Abstract
         {
             if (AutoPull)
             {
-                await Pull();
-                await RegisterOnCommingCommit();
+                await PullAndMonitor();
             }
         }
 
-        public abstract Task Unregister();
+        public async Task StopMonitoring()
+        {
+            await PushLock.WaitAsync();
+            await Disconnect();
+            PushLock.Release();
+        }
 
-        public abstract Task RegisterOnCommingCommit();
+        protected abstract Task Disconnect();
 
-        public abstract Task Upload(List<Commit<T>> commits, string pushPointer);
+        protected abstract Task PullAndMonitor();
 
-        public abstract Task<List<Commit<T>>> Download(string pointer);
+        protected abstract Task Upload(List<Commit<T>> commits, string pushPointer);
+
+        protected abstract Task<List<Commit<T>>> Download(string pointer);
     }
 }

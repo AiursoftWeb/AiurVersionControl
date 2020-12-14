@@ -67,7 +67,7 @@ namespace AiurEventSyncer.Models
             {
                 throw new InvalidOperationException("Our remotes record you want to drop do not have a context for current repository.");
             }
-            await remote.Unregister();
+            await remote.StopMonitoring();
             _remotesStore.Remove(remote);
         }
 

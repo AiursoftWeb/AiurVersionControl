@@ -13,7 +13,7 @@ namespace SampleWebApp.Tests.IntegrationTests
     public class BasicTests
     {
         private const int _port = 15151;
-        private readonly string _endpointUrl = $"http://localhost:{_port}/repo.ares";
+        private readonly string _endpointUrl = $"ws://localhost:{_port}/repo.ares";
         private IHost _server;
 
         [TestInitialize]
