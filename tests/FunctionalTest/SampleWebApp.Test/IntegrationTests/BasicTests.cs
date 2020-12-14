@@ -106,18 +106,18 @@ namespace SampleWebApp.Tests.IntegrationTests
             //    /       \
             //   sender    subscriber1,2,3
 
-            var senderserver = new Repository<LogItem>();
-            var subscriber1 = new Repository<LogItem>();
-            var subscriber2 = new Repository<LogItem>();
-            var subscriber3 = new Repository<LogItem>();
+            var senderserver = new Repository<LogItem>() { Name = "Sender Server" };
+            var subscriber1 = new Repository<LogItem>() { Name = "Subscriber1" };
+            var subscriber2 = new Repository<LogItem>() { Name = "Subscriber2" };
+            var subscriber3 = new Repository<LogItem>() { Name = "Subscriber3" };
 
-            await senderserver.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
-            await subscriber1.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
-            await subscriber2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
-            await subscriber3.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
+            await senderserver.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of sender" });
+            await subscriber1.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of subscriber1" });
+            await subscriber2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of subscriber2" });
 
             await senderserver.CommitAsync(new LogItem { Message = "G" });
             await senderserver.CommitAsync(new LogItem { Message = "H" });
+            await subscriber3.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of subscriber3" });
             await senderserver.CommitAsync(new LogItem { Message = "X" });
             await senderserver.CommitAsync(new LogItem { Message = "Z" });
 

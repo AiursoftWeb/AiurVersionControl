@@ -45,13 +45,14 @@ namespace AiurEventSyncer.Abstract
 
         public async Task Pull()
         {
-            await PullLock.WaitAsync();
             if (ContextRepository == null)
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
+            await PullLock.WaitAsync();
+            Console.WriteLine($"[{Name}] Active Pulling!");
             var downloadResult = await Download(PullPointer);
-            if(downloadResult.Any())
+            if (downloadResult.Any())
             {
                 await ContextRepository.OnPulled(downloadResult, this);
             }
@@ -60,6 +61,10 @@ namespace AiurEventSyncer.Abstract
 
         public async Task BeAdded()
         {
+            if (AutoPush)
+            {
+                ContextRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) => await Push();
+            }
             if (AutoPull)
             {
                 await PullAndMonitor();

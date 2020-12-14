@@ -112,16 +112,17 @@ namespace AiurEventSyncer.Tests
 
             var senderserver = new Repository<int>();
             var server = BookDbRepoFactory.BuildRepo<int>();
-            var subscriber1 = new Repository<int>();
-            var subscriber2 = new Repository<int>();
-            var subscriber3 = new Repository<int>();
+            var subscriber1 = new Repository<int>() { Name = "subscriber1" };
+            var subscriber2 = new Repository<int>() { Name = "subscriber2" };
+            var subscriber3 = new Repository<int>() { Name = "subscriber3" };
 
-            await senderserver.AddRemoteAsync(new ObjectRemote<int>(server, true));
-            await subscriber1.AddRemoteAsync(new ObjectRemote<int>(server, false, true));
-            await subscriber2.AddRemoteAsync(new ObjectRemote<int>(server, false, true));
-            await subscriber3.AddRemoteAsync(new ObjectRemote<int>(server, false, true));
-
+            await senderserver.AddRemoteAsync(new ObjectRemote<int>(server, true) { Name = "Sender Remote" });
+            await subscriber1.AddRemoteAsync(new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 1" });
+            await subscriber2.AddRemoteAsync(new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 2" });
             await senderserver.CommitAsync(5);
+            await subscriber3.AddRemoteAsync(new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 3" });
+
+            senderserver.Assert(5);
             server.Assert(5);
             subscriber1.Assert(5);
             subscriber2.Assert(5);
@@ -134,7 +135,7 @@ namespace AiurEventSyncer.Tests
             var sender = new Repository<int>() { Name = "Sender" };
             var server = BookDbRepoFactory.BuildRepo<int>();
             var subscriber = new Repository<int>() { Name = "Subscriber" };
-            await sender.AddRemoteAsync(new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push"});
+            await sender.AddRemoteAsync(new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" });
 
             var remote = new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" };
             await subscriber.AddRemoteAsync(remote);

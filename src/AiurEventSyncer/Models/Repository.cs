@@ -39,15 +39,17 @@ namespace AiurEventSyncer.Models
             await TriggerOnNewCommits(new ConcurrentBag<Commit<T>> { commitObject });
         }
 
+#warning Use List is ok.
         private async Task TriggerOnNewCommits(ConcurrentBag<Commit<T>> newCommits)
         {
             Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             Console.WriteLine($"[{Name}] Broadcasting and auto pushing...");
-            var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits));
-            var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => t.Push());
-            await Task.Factory.StartNew(async () => await Task.WhenAll(notiyTasks));
-            await Task.Factory.StartNew(async () => await Task.WhenAll(pushTasks));
+            var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits)).ToList();
+            await Task.Factory.StartNew(async () =>
+            {
+                await Task.WhenAll(notiyTasks);
+            });
         }
 
         public async Task AddRemoteAsync(Remote<T> remote)

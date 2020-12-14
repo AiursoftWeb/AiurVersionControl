@@ -52,7 +52,10 @@ namespace AiurEventSyncer.Remotes
                 var commits = await _ws.GetObject<List<Commit<T>>>();
                 if (commits.Any())
                 {
+#warning Might not necessary.
+                    await PullLock.WaitAsync();
                     await ContextRepository.OnPulled(commits, this);
+                    PullLock.Release();
                 }
                 await Task.Factory.StartNew(Monitor);
             }
@@ -76,7 +79,10 @@ namespace AiurEventSyncer.Remotes
                 }
                 if (commits.Any())
                 {
+#warning Might not necessary.
+                    await PullLock.WaitAsync();
                     await ContextRepository.OnPulled(commits, this);
+                    PullLock.Release();
                 }
             }
             throw new InvalidOperationException("Websocket dropped!");
