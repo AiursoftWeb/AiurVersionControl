@@ -16,12 +16,13 @@ namespace AiurEventSyncer.Models
     {
         public string Name { get; init; } = string.Empty;
         public IAfterable<Commit<T>> Commits => _commits;
-        public IEnumerable<IRemote<T>> Remotes => _remotesStore.ToList();
+        [Obsolete]
+        public IEnumerable<Remote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
         public ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>>();
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
+        private readonly List<Remote<T>> _remotesStore = new List<Remote<T>>();
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider) { _commits = dbProvider; }
@@ -44,19 +45,19 @@ namespace AiurEventSyncer.Models
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             Console.WriteLine($"[{Name}] Broadcasting and auto pushing...");
             var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits));
-            var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => PushAsync(t));
+            var pushTasks = Remotes.Where(t => t.AutoPush).Select(t => t.Push());
             await Task.Factory.StartNew(async () => await Task.WhenAll(notiyTasks));
             await Task.Factory.StartNew(async () => await Task.WhenAll(pushTasks));
         }
 
-        public async Task AddRemoteAsync(IRemote<T> remote)
+        public async Task AddRemoteAsync(Remote<T> remote)
         {
             remote.ContextRepository = this;
-            await remote.PullAndStartMonitoring();
+            await remote.BeAdded();
             _remotesStore.Add(remote);
         }
 
-        public async Task DropRemoteAsync(IRemote<T> remote)
+        public async Task DropRemoteAsync(Remote<T> remote)
         {
             if (!_remotesStore.Contains(remote))
             {
@@ -72,21 +73,15 @@ namespace AiurEventSyncer.Models
 
         public Task PullAsync()
         {
-            return PullAsync(Remotes.First());
+            return Remotes.First().Pull();
         }
 
         public Task PushAsync()
         {
-            return PushAsync(Remotes.First());
+            return Remotes.First().Push();
         }
 
-        public async Task PullAsync(IRemote<T> remoteRecord)
-        {
-            Console.WriteLine($"[{Name}] Pulling remote: {remoteRecord.Name}...");
-            await remoteRecord.DownloadAndPull();
-        }
-
-        public async Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
+        public async Task OnPulled(List<Commit<T>> subtraction, Remote<T> remoteRecord)
         {
             await _pullingLock.WaitAsync();
             Console.WriteLine($"[{Name}] Loading on pulled commits {string.Join(',', subtraction.Select(t => t.Item.ToString()))} from remote: {remoteRecord.Name}");
@@ -137,20 +132,6 @@ namespace AiurEventSyncer.Models
                 return true;
             }
             return false;
-        }
-
-        public async Task PushAsync(IRemote<T> remoteRecord)
-        {
-            await remoteRecord.PushLock.WaitAsync();
-            var commitsToPush = _commits.AfterCommitId(remoteRecord.PushPointer).ToList();
-            if (commitsToPush.Any())
-            {
-                Console.WriteLine($"[{Name}] Pushing remote: {remoteRecord.Name}... Pushing content: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))}");
-                await remoteRecord.Upload(commitsToPush);
-                Console.WriteLine($"[{Name}] Push remote '{remoteRecord.Name}' completed.");
-                remoteRecord.PushPointer = commitsToPush.Last().Id;
-            }
-            remoteRecord.PushLock.Release();
         }
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)

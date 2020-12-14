@@ -58,7 +58,7 @@ namespace AiurEventSyncer.Tests
 
             var secondRemoteRecord = new ObjectRemote<int>(remoteRepo);
             await _localRepo.AddRemoteAsync(secondRemoteRecord);
-            await _localRepo.PushAsync(secondRemoteRecord);
+            await secondRemoteRecord.Push();
 
             remoteRepo.Assert(1, 2, 3);
         }
