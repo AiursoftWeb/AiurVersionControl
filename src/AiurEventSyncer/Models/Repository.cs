@@ -15,21 +15,7 @@ namespace AiurEventSyncer.Models
     public class Repository<T>
     {
         public string Name { get; init; } = string.Empty;
-        public IAfterable<Commit<T>> Commits
-        {
-            get
-            {
-                try
-                {
-                    _insertCommitLock.Wait();
-                    return _commits;
-                }
-                finally
-                {
-                    _insertCommitLock.Release();
-                }
-            }
-        }
+        public IAfterable<Commit<T>> Commits => _commits;
         public IEnumerable<IRemote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
         public ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>>();
@@ -102,14 +88,16 @@ namespace AiurEventSyncer.Models
             await remoteRecord.Download();
         }
 
-        public async Task OnPulled(IReadOnlyList<Commit<T>> subtraction, IRemote<T> remoteRecord)
+        public async Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             Console.WriteLine($"[{Name}] Loading on pulled commits {string.Join(',', subtraction.Select(t => t.Item.ToString()))} from remote: {remoteRecord.Name}");
             await remoteRecord.PullLock.WaitAsync();
+            Console.WriteLine($"[{Name}] pull unlocked!");
             var newCommitsSaved = new ConcurrentBag<Commit<T>>();
             var pushingPushPointer = false;
             foreach (var commit in subtraction)
             {
+                Console.WriteLine($"[{Name}] Trying to save pulled  commit : {commit}...");
                 var inserted = await OnPulledCommit(commit, remoteRecord.HEAD);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
                 if (remoteRecord.HEAD == remoteRecord.PushPointer)
@@ -138,6 +126,7 @@ namespace AiurEventSyncer.Models
         {
             Console.WriteLine($"[{Name}] Pulled a new commit: '{subtract.Item}'. Will load to local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             await _insertCommitLock.WaitAsync();
+            Console.WriteLine($"[{Name}] Insert commit unlocked!");
             try
             {
                 var localAfter = _commits.AfterCommitId(position).FirstOrDefault();

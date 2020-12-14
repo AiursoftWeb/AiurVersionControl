@@ -46,7 +46,7 @@ namespace AiurEventSyncer.Remotes
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             await _downloadLock.WaitAsync();
-            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(HEAD).ToList().AsReadOnly() as IReadOnlyList<Commit<T>>;
+            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(HEAD).ToList();
             await ContextRepository.OnPulled(downloadResult, this);
             _downloadLock.Release();
         }

@@ -87,7 +87,12 @@ namespace AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            return Provider.GetAll().Select(t => JsonTools.Deserialize<T>(t)).GetEnumerator();
+            List<T> copy = null;
+            lock(_obj)
+            {
+                copy = Provider.GetAll().Select(t => JsonTools.Deserialize<T>(t)).ToList();
+            }
+            return copy.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
