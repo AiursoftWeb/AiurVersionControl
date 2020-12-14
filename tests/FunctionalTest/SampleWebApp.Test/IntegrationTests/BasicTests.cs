@@ -41,8 +41,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
 
-            await Task.Delay(50);
-            Assert.IsNotNull(remote.HEAD);
+            await Task.Delay(50); // Wait for the pull to update pointer.
+            Assert.IsNotNull(remote.PullPointer);
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" },
@@ -136,9 +136,9 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "H" },
                 new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
-            Assert.AreEqual(subscriber1.Head.Id, subscriber1.Remotes.First().PushPointer, subscriber1.Remotes.First().HEAD);
-            Assert.AreEqual(subscriber2.Head.Id, subscriber2.Remotes.First().PushPointer, subscriber2.Remotes.First().HEAD);
-            Assert.AreEqual(subscriber3.Head.Id, subscriber3.Remotes.First().PushPointer, subscriber3.Remotes.First().HEAD);
+            Assert.AreEqual(subscriber1.Head.Id, subscriber1.Remotes.First().PushPointer, subscriber1.Remotes.First().PullPointer);
+            Assert.AreEqual(subscriber2.Head.Id, subscriber2.Remotes.First().PushPointer, subscriber2.Remotes.First().PullPointer);
+            Assert.AreEqual(subscriber3.Head.Id, subscriber3.Remotes.First().PushPointer, subscriber3.Remotes.First().PullPointer);
         }
 
 

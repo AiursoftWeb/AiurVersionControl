@@ -33,14 +33,14 @@ namespace AiurEventSyncer.Tests
             var remote = new ObjectRemote<int>(_demoRepo);
             await localRepo.AddRemoteAsync(remote);
 
-            Assert.AreEqual(remote.HEAD, null);
+            Assert.AreEqual(remote.PullPointer, null);
             Assert.AreEqual(remote.PushPointer, null);
             Assert.AreEqual(localRepo.Head?.Item, null);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
 
             await localRepo.PullAsync();
 
-            Assert.IsNotNull(remote.HEAD);
+            Assert.IsNotNull(remote.PullPointer);
             Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
@@ -54,20 +54,20 @@ namespace AiurEventSyncer.Tests
             var remote = new ObjectRemote<int>(remoteRepo);
             await localRepo.AddRemoteAsync(remote);
 
-            Assert.AreEqual(remote.HEAD, null);
+            Assert.AreEqual(remote.PullPointer, null);
             Assert.AreEqual(remote.PushPointer, null);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(remoteRepo.Head?.Item, null);
 
             await localRepo.PushAsync();
 
-            Assert.AreEqual(remote.HEAD, null);
+            Assert.AreEqual(remote.PullPointer, null);
             Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(remoteRepo.Head.Item, 3);
 
             await localRepo.PullAsync();
-            Assert.IsNotNull(remote.HEAD);
+            Assert.IsNotNull(remote.PullPointer);
             Assert.IsNotNull(remote.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
             Assert.AreEqual(remoteRepo.Head.Item, 3);
@@ -90,7 +90,7 @@ namespace AiurEventSyncer.Tests
             await localRepo.PushAsync();
 
             Assert.AreEqual(remoteRecord.PushPointer, square1.Id);
-            Assert.AreEqual(remoteRecord.HEAD, commit3Id);
+            Assert.AreEqual(remoteRecord.PullPointer, commit3Id);
 
             var tri1 = new Commit<int> { Item = 11111 };
             var tri2 = new Commit<int> { Item = 22222 };
@@ -108,7 +108,7 @@ namespace AiurEventSyncer.Tests
             remoteRepo.Assert(1, 2, 3, 111, 11111, 22222);
 
             Assert.AreEqual(remoteRecord.PushPointer, tri2.Id);
-            Assert.AreEqual(remoteRecord.HEAD, tri2.Id);
+            Assert.AreEqual(remoteRecord.PullPointer, tri2.Id);
         }
     }
 }

@@ -3,6 +3,7 @@ using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace AiurEventSyncer.Remotes
 
         public string Name { get; init; } = "WebSocket Origin Default Name";
         public bool AutoPush => true;
-        public string HEAD { get; set; }
+        public string PullPointer { get; set; }
         public string PushPointer { get; set; }
         public Repository<T> ContextRepository { get; set; }
         public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
@@ -32,19 +33,22 @@ namespace AiurEventSyncer.Remotes
             _wsEndpointUrl = http.Replace(_wsEndpointUrl, "ws://");
         }
 
-        public async Task StartPullAndMonitor()
+        public async Task PullAndStartMonitoring()
         {
             if (ContextRepository == null)
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             Console.WriteLine("Preparing websocket connection for: " + this.Name);
-            await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + HEAD), CancellationToken.None);
+            await _ws.ConnectAsync(new Uri(_wsEndpointUrl + "?start=" + PullPointer), CancellationToken.None);
             Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
             if (_ws.State == WebSocketState.Open)
             {
                 var commits = await _ws.GetObject<List<Commit<T>>>();
-                await ContextRepository.OnPulled(commits, this);
+                if (commits.Any())
+                {
+                    await ContextRepository.OnPulled(commits, this);
+                }
                 await Task.Factory.StartNew(Monitor);
             }
             else
@@ -65,18 +69,25 @@ namespace AiurEventSyncer.Remotes
                     Console.WriteLine($"[{Name}] WARNING! Websocket state: {_ws.State} is not connected! Will stop monitoring!");
                     return;
                 }
-                await ContextRepository.OnPulled(commits, this);
+                if (commits.Any())
+                {
+                    await ContextRepository.OnPulled(commits, this);
+                }
             }
             throw new InvalidOperationException("Websocket dropped!");
         }
 
-        public Task Download()
+        public Task DownloadAndPull()
         {
             throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
         public async Task Upload(List<Commit<T>> commitsToPush)
         {
+            if (!commitsToPush.Any())
+            {
+                return;
+            }
             if (_ws.State != WebSocketState.Open)
             {
                 throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");

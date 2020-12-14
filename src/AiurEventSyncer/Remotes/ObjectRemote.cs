@@ -15,12 +15,11 @@ namespace AiurEventSyncer.Remotes
         public string Name { get; init; } = "Object Origin Default Name";
         public bool AutoPush { get; init; }
         public bool AutoPull { get; init; }
-        public string HEAD { get; set; }
+        public string PullPointer { get; set; }
         public string PushPointer { get; set; }
         public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         public SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         public Repository<T> ContextRepository { get; set; }
-        private readonly SemaphoreSlim _downloadLock = new SemaphoreSlim(1);
         private readonly DateTime _key = DateTime.UtcNow;
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
@@ -39,26 +38,26 @@ namespace AiurEventSyncer.Remotes
             return Task.CompletedTask;
         }
 
-        public async Task Download()
+        public async Task DownloadAndPull()
         {
+            await PullLock.WaitAsync();
             if (ContextRepository == null)
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
-            await _downloadLock.WaitAsync();
-            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(HEAD).ToList();
+            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(PullPointer).ToList();
             await ContextRepository.OnPulled(downloadResult, this);
-            _downloadLock.Release();
+            PullLock.Release();
         }
 
-        public async Task StartPullAndMonitor()
+        public async Task PullAndStartMonitoring()
         {
             if (AutoPull)
             {
-                await Download();
+                await ContextRepository.PullAsync(this);
                 _fakeRemoteRepository.OnNewCommitsSubscribers[_key] = async (c) =>
                 {
-                    await Download();
+                    await ContextRepository.PullAsync(this);
                 };
             }
         }

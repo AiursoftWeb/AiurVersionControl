@@ -22,7 +22,7 @@ namespace AiurEventSyncer.Models
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<IRemote<T>> _remotesStore = new List<IRemote<T>>();
-        private readonly SemaphoreSlim _insertCommitLock = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider) { _commits = dbProvider; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
@@ -34,9 +34,7 @@ namespace AiurEventSyncer.Models
 
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
-            await _insertCommitLock.WaitAsync();
             _commits.Add(commitObject);
-            _insertCommitLock.Release();
             await TriggerOnNewCommits(new ConcurrentBag<Commit<T>> { commitObject });
         }
 
@@ -54,7 +52,7 @@ namespace AiurEventSyncer.Models
         public async Task AddRemoteAsync(IRemote<T> remote)
         {
             remote.ContextRepository = this;
-            await remote.StartPullAndMonitor();
+            await remote.PullAndStartMonitoring();
             _remotesStore.Add(remote);
         }
 
@@ -85,36 +83,35 @@ namespace AiurEventSyncer.Models
         public async Task PullAsync(IRemote<T> remoteRecord)
         {
             Console.WriteLine($"[{Name}] Pulling remote: {remoteRecord.Name}...");
-            await remoteRecord.Download();
+            await remoteRecord.DownloadAndPull();
         }
 
         public async Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
+            await _pullingLock.WaitAsync();
             Console.WriteLine($"[{Name}] Loading on pulled commits {string.Join(',', subtraction.Select(t => t.Item.ToString()))} from remote: {remoteRecord.Name}");
-            await remoteRecord.PullLock.WaitAsync();
-            Console.WriteLine($"[{Name}] pull unlocked!");
             var newCommitsSaved = new ConcurrentBag<Commit<T>>();
             var pushingPushPointer = false;
             foreach (var commit in subtraction)
             {
                 Console.WriteLine($"[{Name}] Trying to save pulled  commit : {commit}...");
-                var inserted = await OnPulledCommit(commit, remoteRecord.HEAD);
+                var inserted = OnPulledCommit(commit, remoteRecord.PullPointer);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-                if (remoteRecord.HEAD == remoteRecord.PushPointer)
+                if (remoteRecord.PullPointer == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
                 }
-                remoteRecord.HEAD = commit.Id;
+                remoteRecord.PullPointer = commit.Id;
                 if (pushingPushPointer == true)
                 {
-                    remoteRecord.PushPointer = remoteRecord.HEAD;
+                    remoteRecord.PushPointer = remoteRecord.PullPointer;
                 }
                 if (inserted)
                 {
                     newCommitsSaved.Add(commit);
                 }
             }
-            remoteRecord.PullLock.Release();
+            _pullingLock.Release();
             if (newCommitsSaved.Any())
             {
                 Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just pulled: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
@@ -122,33 +119,24 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        private async Task<bool> OnPulledCommit(Commit<T> subtract, string position)
+        private bool OnPulledCommit(Commit<T> subtract, string position)
         {
-            Console.WriteLine($"[{Name}] Pulled a new commit: '{subtract.Item}'. Will load to local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-            await _insertCommitLock.WaitAsync();
-            Console.WriteLine($"[{Name}] Insert commit unlocked!");
-            try
+            Console.WriteLine($"[{Name}] Pull process is loading commit: '{subtract.Item}' to local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+            var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
+            if (localAfter is not null)
             {
-                var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
-                if (localAfter is not null)
+                if (localAfter.Id != subtract.Id)
                 {
-                    if (localAfter.Id != subtract.Id)
-                    {
-                        _commits.InsertAfterCommitId(position, subtract);
-                        return true;
-                    }
-                }
-                else
-                {
-                    _commits.Add(subtract);
+                    _commits.InsertAfterCommitId(position, subtract);
                     return true;
                 }
-                return false;
             }
-            finally
+            else
             {
-                _insertCommitLock.Release();
+                _commits.Add(subtract);
+                return true;
             }
+            return false;
         }
 
         public async Task PushAsync(IRemote<T> remoteRecord)
@@ -167,7 +155,6 @@ namespace AiurEventSyncer.Models
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
         {
-            await _insertCommitLock.WaitAsync();
             var newCommitsSaved = new ConcurrentBag<Commit<T>>();
             Console.WriteLine($"[{Name}] New {commitsToPush.Count()} commits: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))} (pushed by other remote) are loaded. Adding to local commits.");
             foreach (var commit in commitsToPush) // 4,5,6
@@ -179,7 +166,6 @@ namespace AiurEventSyncer.Models
                     newCommitsSaved.Add(commit);
                 }
             }
-            _insertCommitLock.Release();
             if (newCommitsSaved.Any())
             {
                 Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just by pushed with: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
