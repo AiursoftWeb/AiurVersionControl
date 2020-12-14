@@ -41,7 +41,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await repo.CommitAsync(new LogItem { Message = "1" });
             await repo.CommitAsync(new LogItem { Message = "2" });
 
-            await Task.Delay(50); // Wait for the pull to update pointer.
+            await Task.Delay(500); // Wait for the pull to update pointer.
             Assert.IsNotNull(remote.PullPointer);
 
             HomeController._repo.Assert(

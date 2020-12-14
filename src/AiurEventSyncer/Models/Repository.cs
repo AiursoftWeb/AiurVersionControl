@@ -24,6 +24,7 @@ namespace AiurEventSyncer.Models
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<Remote<T>> _remotesStore = new List<Remote<T>>();
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
+        private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider) { _commits = dbProvider; }
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
@@ -46,7 +47,7 @@ namespace AiurEventSyncer.Models
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             Console.WriteLine($"[{Name}] Broadcasting and auto pushing...");
             var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits)).ToList();
-            await Task.Factory.StartNew(async () =>
+            _notifyingQueue.QueueNew(async () =>
             {
                 await Task.WhenAll(notiyTasks);
             });
@@ -91,7 +92,7 @@ namespace AiurEventSyncer.Models
             var pushingPushPointer = false;
             foreach (var commit in subtraction)
             {
-                Console.WriteLine($"[{Name}] Trying to save pulled  commit : {commit}...");
+                Console.WriteLine($"[{Name}] Trying to save pulled commit : {commit}...");
                 var inserted = OnPulledCommit(commit, remoteRecord.PullPointer);
                 Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
                 if (remoteRecord.PullPointer == remoteRecord.PushPointer)
