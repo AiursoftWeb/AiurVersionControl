@@ -15,7 +15,7 @@ namespace SampleConsoleApp
             var endpointUrl = Console.ReadLine();
 
             var repo = new Repository<LogItem>();
-            await repo.AddRemoteAsync(new WebSocketRemote<LogItem>(endpointUrl));
+            await new WebSocketRemote<LogItem>(endpointUrl).AttachAsync(repo);
 
             while (true)
             {
@@ -30,9 +30,9 @@ namespace SampleConsoleApp
                         PrintRepo(repo);
                         break;
                     case "commit":
-                        await repo.CommitAsync(new LogItem
+                        repo.Commit(new LogItem
                         {
-                            Message = DateTime.Now.ToString()
+                            Message = $"Commit message at:  {DateTime.Now}"
                         });
                         break;
                 }

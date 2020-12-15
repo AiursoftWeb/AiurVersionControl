@@ -1,10 +1,9 @@
 ﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.Remotes;
+using AiurEventSyncer.Remotes.Models;
 using AiurEventSyncer.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -21,16 +20,16 @@ namespace AiurEventSyncer.WebExtends
                 var ws = await websocket.AcceptWebSocketAsync();
                 Console.WriteLine($"[SERVER]: New Websocket client online! Status: '{ws.State}'");
                 // Send pull result.
-                var pullResult = repository.Commits.AfterCommitId(startPosition).ToList();
-                await ws.SendObject(pullResult);
-                Func<ConcurrentBag<Commit<T>>, Task> pushEvent = async (ConcurrentBag<Commit<T>> newCommits) =>
+                var firstPullResult = repository.Commits.AfterCommitId(startPosition).ToList();
+                await ws.SendObject(firstPullResult);
+                async Task pushEvent(List<Commit<T>> newCommits)
                 {
                     // Broadcast new commits.
                     Console.WriteLine($"[SERVER]: I was changed with: {string.Join(',', newCommits.Select(t => t.Item.ToString()))}! Broadcasting to a remote...");
-                    await ws.SendObject(newCommits);
-                };
-                var key = DateTime.UtcNow;
-                repository.OnNewCommitsSubscribers[key]= pushEvent;
+                    await ws.SendObject(newCommits.Where(t => !firstPullResult.Any(p => p.Id == t.Id)));
+                }
+                var connectionId = Guid.NewGuid();
+                repository.OnNewCommitsSubscribers[connectionId]= pushEvent;
                 Console.WriteLine($"[SERVER] New Websocket subscriber registered! Current registers: {repository.OnNewCommitsSubscribers.Count}.");
                 while (ws.State == WebSocketState.Open)
                 {
@@ -40,7 +39,7 @@ namespace AiurEventSyncer.WebExtends
                     await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
-                repository.OnNewCommitsSubscribers.TryRemove(key, out _);
+                repository.OnNewCommitsSubscribers.TryRemove(connectionId, out _);
                 return new EmptyResult();
             }
             else

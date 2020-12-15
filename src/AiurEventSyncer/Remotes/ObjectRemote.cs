@@ -4,67 +4,44 @@ using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Remotes
 {
-    public class ObjectRemote<T> : IRemote<T>
+    public class ObjectRemote<T> : Remote<T>
     {
-        private readonly Repository<T> _fakeRemoteRepository;
-        public string Name { get; init; } = "Object Origin Default Name";
-        public bool AutoPush { get; init; }
-        public bool AutoPull { get; init; }
-        public string PullPointer { get; set; }
-        public string PushPointer { get; set; }
-        public SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
-        public SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
-        public Repository<T> ContextRepository { get; set; }
-        private readonly DateTime _key = DateTime.UtcNow;
+        private Repository<T> _fakeRemoteRepository;
+        protected readonly Guid _id = Guid.NewGuid();
 
-        public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
+        public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false) : base(autoPush, autoPull)
         {
             _fakeRemoteRepository = localRepository;
-            AutoPush = autoPush;
-            AutoPull = autoPull;
         }
 
-        public Task Upload(List<Commit<T>> commitsToPush)
+        protected override Task Upload(List<Commit<T>> commits, string pushPointer)
         {
-            if (commitsToPush.Any())
+            return _fakeRemoteRepository.OnPushed(commits, PushPointer);
+        }
+
+        protected override Task<List<Commit<T>>> Download(string pointer)
+        {
+            return Task.FromResult(_fakeRemoteRepository.Commits.AfterCommitId(PullPointer).ToList());
+        }
+
+        protected async override Task PullAndMonitor()
+        {
+            await PullAsync();
+            _fakeRemoteRepository.OnNewCommitsSubscribers[_id] = async (c) =>
             {
-                return _fakeRemoteRepository.OnPushed(commitsToPush, PushPointer?.ToString());
-            }
-            return Task.CompletedTask;
+                await PullLock.WaitAsync();
+                await ContextRepository.OnPulled(c.ToList(), this);
+                PullLock.Release();
+            };
         }
 
-        public async Task DownloadAndPull()
+        protected override Task Disconnect()
         {
-            await PullLock.WaitAsync();
-            if (ContextRepository == null)
-            {
-                throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
-            }
-            var downloadResult = _fakeRemoteRepository.Commits.AfterCommitId(PullPointer).ToList();
-            await ContextRepository.OnPulled(downloadResult, this);
-            PullLock.Release();
-        }
-
-        public async Task PullAndStartMonitoring()
-        {
-            if (AutoPull)
-            {
-                await ContextRepository.PullAsync(this);
-                _fakeRemoteRepository.OnNewCommitsSubscribers[_key] = async (c) =>
-                {
-                    await ContextRepository.OnPulled(c.ToList(), this);
-                };
-            }
-        }
-
-        public Task Unregister()
-        {
-            _fakeRemoteRepository.OnNewCommitsSubscribers.TryRemove(_key, out _);
+            _fakeRemoteRepository.OnNewCommitsSubscribers.TryRemove(_id, out _);
             return Task.CompletedTask;
         }
     }

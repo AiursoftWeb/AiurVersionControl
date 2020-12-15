@@ -1,24 +1,21 @@
-﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.WebExtends;
+﻿using AiurEventSyncer.WebExtends;
 using Microsoft.AspNetCore.Mvc;
-using SampleWebApp.Data;
 using SampleWebApp.Services;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace SampleWebApp.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly RepoFactory<LogItem> _repoFactory;
-        public static Repository<LogItem> _repo;
-        private static object _obj = new object();
+        private readonly RepositoryContainer _repositoryContainer;
 
-        public HomeController(
-            RepoFactory<LogItem> repoFactory)
+        public HomeController(RepositoryContainer repositoryContainer)
         {
-            _repoFactory = repoFactory;
+            _repositoryContainer = repositoryContainer;
         }
 
+        [ExcludeFromCodeCoverage]
         public IActionResult Index()
         {
             return Ok(new { Message = "Welcome!" });
@@ -27,14 +24,8 @@ namespace SampleWebApp.Controllers
         [Route("repo.ares")]
         public Task<IActionResult> ReturnRepoDemo(string start)
         {
-            lock (_obj)
-            {
-                if (_repo == null)
-                {
-                    _repo = _repoFactory.BuildRepo();
-                }
-            }
-            return new ActionBuilder().BuildWebActionResultAsync(HttpContext.WebSockets, _repo, start);
+            var repo = _repositoryContainer.GetLogItemRepository();
+            return new ActionBuilder().BuildWebActionResultAsync(HttpContext.WebSockets, repo, start);
         }
     }
 }
