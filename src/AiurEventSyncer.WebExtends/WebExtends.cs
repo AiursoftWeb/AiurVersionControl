@@ -30,8 +30,8 @@ namespace AiurEventSyncer.WebExtends
                     Console.WriteLine($"[SERVER]: I was changed with: {string.Join(',', newCommits.Select(t => t.Item.ToString()))}! Broadcasting to a remote...");
                     await ws.SendObject(newCommits.Where(t => !firstPullResult.Any(p => p.Id == t.Id)));
                 }
-                var key = DateTime.UtcNow;
-                repository.OnNewCommitsSubscribers[key]= pushEvent;
+                var connectionId = Guid.NewGuid();
+                repository.OnNewCommitsSubscribers[connectionId]= pushEvent;
                 Console.WriteLine($"[SERVER] New Websocket subscriber registered! Current registers: {repository.OnNewCommitsSubscribers.Count}.");
                 while (ws.State == WebSocketState.Open)
                 {
@@ -41,7 +41,7 @@ namespace AiurEventSyncer.WebExtends
                     await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
-                repository.OnNewCommitsSubscribers.TryRemove(key, out _);
+                repository.OnNewCommitsSubscribers.TryRemove(connectionId, out _);
                 return new EmptyResult();
             }
             else

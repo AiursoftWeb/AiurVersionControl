@@ -17,8 +17,7 @@ namespace AiurEventSyncer.Models
         public string Name { get; init; } = string.Empty;
         public IAfterable<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
-#warning find a better solution to register.
-        public ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>>();
+        public ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>>();
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);

@@ -12,6 +12,7 @@ namespace AiurEventSyncer.Remotes
     public class ObjectRemote<T> : Remote<T>
     {
         private Repository<T> _fakeRemoteRepository;
+        protected readonly Guid _id = Guid.NewGuid();
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false) : base(autoPush, autoPull)
         {
@@ -31,7 +32,7 @@ namespace AiurEventSyncer.Remotes
         protected async override Task PullAndMonitor()
         {
             await PullAsync();
-            _fakeRemoteRepository.OnNewCommitsSubscribers[_key] = async (c) =>
+            _fakeRemoteRepository.OnNewCommitsSubscribers[_id] = async (c) =>
             {
                 await PullLock.WaitAsync();
                 await ContextRepository.OnPulled(c.ToList(), this);
@@ -41,7 +42,7 @@ namespace AiurEventSyncer.Remotes
 
         protected override Task Disconnect()
         {
-            _fakeRemoteRepository.OnNewCommitsSubscribers.TryRemove(_key, out _);
+            _fakeRemoteRepository.OnNewCommitsSubscribers.TryRemove(_id, out _);
             return Task.CompletedTask;
         }
     }

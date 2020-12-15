@@ -19,9 +19,6 @@ namespace AiurEventSyncer.Abstract
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         public Repository<T> ContextRepository { get; set; }
-#warning Avoid datetime!
-        protected readonly DateTime _key = DateTime.UtcNow;
-
 
         public Remote(bool autoPush = false, bool autoPull = false)
         {
@@ -84,7 +81,7 @@ namespace AiurEventSyncer.Abstract
         {
             if (AutoPush)
             {
-                ContextRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) => await PushAsync();
+                ContextRepository.OnNewCommitsSubscribers[Guid.NewGuid()] = async (c) => await PushAsync();
             }
             if (AutoPull)
             {
