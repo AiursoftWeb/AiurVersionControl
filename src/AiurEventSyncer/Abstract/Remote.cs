@@ -3,7 +3,6 @@ using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace AiurEventSyncer.Abstract
         public string PushPointer { get; set; }
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
-        public Repository<T> ContextRepository { get; set; }
+        protected Repository<T> ContextRepository { get; set; }
 
         public Remote(bool autoPush = false, bool autoPull = false)
         {

@@ -1,8 +1,7 @@
-﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.WebExtends;
+﻿using AiurEventSyncer.WebExtends;
 using Microsoft.AspNetCore.Mvc;
-using SampleWebApp.Data;
 using SampleWebApp.Services;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace SampleWebApp.Controllers
@@ -16,6 +15,7 @@ namespace SampleWebApp.Controllers
             _repositoryContainer = repositoryContainer;
         }
 
+        [ExcludeFromCodeCoverage]
         public IActionResult Index()
         {
             return Ok(new { Message = "Welcome!" });

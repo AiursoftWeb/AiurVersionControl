@@ -2,7 +2,6 @@
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SampleWebApp.Controllers;
 using SampleWebApp.Data;
 using SampleWebApp.Services;
 using System.Linq;
