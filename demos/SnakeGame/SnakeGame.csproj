@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\AiurEventSyncer\AiurEventSyncer.csproj" />
+    <ProjectReference Include="..\..\src\AiurEventSyncer\AiurEventSyncer.csproj" />
   </ItemGroup>
 
 </Project>
