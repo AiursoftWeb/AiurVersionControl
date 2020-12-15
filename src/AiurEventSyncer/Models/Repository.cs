@@ -20,7 +20,7 @@ namespace AiurEventSyncer.Models
         public IEnumerable<Remote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
 #warning find a better solution to register.
-        public ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>>();
+        public ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>>();
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly List<Remote<T>> _remotesStore = new List<Remote<T>>();
@@ -38,11 +38,11 @@ namespace AiurEventSyncer.Models
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
             _commits.Add(commitObject);
-            TriggerOnNewCommits(new ConcurrentBag<Commit<T>> { commitObject });
+            TriggerOnNewCommits(new List<Commit<T>>{ commitObject });
         }
 
 #warning Use List is ok.
-        private void TriggerOnNewCommits(ConcurrentBag<Commit<T>> newCommits)
+        private void TriggerOnNewCommits(List<Commit<T>> newCommits)
         {
             Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
@@ -89,7 +89,7 @@ namespace AiurEventSyncer.Models
         {
             await _pullingLock.WaitAsync();
             Console.WriteLine($"[{Name}] Loading on pulled commits {string.Join(',', subtraction.Select(t => t.Item.ToString()))} from remote: {remoteRecord.Name}");
-            var newCommitsSaved = new ConcurrentBag<Commit<T>>();
+            var newCommitsSaved = new List<Commit<T>>();
             var pushingPushPointer = false;
             foreach (var commit in subtraction)
             {
@@ -140,7 +140,7 @@ namespace AiurEventSyncer.Models
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
         {
-            var newCommitsSaved = new ConcurrentBag<Commit<T>>();
+            var newCommitsSaved = new List<Commit<T>>();
             Console.WriteLine($"[{Name}] New {commitsToPush.Count()} commits: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))} (pushed by other remote) are loaded. Adding to local commits.");
             foreach (var commit in commitsToPush) // 4,5,6
             {

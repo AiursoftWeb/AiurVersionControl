@@ -24,7 +24,7 @@ namespace AiurEventSyncer.WebExtends
                 // Send pull result.
                 var firstPullResult = repository.Commits.AfterCommitId(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
-                Func<ConcurrentBag<Commit<T>>, Task> pushEvent = async (ConcurrentBag<Commit<T>> newCommits) =>
+                Func<List<Commit<T>>, Task> pushEvent = async (List<Commit<T>> newCommits) =>
                 {
                     // Broadcast new commits.
                     Console.WriteLine($"[SERVER]: I was changed with: {string.Join(',', newCommits.Select(t => t.Item.ToString()))}! Broadcasting to a remote...");
