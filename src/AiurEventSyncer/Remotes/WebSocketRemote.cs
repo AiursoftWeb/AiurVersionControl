@@ -52,7 +52,6 @@ namespace AiurEventSyncer.Remotes
                 var commits = await _ws.GetObject<List<Commit<T>>>();
                 if (commits.Any())
                 {
-#warning Might not necessary.
                     await PullLock.WaitAsync();
                     await ContextRepository.OnPulled(commits, this);
                     PullLock.Release();

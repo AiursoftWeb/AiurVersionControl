@@ -24,12 +24,12 @@ namespace AiurEventSyncer.WebExtends
                 // Send pull result.
                 var firstPullResult = repository.Commits.AfterCommitId(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
-                Func<List<Commit<T>>, Task> pushEvent = async (List<Commit<T>> newCommits) =>
+                async Task pushEvent(List<Commit<T>> newCommits)
                 {
                     // Broadcast new commits.
                     Console.WriteLine($"[SERVER]: I was changed with: {string.Join(',', newCommits.Select(t => t.Item.ToString()))}! Broadcasting to a remote...");
                     await ws.SendObject(newCommits.Where(t => !firstPullResult.Any(p => p.Id == t.Id)));
-                };
+                }
                 var key = DateTime.UtcNow;
                 repository.OnNewCommitsSubscribers[key]= pushEvent;
                 Console.WriteLine($"[SERVER] New Websocket subscriber registered! Current registers: {repository.OnNewCommitsSubscribers.Count}.");
