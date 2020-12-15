@@ -19,6 +19,7 @@ namespace AiurEventSyncer.Models
         [Obsolete]
         public IEnumerable<Remote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
+#warning find a better solution to register.
         public ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<ConcurrentBag<Commit<T>>, Task>>();
 
         private readonly InOutDatabase<Commit<T>> _commits;
@@ -37,16 +38,16 @@ namespace AiurEventSyncer.Models
         public async Task CommitObjectAsync(Commit<T> commitObject)
         {
             _commits.Add(commitObject);
-            await TriggerOnNewCommits(new ConcurrentBag<Commit<T>> { commitObject });
+            TriggerOnNewCommits(new ConcurrentBag<Commit<T>> { commitObject });
         }
 
 #warning Use List is ok.
-        private async Task TriggerOnNewCommits(ConcurrentBag<Commit<T>> newCommits)
+        private void TriggerOnNewCommits(ConcurrentBag<Commit<T>> newCommits)
         {
             Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-            Console.WriteLine($"[{Name}] Broadcasting and auto pushing...");
             var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits)).ToList();
+            Console.WriteLine($"[{Name}] Broadcasting and auto pushing... Totally: {notiyTasks.Count} listeners.");
             _notifyingQueue.QueueNew(async () =>
             {
                 await Task.WhenAll(notiyTasks);
@@ -113,7 +114,7 @@ namespace AiurEventSyncer.Models
             if (newCommitsSaved.Any())
             {
                 Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just pulled: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
-                await TriggerOnNewCommits(newCommitsSaved);
+                TriggerOnNewCommits(newCommitsSaved);
             }
         }
 
@@ -153,7 +154,7 @@ namespace AiurEventSyncer.Models
             if (newCommitsSaved.Any())
             {
                 Console.WriteLine($"[{Name}] Will trigger on new commit event. Because just by pushed with: {string.Join(',', newCommitsSaved.Select(t => t.Item.ToString()))}.");
-                await TriggerOnNewCommits(newCommitsSaved);
+                TriggerOnNewCommits(newCommitsSaved);
             }
         }
 
