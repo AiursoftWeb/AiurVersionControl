@@ -13,12 +13,12 @@ namespace AiurEventSyncer.Tests
         private const string commit3Id = "5e641147de8c4306b56d19c053122854";
 
         [TestInitialize]
-        public async Task GetBasicRepo()
+        public void GetBasicRepo()
         {
             _demoRepo = new Repository<int>();
-            await _demoRepo.CommitAsync(1);
-            await _demoRepo.CommitAsync(2);
-            await _demoRepo.CommitObjectAsync(new Commit<int>
+            _demoRepo.Commit(1);
+            _demoRepo.Commit(2);
+            _demoRepo.CommitObject(new Commit<int>
             {
                 Id = commit3Id,
                 Item = 3
@@ -86,7 +86,7 @@ namespace AiurEventSyncer.Tests
             var square1 = new Commit<int> { Item = 111 };
             var square2 = new Commit<int> { Item = 222 };
 
-            await localRepo.CommitObjectAsync(square1);
+            localRepo.CommitObject(square1);
             await localRepo.PushAsync();
 
             Assert.AreEqual(remoteRecord.PushPointer, square1.Id);
@@ -95,9 +95,9 @@ namespace AiurEventSyncer.Tests
             var tri1 = new Commit<int> { Item = 11111 };
             var tri2 = new Commit<int> { Item = 22222 };
 
-            await localRepo.CommitObjectAsync(square2);
-            await remoteRepo.CommitObjectAsync(tri1);
-            await remoteRepo.CommitObjectAsync(tri2);
+            localRepo.CommitObject(square2);
+            remoteRepo.CommitObject(tri1);
+            remoteRepo.CommitObject(tri2);
 
             localRepo.Assert(1, 2, 3, 111, 222);
             remoteRepo.Assert(1, 2, 3, 111, 11111, 22222);
@@ -123,7 +123,7 @@ namespace AiurEventSyncer.Tests
 
             var square1 = new Commit<int> { Item = 111 };
 
-            await localRepo.CommitObjectAsync(square1);
+            localRepo.CommitObject(square1);
             await localRepo.PushAsync();
 
             Assert.AreEqual(remoteRecord.PushPointer, square1.Id);
@@ -132,7 +132,7 @@ namespace AiurEventSyncer.Tests
             remoteRepo.Assert(1, 2, 3, 111);
 
             var square2 = new Commit<int> { Item = 222 };
-            await localRepo.CommitObjectAsync(square2);
+            localRepo.CommitObject(square2);
 
             Assert.AreEqual(remoteRecord.PushPointer, square1.Id);
             Assert.AreEqual(remoteRecord.PullPointer, commit3Id);

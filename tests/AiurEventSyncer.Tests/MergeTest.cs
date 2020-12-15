@@ -12,12 +12,12 @@ namespace AiurEventSyncer.Tests
         private Repository<int> _localRepo;
 
         [TestInitialize]
-        public async Task BuildBasicRepo()
+        public void BuildBasicRepo()
         {
             _localRepo = new Repository<int>();
-            await _localRepo.CommitAsync(1);
-            await _localRepo.CommitAsync(2);
-            await _localRepo.CommitAsync(3);
+            _localRepo.Commit(1);
+            _localRepo.Commit(2);
+            _localRepo.Commit(3);
             _localRepo.Assert(1, 2, 3);
         }
 
@@ -25,13 +25,13 @@ namespace AiurEventSyncer.Tests
         public async Task TestPushWithDifferentTree()
         {
             var remoteRepo = new Repository<int>();
-            await remoteRepo.CommitAsync(20);
+            remoteRepo.Commit(20);
             remoteRepo.Assert(20);
 
             await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
 
             await _localRepo.PullAsync();
-            await remoteRepo.CommitAsync(50);
+            remoteRepo.Commit(50);
 
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50);
@@ -50,13 +50,13 @@ namespace AiurEventSyncer.Tests
         public async Task TestPullWithDifferentTree()
         {
             var remoteRepo = new Repository<int>();
-            await remoteRepo.CommitAsync(20);
+            remoteRepo.Commit(20);
             remoteRepo.Assert(20);
 
             await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
 
             await _localRepo.PullAsync();
-            await remoteRepo.CommitAsync(50);
+            remoteRepo.Commit(50);
 
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50);

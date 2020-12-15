@@ -12,12 +12,12 @@ namespace AiurEventSyncer.Tests
         private Repository<int> _localRepo;
 
         [TestInitialize]
-        public async Task GetBasicRepo()
+        public void GetBasicRepo()
         {
             _localRepo = new Repository<int>();
-            await _localRepo.CommitAsync(1);
-            await _localRepo.CommitAsync(2);
-            await _localRepo.CommitAsync(3);
+            _localRepo.Commit(1);
+            _localRepo.Commit(2);
+            _localRepo.Commit(3);
             _localRepo.Assert(1, 2, 3);
         }
 
@@ -28,11 +28,11 @@ namespace AiurEventSyncer.Tests
             var remoteRecord = new ObjectRemote<int>(remoteRepo, autoPush: true);
             await _localRepo.AddRemoteAsync(remoteRecord);
 
-            await _localRepo.CommitAsync(50);
+             _localRepo.Commit(50);
             remoteRepo.Assert(1, 2, 3, 50);
 
-            await _localRepo.CommitAsync(200);
-            await _localRepo.CommitAsync(300);
+            _localRepo.Commit(200);
+            _localRepo.Commit(300);
 
             _localRepo.Assert(1, 2, 3, 50, 200, 300);
             remoteRepo.Assert(1, 2, 3, 50, 200, 300);
@@ -46,11 +46,11 @@ namespace AiurEventSyncer.Tests
             await localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo, autoPush: false, autoPull: true));
             localRepo.Assert(1, 2, 3);
 
-            await remoteRepo.CommitAsync(50);
+            remoteRepo.Commit(50);
             localRepo.Assert(1, 2, 3, 50);
 
-            await remoteRepo.CommitAsync(200);
-            await remoteRepo.CommitAsync(300);
+            remoteRepo.Commit(200);
+            remoteRepo.Commit(300);
 
             localRepo.Assert(1, 2, 3, 50, 200, 300);
             remoteRepo.Assert(1, 2, 3, 50, 200, 300);
@@ -63,16 +63,16 @@ namespace AiurEventSyncer.Tests
             var b = new Repository<int>() { Name = "Repo B" };
             await a.AddRemoteAsync(new ObjectRemote<int>(b, autoPush: true, autoPull: true) { Name = "A auto sync B." });
 
-            await a.CommitAsync(5);
+            a.Commit(5);
             a.Assert(5);
             b.Assert(5);
 
-            await b.CommitAsync(10);
+            b.Commit(10);
             a.Assert(5, 10);
             b.Assert(5, 10);
 
-            await a.CommitAsync(100);
-            await b.CommitAsync(200);
+            a.Commit(100);
+            b.Commit(200);
             a.Assert(5, 10, 100, 200);
             b.Assert(5, 10, 100, 200);
         }
@@ -95,7 +95,7 @@ namespace AiurEventSyncer.Tests
             await c.AddRemoteAsync(new ObjectRemote<int>(d, true) { Name = "c autopush d" });
             await e.AddRemoteAsync(new ObjectRemote<int>(d, false, true) { Name = "e autopull d" });
 
-            await a.CommitAsync(5);
+            a.Commit(5);
 
             b.Assert(5);
             c.Assert(5);
@@ -119,7 +119,7 @@ namespace AiurEventSyncer.Tests
             await senderserver.AddRemoteAsync(new ObjectRemote<int>(server, true) { Name = "Sender Remote" });
             await subscriber1.AddRemoteAsync(new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 1" });
             await subscriber2.AddRemoteAsync(new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 2" });
-            await senderserver.CommitAsync(5);
+            senderserver.Commit(5);
             await subscriber3.AddRemoteAsync(new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 3" });
 
             senderserver.Assert(5);
@@ -140,14 +140,14 @@ namespace AiurEventSyncer.Tests
             var remote = new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" };
             await subscriber.AddRemoteAsync(remote);
 
-            await sender.CommitAsync(5);
-            await sender.CommitAsync(10);
+            sender.Commit(5);
+            sender.Commit(10);
             server.Assert(5, 10);
             subscriber.Assert(5, 10);
 
             await subscriber.DropRemoteAsync(remote);
-            await sender.CommitAsync(100);
-            await sender.CommitAsync(200);
+            sender.Commit(100);
+            sender.Commit(200);
             server.Assert(5, 10, 100, 200);
             subscriber.Assert(5, 10);
         }

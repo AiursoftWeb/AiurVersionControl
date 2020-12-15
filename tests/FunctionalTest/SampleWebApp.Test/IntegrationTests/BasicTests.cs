@@ -38,8 +38,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             var remote = new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Demo remote" };
             await repo.AddRemoteAsync(remote);
 
-            await repo.CommitAsync(new LogItem { Message = "1" });
-            await repo.CommitAsync(new LogItem { Message = "2" });
+            repo.Commit(new LogItem { Message = "1" });
+            repo.Commit(new LogItem { Message = "2" });
 
             await Task.Delay(500); // Wait for the pull to update pointer.
             Assert.IsNotNull(remote.PullPointer);
@@ -62,9 +62,9 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repo2 = new Repository<LogItem>();
             await repo2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl));
 
-            await repo.CommitAsync(new LogItem { Message = "1" });
-            await repo.CommitAsync(new LogItem { Message = "2" });
-            await repo.CommitAsync(new LogItem { Message = "3" });
+            repo.Commit(new LogItem { Message = "1" });
+            repo.Commit(new LogItem { Message = "2" });
+            repo.Commit(new LogItem { Message = "3" });
 
             repo.Assert(
                 new LogItem { Message = "1" },
@@ -89,7 +89,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
             await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "B to server" });
 
-            await repoA.CommitAsync(new LogItem { Message = "1" });
+            repoA.Commit(new LogItem { Message = "1" });
 
             HomeController._repo.Assert(
                 new LogItem { Message = "1" });
@@ -115,11 +115,11 @@ namespace SampleWebApp.Tests.IntegrationTests
             await subscriber1.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of subscriber1" });
             await subscriber2.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of subscriber2" });
 
-            await senderserver.CommitAsync(new LogItem { Message = "G" });
-            await senderserver.CommitAsync(new LogItem { Message = "H" });
+            senderserver.Commit(new LogItem { Message = "G" });
+            senderserver.Commit(new LogItem { Message = "H" });
             await subscriber3.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Remote of subscriber3" });
-            await senderserver.CommitAsync(new LogItem { Message = "X" });
-            await senderserver.CommitAsync(new LogItem { Message = "Z" });
+            senderserver.Commit(new LogItem { Message = "X" });
+            senderserver.Commit(new LogItem { Message = "Z" });
 
             subscriber1.Assert(
                 new LogItem { Message = "G" },
@@ -151,10 +151,10 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
             await repoB.AddRemoteAsync(new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Connection to server for Repo B" });
 
-            await repoA.CommitAsync(new LogItem { Message = "G" });
-            await repoA.CommitAsync(new LogItem { Message = "H" });
-            await repoA.CommitAsync(new LogItem { Message = "X" });
-            await repoB.CommitAsync(new LogItem { Message = "Z" });
+            repoA.Commit(new LogItem { Message = "G" });
+            repoA.Commit(new LogItem { Message = "H" });
+            repoA.Commit(new LogItem { Message = "X" });
+            repoB.Commit(new LogItem { Message = "Z" });
 
             repoA.AssertEqual(repoB, 4);
             repoA.AssertEqual(HomeController._repo, 4);
@@ -170,8 +170,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             var remote = new WebSocketRemote<LogItem>(_endpointUrl);
             await subscriber.AddRemoteAsync(remote);
 
-            await sender.CommitAsync(new LogItem { Message = "G" });
-            await sender.CommitAsync(new LogItem { Message = "H" });
+            sender.Commit(new LogItem { Message = "G" });
+            sender.Commit(new LogItem { Message = "H" });
 
             sender.Assert(
                 new LogItem { Message = "G" },
@@ -180,8 +180,8 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
             await subscriber.DropRemoteAsync(remote);
-            await sender.CommitAsync(new LogItem { Message = "X" });
-            await sender.CommitAsync(new LogItem { Message = "Z" });
+            sender.Commit(new LogItem { Message = "X" });
+            sender.Commit(new LogItem { Message = "Z" });
             await Task.Delay(30);
             sender.Assert(
                 new LogItem { Message = "G" },

@@ -35,7 +35,7 @@ namespace AiurEventSyncer.Remotes
 
         protected override Task<List<Commit<T>>> Download(string pointer)
         {
-            throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
+            throw new InvalidOperationException($"You can't manually pull a websocket remote: '{Name}'. Because all websocket remotes are updated automatically!");
         }
 
         protected override async Task PullAndMonitor()
@@ -44,9 +44,9 @@ namespace AiurEventSyncer.Remotes
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
-            Console.WriteLine("Preparing websocket connection for: " + this.Name);
+            Console.WriteLine($"[{Name}] Preparing websocket connection for: " + this.Name);
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + PullPointer), CancellationToken.None);
-            Console.WriteLine("[WebSocket Event] Websocket connected! " + this.Name);
+            Console.WriteLine($"[{Name}] Websocket connected! " + this.Name);
             if (_ws.State == WebSocketState.Open)
             {
                 var commits = await _ws.GetObject<List<Commit<T>>>();
@@ -78,13 +78,11 @@ namespace AiurEventSyncer.Remotes
                 }
                 if (commits.Any())
                 {
-#warning Might not necessary.
-                    await PullLock.WaitAsync();
+                    // Don't need to lock the pull lock here. Because websocket remote is never pulled.
                     await ContextRepository.OnPulled(commits, this);
-                    PullLock.Release();
                 }
             }
-            throw new InvalidOperationException("Websocket dropped!");
+            throw new InvalidOperationException($"[{Name}] Websocket dropped!");
         }
 
         protected async override Task Disconnect()

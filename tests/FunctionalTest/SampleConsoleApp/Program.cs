@@ -30,7 +30,7 @@ namespace SampleConsoleApp
                         PrintRepo(repo);
                         break;
                     case "commit":
-                        await repo.CommitAsync(new LogItem
+                        repo.Commit(new LogItem
                         {
                             Message = DateTime.Now.ToString()
                         });
