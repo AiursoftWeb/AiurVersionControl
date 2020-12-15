@@ -33,10 +33,17 @@ namespace AiurEventSyncer.WebExtends
                 Console.WriteLine($"[SERVER] New Websocket subscriber registered! Current registers: {repository.OnNewCommitsSubscribers.Count}.");
                 while (ws.State == WebSocketState.Open)
                 {
-                    // Waitting for pushed commits.
-                    var pushedCommits = await ws.GetObject<PushModel<T>>();
-                    Console.WriteLine($"[SERVER]: I got a new push request with commits: {string.Join(',', pushedCommits.Commits.Select(t => t.Item.ToString()))}.");
-                    await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
+                    try
+                    {
+                        // Waitting for pushed commits.
+                        var pushedCommits = await ws.GetObject<PushModel<T>>();
+                        Console.WriteLine($"[SERVER]: I got a new push request with commits: {string.Join(',', pushedCommits.Commits.Select(t => t.Item.ToString()))}.");
+                        await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
+                    }
+                    catch (WebSocketException)
+                    {
+                        break;
+                    }
                 }
                 Console.WriteLine($"[SERVER]: Websocket dropped! Reason: '{ws.State}'");
                 repository.OnNewCommitsSubscribers.TryRemove(connectionId, out _);
