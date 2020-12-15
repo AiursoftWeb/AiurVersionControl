@@ -24,11 +24,11 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public async Task PullSelfTest()
         {
-            await _demoRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
-            await _demoRepo.PullAsync();
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(_demoRepo);
+            await origin.PullAsync();
             _demoRepo.Assert(1, 2, 3);
 
-            await _demoRepo.PullAsync();
+            await origin.PullAsync();
             _demoRepo.Assert(1, 2, 3);
         }
 
@@ -36,12 +36,12 @@ namespace AiurEventSyncer.Tests
         public async Task MeaninglessPullTest()
         {
             var localRepo = new Repository<int>();
-            await localRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
             _demoRepo.Assert(1, 2, 3);
         }
@@ -50,14 +50,12 @@ namespace AiurEventSyncer.Tests
         public async Task PullWithResetRemoteTest()
         {
             var localRepo = new Repository<int>();
-            await localRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
-            await localRepo.PullAsync();
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
 
-            var record = new ObjectRemote<int>(_demoRepo);
-            await localRepo.AddRemoteAsync(record);
-            await localRepo.PullAsync();
-
+            var origin2 = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
+            await origin2.PullAsync();
             localRepo.Assert(1, 2, 3);
         }
 
@@ -65,14 +63,14 @@ namespace AiurEventSyncer.Tests
         public async Task PullMultipleTimesTest()
         {
             var localRepo = new Repository<int>();
-            await localRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
-            await localRepo.PullAsync();
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             _demoRepo.Commit(5);
             _demoRepo.Commit(7);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
 
             localRepo.Assert(1, 2, 3, 5, 7);
             _demoRepo.Assert(1, 2, 3, 5, 7);
@@ -82,7 +80,7 @@ namespace AiurEventSyncer.Tests
             localRepo.Assert(1, 2, 3, 5, 7);
             _demoRepo.Assert(1, 2, 3, 5, 7, 9);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
 
             localRepo.Assert(1, 2, 3, 5, 7, 9);
             _demoRepo.Assert(1, 2, 3, 5, 7, 9);
@@ -92,12 +90,12 @@ namespace AiurEventSyncer.Tests
         public async Task PullWithLocalCommitTest()
         {
             var localRepo = new Repository<int>();
-            await localRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
-            await localRepo.PullAsync();
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             localRepo.Commit(100);
-            await localRepo.PullAsync();
+            await origin.PullAsync();
 
             localRepo.Assert(1, 2, 3, 100);
             _demoRepo.Assert(1, 2, 3);
@@ -108,7 +106,7 @@ namespace AiurEventSyncer.Tests
             localRepo.Assert(1, 2, 3, 100);
             _demoRepo.Assert(1, 2, 3, 20, 30);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
 
             localRepo.Assert(1, 2, 3, 20, 30, 100);
             _demoRepo.Assert(1, 2, 3, 20, 30);
@@ -118,8 +116,8 @@ namespace AiurEventSyncer.Tests
         public async Task PullWithManualCommitTest()
         {
             var localRepo = new Repository<int>();
-            await localRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
-            await localRepo.PullAsync();
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             var manualSyncedCommit = new Commit<int>
@@ -137,7 +135,7 @@ namespace AiurEventSyncer.Tests
             localRepo.Assert(1, 2, 3, 10);
             _demoRepo.Assert(1, 2, 3, 10, 20);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
 
             localRepo.Assert(1, 2, 3, 10, 20);
             _demoRepo.Assert(1, 2, 3, 10, 20);
@@ -147,8 +145,8 @@ namespace AiurEventSyncer.Tests
         public async Task PullWithDiffOrderCommitsTest()
         {
             var localRepo = new Repository<int>();
-            await localRepo.AddRemoteAsync(new ObjectRemote<int>(_demoRepo));
-            await localRepo.PullAsync();
+            var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
+            await origin.PullAsync();
             localRepo.Assert(1, 2, 3);
 
             var manual10SyncedCommit = new Commit<int>
@@ -168,7 +166,7 @@ namespace AiurEventSyncer.Tests
             localRepo.Assert(1, 2, 3, 10, 20);
             _demoRepo.Assert(1, 2, 3, 20, 10, 300);
 
-            await localRepo.PullAsync();
+            await origin.PullAsync();
 
             localRepo.Assert(1, 2, 3, 20, 10, 300, 20);
             _demoRepo.Assert(1, 2, 3, 20, 10, 300);

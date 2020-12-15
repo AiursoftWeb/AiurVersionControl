@@ -29,7 +29,28 @@ namespace AiurEventSyncer.Abstract
             AutoPull = autoPull;
         }
 
-        public async Task Push()
+        public async Task<Remote<T>> AttachAsync(Repository<T> target)
+        {
+            if(ContextRepository!=null)
+            {
+                throw new InvalidOperationException("You can't attach a remote to more than one repository. Consider creating a new remote!");
+            }
+            ContextRepository = target;
+            await BeAdded();
+            return this;
+        }
+
+        public async Task DropAsync()
+        {
+            if (ContextRepository == null)
+            {
+                throw new InvalidOperationException("You can't drop the remote because it has no repository attached!");
+            }
+            await StopMonitoring();
+            ContextRepository = null;
+        }
+
+        public async Task PushAsync()
         {
             await PushLock.WaitAsync();
             var commitsToPush = ContextRepository.Commits.AfterCommitId(PushPointer).ToList();
@@ -43,7 +64,7 @@ namespace AiurEventSyncer.Abstract
             PushLock.Release();
         }
 
-        public async Task Pull()
+        public async Task PullAsync()
         {
             if (ContextRepository == null)
             {
@@ -63,7 +84,7 @@ namespace AiurEventSyncer.Abstract
         {
             if (AutoPush)
             {
-                ContextRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) => await Push();
+                ContextRepository.OnNewCommitsSubscribers[DateTime.UtcNow] = async (c) => await PushAsync();
             }
             if (AutoPull)
             {

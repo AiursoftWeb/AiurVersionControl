@@ -28,19 +28,20 @@ namespace AiurEventSyncer.Tests
             remoteRepo.Commit(20);
             remoteRepo.Assert(20);
 
-            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
+            var origin = await new ObjectRemote<int>(remoteRepo)
+                .AttachAsync(_localRepo);
 
-            await _localRepo.PullAsync();
+            await origin.PullAsync();
             remoteRepo.Commit(50);
 
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50);
 
-            await _localRepo.PushAsync();
+            await origin.PushAsync();
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
 
-            await _localRepo.PullAsync();
+            await origin.PullAsync();
             // 20,1,2,3
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
@@ -53,19 +54,20 @@ namespace AiurEventSyncer.Tests
             remoteRepo.Commit(20);
             remoteRepo.Assert(20);
 
-            await _localRepo.AddRemoteAsync(new ObjectRemote<int>(remoteRepo));
+            var origin = await new ObjectRemote<int>(remoteRepo)
+                .AttachAsync(_localRepo);
 
-            await _localRepo.PullAsync();
+            await origin.PullAsync();
             remoteRepo.Commit(50);
 
             _localRepo.Assert(20, 1, 2, 3);
             remoteRepo.Assert(20, 50);
 
-            await _localRepo.PullAsync();
+            await origin.PullAsync();
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50);
 
-            await _localRepo.PushAsync();
+            await origin.PushAsync();
             _localRepo.Assert(20, 50, 1, 2, 3);
             remoteRepo.Assert(20, 50, 1, 2, 3);
         }

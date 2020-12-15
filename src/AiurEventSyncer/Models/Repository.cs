@@ -16,14 +16,11 @@ namespace AiurEventSyncer.Models
     {
         public string Name { get; init; } = string.Empty;
         public IAfterable<Commit<T>> Commits => _commits;
-        [Obsolete]
-        public IEnumerable<Remote<T>> Remotes => _remotesStore.ToList();
         public Commit<T> Head => Commits.LastOrDefault();
 #warning find a better solution to register.
         public ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<DateTime, Func<List<Commit<T>>, Task>>();
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly List<Remote<T>> _remotesStore = new List<Remote<T>>();
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
@@ -51,37 +48,6 @@ namespace AiurEventSyncer.Models
             {
                 await Task.WhenAll(notiyTasks);
             });
-        }
-
-        public async Task AddRemoteAsync(Remote<T> remote)
-        {
-            remote.ContextRepository = this;
-            await remote.BeAdded();
-            _remotesStore.Add(remote);
-        }
-
-        public async Task DropRemoteAsync(Remote<T> remote)
-        {
-            if (!_remotesStore.Contains(remote))
-            {
-                throw new InvalidOperationException("Our remotes record doesn't contains the remote you want to drop.");
-            }
-            if (remote.ContextRepository != this)
-            {
-                throw new InvalidOperationException("Our remotes record you want to drop do not have a context for current repository.");
-            }
-            await remote.StopMonitoring();
-            _remotesStore.Remove(remote);
-        }
-
-        public Task PullAsync()
-        {
-            return Remotes.First().Pull();
-        }
-
-        public Task PushAsync()
-        {
-            return Remotes.First().Push();
         }
 
         public async Task OnPulled(List<Commit<T>> subtraction, Remote<T> remoteRecord)
