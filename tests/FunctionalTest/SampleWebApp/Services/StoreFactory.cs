@@ -1,23 +1,27 @@
 ﻿using AiurEventSyncer.Models;
+using AiurStore.Models;
 using AiurStore.Providers.DbQueryProvider;
 using Microsoft.Extensions.DependencyInjection;
 using SampleWebApp.Data;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SampleWebApp.Services
 {
-    public class RepoFactory<T>
+    public class StoreFactory
     {
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public RepoFactory(IServiceScopeFactory scopeFactory)
+        public StoreFactory(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
         }
 
-        public Repository<T> BuildRepo()
+        public InOutDatabase<Commit<T>> BuildStore<T>()
         {
-            var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>, ApplicationDbContext>(
+            return DbQueryProviderTools.BuildFromDbSet<Commit<T>, ApplicationDbContext>(
                 contextFactory: () =>
                 {
                     var scope = _scopeFactory.CreateScope();
@@ -36,10 +40,6 @@ namespace SampleWebApp.Services
                     });
                     context.SaveChanges();
                 });
-            return new Repository<T>(store)
-            {
-                Name = "SERVER"
-            };
         }
     }
 }

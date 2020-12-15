@@ -32,7 +32,7 @@ namespace SampleConsoleApp
                     case "commit":
                         repo.Commit(new LogItem
                         {
-                            Message = DateTime.Now.ToString()
+                            Message = $"Commit message at:  {DateTime.Now}"
                         });
                         break;
                 }

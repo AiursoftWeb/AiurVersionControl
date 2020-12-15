@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleWebApp.Controllers;
 using SampleWebApp.Data;
+using SampleWebApp.Services;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,7 +29,6 @@ namespace SampleWebApp.Tests.IntegrationTests
         {
             await _server.StopAsync();
             _server.Dispose();
-            HomeController._repo = null;
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             await Task.Delay(500); // Wait for the pull to update pointer.
             Assert.IsNotNull(remote.PullPointer);
 
-            HomeController._repo.Assert(
+            RepositoryContainer.GetRepositoryForTest().Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" });
 
@@ -70,7 +70,7 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
                 new LogItem { Message = "3" });
-            HomeController._repo.Assert(
+            RepositoryContainer.GetRepositoryForTest().Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
                 new LogItem { Message = "3" });
@@ -93,7 +93,7 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             repoA.Commit(new LogItem { Message = "1" });
 
-            HomeController._repo.Assert(
+            RepositoryContainer.GetRepositoryForTest().Assert(
                 new LogItem { Message = "1" });
             repoA.Assert(
                 new LogItem { Message = "1" });
@@ -164,7 +164,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             repoB.Commit(new LogItem { Message = "Z" });
 
             repoA.AssertEqual(repoB, 4);
-            repoA.AssertEqual(HomeController._repo, 4);
+            repoA.AssertEqual(RepositoryContainer.GetRepositoryForTest(), 4);
         }
 
         [TestMethod]

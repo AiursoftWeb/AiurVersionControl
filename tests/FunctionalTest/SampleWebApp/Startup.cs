@@ -22,7 +22,9 @@ namespace SampleWebApp
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllersWithViews();
-            services.AddSingleton<RepoFactory<LogItem>>();
+            services.AddSingleton<StoreFactory>();
+            services.AddSingleton<RepositoryContainer>();
+            services.AddSingleton<RepositoryFactory<LogItem>>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
