@@ -7,10 +7,10 @@ namespace AiurEventSyncer.Tests.Tools
 {
     public static class BookDbRepoFactory
     {
-        private static object obj = new object();
+        private static object _obj = new object();
         public static SqlDbContext ResetDb()
         {
-            lock (obj)
+            lock (_obj)
             {
                 var _dbContext = new SqlDbContext();
                 _dbContext.Database.EnsureDeleted();

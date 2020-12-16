@@ -32,7 +32,14 @@ namespace AiurEventSyncer.Abstract
                 throw new InvalidOperationException("You can't attach a remote to more than one repository. Consider creating a new remote!");
             }
             ContextRepository = target;
-            await BeAdded();
+            if (AutoPush)
+            {
+                ContextRepository.OnNewCommitsSubscribers[Guid.NewGuid()] = async (c) => await PushAsync();
+            }
+            if (AutoPull)
+            {
+                await PullAndMonitor();
+            }
             return this;
         }
 
@@ -74,18 +81,6 @@ namespace AiurEventSyncer.Abstract
                 await ContextRepository.OnPulled(downloadResult, this);
             }
             PullLock.Release();
-        }
-
-        public async Task BeAdded()
-        {
-            if (AutoPush)
-            {
-                ContextRepository.OnNewCommitsSubscribers[Guid.NewGuid()] = async (c) => await PushAsync();
-            }
-            if (AutoPull)
-            {
-                await PullAndMonitor();
-            }
         }
 
         public async Task StopMonitoring()
