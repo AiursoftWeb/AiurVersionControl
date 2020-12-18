@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using SnakeGame.Models;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
+using SnakeGame.Services;
+using SnakeGame.Services.Implements;
 
 namespace SnakeGame
 {
@@ -18,48 +20,47 @@ namespace SnakeGame
         private static readonly string _endpointUrl = $"ws://localhost:{_port}/repo.ares";
         
         #endregion
+
         static async Task Main(string[] args)
         {
             #region Repos
-            
+
             // Build repository
-            Repository<string> repoA = new Repository<string>();
-            await new WebSocketRemote<string>(_endpointUrl).AttachAsync(repoA);
-            Repository<string> repoB = new Repository<string>();
-            await new WebSocketRemote<string>(_endpointUrl).AttachAsync(repoB);
+            Repository<Position> repoA = new Repository<Position>();
+            await new WebSocketRemote<Position>(_endpointUrl).AttachAsync(repoA);
+            Repository<Position> repoB = new Repository<Position>();
+            await new WebSocketRemote<Position>(_endpointUrl).AttachAsync(repoB);
 
             #endregion
-            
-            Console.Clear();
-            
-            #region Setup variables for player
-            
-            Position direction = new Position(0, 0);
-            bool isGameOver = false;
-            // Build grid
-            Grid grid = new Grid(GRID_SIZE);
-            
-            // Build snake
-            Snake snake = new Snake(new Position(GRID_SIZE / 2, GRID_SIZE / 2));
 
+            Console.Clear();
+            int seed = new Random().Next();
+
+            #region Setup variables for player
+
+            Position direction = new Position{ X = 0, Y = 0 };
+            bool isGameOver = false;
+
+            // Build grid
+            Grid grid = new Grid(GRID_SIZE, seed);
+            // Build snake
+            Snake snake = new Snake(new Position{ X = GRID_SIZE / 2, Y = GRID_SIZE / 2 });
             // Add food
             Food food = new Food(GRID_SIZE);
-            
+
             #endregion
-            
+
             #region Setup variables for observer
 
             int offset = GRID_SIZE + GRID_SIZE / 2;
-            int CountOfRemote = 0;
-            Position directionB = new Position(0, 0);
+            IRecurrent<Snake, Position> rec = new SnakeRecurrent();
             bool isGameOverB = false;
             
             // Build grid
-            Grid gridB = new Grid(GRID_SIZE, offset);
-            
-            // Build snake
-            Snake snakeB = new Snake(new Position(GRID_SIZE / 2 + offset, GRID_SIZE / 2));
-            
+            Grid gridB = new Grid(GRID_SIZE, seed, offset);
+            // Show Original Snake
+            // IDrawable.Draw(new Position{ X = GRID_SIZE / 2 + offset, Y=GRID_SIZE / 2 }, ConsoleColor.DarkGreen);
+            Snake snakeB = new Snake(new Position {X = GRID_SIZE / 2 + offset, Y = GRID_SIZE / 2});
             // Add food
             Food foodB = new Food(GRID_SIZE, offset);
             
@@ -71,27 +72,17 @@ namespace SnakeGame
             while (!isGameOver)
             {
                 Input.GetInputDirection(command, direction);
-                repoA.Commit(direction.X + "," + direction.Y);
+                repoA.Commit(direction);
                 snake.Update(direction);
 
                 GameDisplay(snake, grid, food, out isGameOver);
 
                 #region Observer's pannel
+                
+                // Recurrent from start
+                snakeB = rec.Recurrent(new Snake(new Position{ X = GRID_SIZE / 2 + offset, Y=GRID_SIZE / 2 }, snakeB.Count), repoB);
 
-                if (repoB.Commits.Count() > CountOfRemote && !isGameOverB)
-                {
-                    // Such an ugly way
-                    string str = repoB.Head.Item;
-                    string[] temp = str.Split(",");
-                    directionB.X = Int32.Parse(temp[0]);
-                    directionB.Y = Int32.Parse(temp[1]);
-                    
-                    CountOfRemote = repoB.Commits.Count();
-                    
-                    snakeB.Update(directionB);
-
-                    GameDisplay(snakeB, gridB, foodB, out isGameOverB);
-                }
+                GameDisplay(snakeB, gridB, foodB, out isGameOverB);
 
                 #endregion
 
@@ -102,6 +93,14 @@ namespace SnakeGame
 
                 // Slow the game down
                 System.Threading.Thread.Sleep(Convert.ToInt32(GAME_SPEED));
+            }
+
+            while (!isGameOverB)
+            {
+                // Recurrent from start
+                snakeB = rec.Recurrent(new Snake(new Position{ X = GRID_SIZE / 2 + offset, Y=GRID_SIZE / 2 }, snakeB.Count), repoB);
+
+                GameDisplay(snakeB, gridB, foodB, out isGameOverB);
             }
             
         }

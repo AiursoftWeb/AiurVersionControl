@@ -1,16 +1,17 @@
 ﻿using System;
 using SnakeGame.Models;
+using SnakeGame.Services;
 
 namespace SnakeGame
 {
-    public class Food
+    public class Food : IDrawable
     {
         private Position _foodPosition;
 
         public Food(int gridSize, int offset = 0)
         {
-            this._foodPosition = new Position(gridSize / 4 + offset, gridSize / 4);
-            DrawFood();
+            this._foodPosition = new Position{ X = gridSize / 4 + offset, Y = gridSize / 4};
+            Draw();
         }
 
         public Position GetFoodPosition()
@@ -25,10 +26,10 @@ namespace SnakeGame
                 this._foodPosition = grid.RandomGridPosition();
             }
 
-            DrawFood();
+            Draw();
         }
 
-        private void DrawFood()
+        public void Draw()
         {
             Console.SetCursorPosition(this._foodPosition.X, this._foodPosition.Y);
             Console.ForegroundColor = ConsoleColor.DarkRed;

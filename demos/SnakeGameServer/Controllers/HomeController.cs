@@ -2,6 +2,7 @@
 using AiurEventSyncer.WebExtends;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using SnakeGame.Models;
 
 namespace SnakeGameServer.Controllers
 {
@@ -30,15 +31,15 @@ namespace SnakeGameServer.Controllers
     public class RepositoryContainer
     {
         private readonly object _obj = new object();
-        private Repository<string> _logItemRepository;
+        private Repository<Position> _logItemRepository;
 
-        public Repository<string> GetLogItemRepository()
+        public Repository<Position> GetLogItemRepository()
         {
             lock (_obj)
             {
                 if (_logItemRepository == null)
                 {
-                    _logItemRepository = new Repository<string>();
+                    _logItemRepository = new Repository<Position>();
                 }
             }
             return _logItemRepository;

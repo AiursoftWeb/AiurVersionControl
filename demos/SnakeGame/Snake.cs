@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using SnakeGame.Models;
+using SnakeGame.Services;
 
 namespace SnakeGame
 {
-    public class Snake
+    public class Snake : IDrawable
     {
-        readonly List<Position> _body = new List<Position>();
+        private readonly List<Position> _body = new List<Position>();
         public Position Head => _body[0];
         // Use for erase tail.
-        private readonly Position _lastPosition = new Position(0, 0);
+        private readonly Position _lastPosition = new Position{ X = 0, Y = 0 };
+        public int Count => this._body.Count;
 
-        public Snake(Position p)
+        public Snake(Position p, int count = 1)
         {
-            this._body.Add(p);
-            DrawSnake();
+            for (int i = 0; i < count; i++)
+            {
+                this._body.Add(p);
+            }
+            Draw();
         }
 
         public void AddBody()
         {
-            this._body.Add(new Position(this._body[^1].X, this._body[^1].Y));
+            this._body.Add(new Position{ X = this._body[^1].X, Y = this._body[^1].Y});
         }
 
         public void Update(Position inputDirection)
@@ -34,10 +39,10 @@ namespace SnakeGame
             }
             this._body[0].X += inputDirection.X;
             this._body[0].Y += inputDirection.Y;
-            DrawSnake();
+            Draw();
         }
 
-        private void DrawSnake()
+        public void Draw()
         {
             foreach (Position p in this._body)
             {

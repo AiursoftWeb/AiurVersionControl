@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace SnakeGame.Models
 {
     public class Position
     {
-        public int X;
-        public int Y;
-
-        public Position(int x, int y)
-        {
-            this.X = x;
-            this.Y = y;
-        }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public override bool Equals(object obj)
         {

@@ -2,26 +2,28 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using SnakeGame.Services;
 
 namespace SnakeGame
 {
-    public class Grid
+    public class Grid : IDrawable
     {
         private readonly int _gridSize;
         // Distance between left boundary and left of console
         private readonly int _offset;
-        private readonly Random _random = new Random();
+        private readonly Random _random;
 
-        public Grid(int gridSize, int offset = 0)
+        public Grid(int gridSize, int seed = 0, int offset = 0)
         {
             this._gridSize = gridSize;
             this._offset = offset;
-            BuildWall();
+            this._random = seed != 0 ? new Random(seed) : new Random();
+            Draw();
         }
 
         public Position RandomGridPosition()
         {
-            return new Position(_random.Next(_offset + 2, _offset + _gridSize - 2), _random.Next(2, _gridSize - 2));
+            return new Position{ X = _random.Next(_offset + 2, _offset + _gridSize - 2), Y = _random.Next(2, _gridSize - 2)};
         }
 
         public bool OutsideGrid(Position p)
@@ -29,7 +31,7 @@ namespace SnakeGame
             return p.X <= _offset + 1 || p.X >= _offset + _gridSize || p.Y <= 1 || p.Y >= _gridSize;
         }
 
-        private void BuildWall()
+        public void Draw()
         {
             for (int i = 1; i <= _gridSize; i++)
             {
