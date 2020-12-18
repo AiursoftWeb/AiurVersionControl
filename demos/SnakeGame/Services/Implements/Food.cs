@@ -1,8 +1,7 @@
 ﻿using System;
 using SnakeGame.Models;
-using SnakeGame.Services;
 
-namespace SnakeGame
+namespace SnakeGame.Services.Implements
 {
     public class Food : IDrawable
     {

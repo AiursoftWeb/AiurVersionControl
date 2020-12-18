@@ -1,10 +1,7 @@
-﻿using SnakeGame.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using SnakeGame.Services;
+﻿using System;
+using SnakeGame.Models;
 
-namespace SnakeGame
+namespace SnakeGame.Services.Implements
 {
     public class Grid : IDrawable
     {

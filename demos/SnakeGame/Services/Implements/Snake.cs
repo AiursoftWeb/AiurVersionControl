@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using SnakeGame.Models;
-using SnakeGame.Services;
 
-namespace SnakeGame
+namespace SnakeGame.Services.Implements
 {
     public class Snake : IDrawable
     {

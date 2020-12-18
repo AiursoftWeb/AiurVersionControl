@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using SnakeGame.Models;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
+using SnakeGame.Models;
 using SnakeGame.Services;
 using SnakeGame.Services.Implements;
 
@@ -92,7 +92,7 @@ namespace SnakeGame
                 }
 
                 // Slow the game down
-                System.Threading.Thread.Sleep(Convert.ToInt32(GAME_SPEED));
+                Thread.Sleep(Convert.ToInt32(GAME_SPEED));
             }
 
             while (!isGameOverB)
