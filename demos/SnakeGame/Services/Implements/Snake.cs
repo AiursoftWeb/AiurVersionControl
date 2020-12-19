@@ -9,7 +9,7 @@ namespace SnakeGame.Services.Implements
         private readonly List<Position> _body = new List<Position>();
         public Position Head => _body[0];
         // Use for erase tail.
-        private readonly Position _lastPosition = new Position{ X = 0, Y = 0 };
+        private Position _lastPosition = new Position{ X = 0, Y = 0 };
         public int Count => this._body.Count;
 
         public Snake(Position p, int count = 1)
@@ -18,7 +18,6 @@ namespace SnakeGame.Services.Implements
             {
                 this._body.Add(p);
             }
-            Draw();
         }
 
         public void AddBody()
@@ -28,17 +27,14 @@ namespace SnakeGame.Services.Implements
 
         public void Update(Position inputDirection)
         {
-            _lastPosition.X = this._body[^1].X;
-            _lastPosition.Y = this._body[^1].Y;
+            this._lastPosition = (Position)this._body[^1].Clone();
             
             for (int i = this._body.Count - 2; i >= 0; i--)
             {
-                this._body[i + 1].X = this._body[i].X;
-                this._body[i + 1].Y = this._body[i].Y;
+                this._body[i + 1] = (Position)this._body[i].Clone();
             }
-            this._body[0].X += inputDirection.X;
-            this._body[0].Y += inputDirection.Y;
-            Draw();
+            this.Head.X += inputDirection.X;
+            this.Head.Y += inputDirection.Y;
         }
 
         public void Draw()

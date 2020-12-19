@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AiurEventSyncer.Models;
@@ -45,6 +46,7 @@ namespace SnakeGame
             Grid grid = new Grid(GRID_SIZE, seed);
             // Build snake
             Snake snake = new Snake(new Position{ X = GRID_SIZE / 2, Y = GRID_SIZE / 2 });
+            snake.Draw();
             // Add food
             Food food = new Food(GRID_SIZE);
 
@@ -56,11 +58,16 @@ namespace SnakeGame
             IRecurrent<Snake, Position> rec = new SnakeRecurrent();
             bool isGameOverB = false;
             
+            // Pointer for repository that snake had recurrent
+            string RepoPosition = null;
+            int test = 0;
+            
             // Build grid
             Grid gridB = new Grid(GRID_SIZE, seed, offset);
             // Show Original Snake
             // IDrawable.Draw(new Position{ X = GRID_SIZE / 2 + offset, Y=GRID_SIZE / 2 }, ConsoleColor.DarkGreen);
             Snake snakeB = new Snake(new Position {X = GRID_SIZE / 2 + offset, Y = GRID_SIZE / 2});
+            snakeB.Draw();
             // Add food
             Food foodB = new Food(GRID_SIZE, offset);
             
@@ -74,6 +81,7 @@ namespace SnakeGame
                 Input.GetInputDirection(command, direction);
                 repoA.Commit(direction);
                 snake.Update(direction);
+                snake.Draw();
 
                 GameDisplay(snake, grid, food, out isGameOver);
 
@@ -81,6 +89,7 @@ namespace SnakeGame
                 
                 // Recurrent from start
                 snakeB = rec.Recurrent(new Snake(new Position{ X = GRID_SIZE / 2 + offset, Y=GRID_SIZE / 2 }, snakeB.Count), repoB);
+                snakeB.Draw();
 
                 GameDisplay(snakeB, gridB, foodB, out isGameOverB);
 

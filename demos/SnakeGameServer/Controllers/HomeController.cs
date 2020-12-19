@@ -17,7 +17,7 @@ namespace SnakeGameServer.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return Ok();
         }
 
         [Route("repo.ares")]

@@ -1,6 +1,8 @@
-﻿namespace SnakeGame.Models
+﻿using System;
+
+namespace SnakeGame.Models
 {
-    public class Position
+    public class Position : ICloneable
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -25,6 +27,11 @@
         public override string ToString()
         {
             return X + "," + Y;
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }
