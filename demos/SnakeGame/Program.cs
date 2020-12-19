@@ -57,11 +57,7 @@ namespace SnakeGame
             int offset = GRID_SIZE + GRID_SIZE / 2;
             IRecurrent<Snake, Position> rec = new SnakeRecurrent();
             bool isGameOverB = false;
-            
-            // Pointer for repository that snake had recurrent
-            string RepoPosition = null;
-            int test = 0;
-            
+
             // Build grid
             Grid gridB = new Grid(GRID_SIZE, seed, offset);
             // Show Original Snake
