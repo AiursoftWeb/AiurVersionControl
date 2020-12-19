@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AiurEventSyncer.Models;
@@ -35,7 +34,7 @@ namespace SnakeGame
             #endregion
 
             Console.Clear();
-            int seed = new Random().Next();
+            int seed = new Random().Next(0, Int32.MaxValue);
 
             #region Setup variables for player
 
