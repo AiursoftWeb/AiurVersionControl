@@ -10,7 +10,7 @@ namespace SnakeGame.Services
         /// <param name="t">Model</param>
         /// <param name="r">Local repository</param>
         /// <returns>Model after recurrent</returns>
-        T Recurrent(T t, Repository<R> r);
+        T Recurrent(T t, Repository<R> r, int offset = 0);
 
         T RecurrentFromId(T t, Repository<R> r, string id = null);
     }

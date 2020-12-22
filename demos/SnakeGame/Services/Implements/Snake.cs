@@ -4,7 +4,7 @@ using SnakeGame.Models;
 
 namespace SnakeGame.Services.Implements
 {
-    public class Snake : IDrawable
+    public class Snake : GameObject
     {
         private readonly List<Position> _body = new List<Position>();
         public Position Head => _body[0];
@@ -35,21 +35,22 @@ namespace SnakeGame.Services.Implements
             }
             this.Head.X += inputDirection.X;
             this.Head.Y += inputDirection.Y;
+            
+            // Erase tail
+            if (_lastPosition != null && !_lastPosition.Equals(this._body[^1]))
+            {
+                Console.SetCursorPosition(_lastPosition.X, _lastPosition.Y);
+                Console.WriteLine(" ");
+            }
         }
 
-        public void Draw()
+        protected override void DrawObject()
         {
             foreach (Position p in this._body)
             {
                 Console.SetCursorPosition(p.X, p.Y);
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("█");
-            }
-            // Erase tail
-            if (_lastPosition != null && !_lastPosition.Equals(this._body[^1]))
-            {
-                Console.SetCursorPosition(_lastPosition.X, _lastPosition.Y);
-                Console.WriteLine(" ");
             }
         }
 

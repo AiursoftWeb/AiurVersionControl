@@ -31,15 +31,15 @@ namespace SnakeGameServer.Controllers
     public class RepositoryContainer
     {
         private readonly object _obj = new object();
-        private Repository<Position> _logItemRepository;
+        private Repository<Action> _logItemRepository;
 
-        public Repository<Position> GetLogItemRepository()
+        public Repository<Action> GetLogItemRepository()
         {
             lock (_obj)
             {
                 if (_logItemRepository == null)
                 {
-                    _logItemRepository = new Repository<Position>();
+                    _logItemRepository = new Repository<Action>();
                 }
             }
             return _logItemRepository;

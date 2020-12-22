@@ -1,11 +1,11 @@
 ﻿using System;
 using SnakeGame.Models;
 
-namespace SnakeGame
+namespace SnakeGame.Launcher
 {
     public static class Input
     {
-        public static void GetInputDirection(ConsoleKey command, Position p)
+        public static void ChangeDirection(ConsoleKey command, Position p)
         {
             switch (command)
             {

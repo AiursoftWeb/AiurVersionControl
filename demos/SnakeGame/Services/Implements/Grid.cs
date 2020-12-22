@@ -10,7 +10,7 @@ namespace SnakeGame.Services.Implements
         private readonly int _offset;
         private readonly Random _random;
 
-        public Grid(int gridSize, int seed = 0, int offset = 0)
+        public Grid(int gridSize, int offset = 0, int seed = 0)
         {
             this._gridSize = gridSize;
             this._offset = offset;

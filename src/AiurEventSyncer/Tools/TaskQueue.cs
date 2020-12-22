@@ -26,7 +26,7 @@ namespace AiurEventSyncer.Tools
                 {
                     if (_engine.IsCompleted)
                     {
-                        Console.WriteLine("Engine is sleeping. Trying to wake it up.");
+                        // Console.WriteLine("Engine is sleeping. Trying to wake it up.");
                         _engine = RunTasksInQueue();
                     }
                 }

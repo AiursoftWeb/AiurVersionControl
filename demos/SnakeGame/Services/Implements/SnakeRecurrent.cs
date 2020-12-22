@@ -1,33 +1,46 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
-using SnakeGame.Models;
+using Action = SnakeGame.Models.Action;
 
 namespace SnakeGame.Services.Implements
 {
-    public class SnakeRecurrent : IRecurrent<Snake, Position>
+    public class SnakeRecurrent : IRecurrent<Snake, Action>
     {
-        public Snake Recurrent(Snake snake, Repository<Position> repo)
+        public Snake Recurrent(Snake snake, Repository<Action> repo, int offset = 0)
         {
             var commits = repo.Commits;
-            return doRecurrent(snake, commits);
+            return doRecurrent(snake, commits, offset);
         }
 
-        public Snake RecurrentFromId(Snake snake, Repository<Position> repo, string position = null)
+        public Snake RecurrentFromId(Snake snake, Repository<Action> repo, string position = null)
         {
             var commits = repo.Commits.AfterCommitId(position);
             return doRecurrent(snake, commits);
         }
 
-        private Snake doRecurrent(Snake snake, IEnumerable<Commit<Position>> commits)
+        private Snake doRecurrent(Snake snake, IEnumerable<Commit<Action>> commits, int offset = 0)
         {
             foreach (var commit in commits)
             {
-                // if snake move.
-                snake.Update(commit.Item);
-                // if snake eat.
+                switch (commit.Item.Type)
+                {
+                    case ActionType.Move:
+                        snake.Update(commit.Item.Direction);
+                        break;
+                    case ActionType.Eat:
+                        snake.AddBody();
+                        
+                        // Draw next food
+                        Console.SetCursorPosition(commit.Item.Direction.X + offset, commit.Item.Direction.Y);
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.Write("█");
+                        
+                        break;
+                }
             }
+
             return snake;
         }
     }

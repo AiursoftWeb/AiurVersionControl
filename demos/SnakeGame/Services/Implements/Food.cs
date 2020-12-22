@@ -18,7 +18,7 @@ namespace SnakeGame.Services.Implements
             return this._foodPosition;
         }
 
-        public void GetRandomFoodPosition(Grid grid,Snake snake)
+        public void RandomFoodPosition(Grid grid,Snake snake)
         {
             while (this._foodPosition == null || snake.OnSnake(this._foodPosition))
             {

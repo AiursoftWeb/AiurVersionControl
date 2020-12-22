@@ -43,9 +43,9 @@ namespace AiurEventSyncer.Remotes
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
-            Console.WriteLine($"[{Name}] Preparing websocket connection for: " + this.Name);
+            // Console.WriteLine($"[{Name}] Preparing websocket connection for: " + this.Name);
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + PullPointer), CancellationToken.None);
-            Console.WriteLine($"[{Name}] Websocket connected! " + this.Name);
+            // Console.WriteLine($"[{Name}] Websocket connected! " + this.Name);
             if (_ws.State == WebSocketState.Open)
             {
                 var commits = await _ws.GetObject<List<Commit<T>>>();
@@ -67,12 +67,12 @@ namespace AiurEventSyncer.Remotes
         {
             while (_ws.State == WebSocketState.Open)
             {
-                Console.WriteLine($"[{Name}] Now is in monitoring mode.");
+                // Console.WriteLine($"[{Name}] Now is in monitoring mode.");
                 var commits = await _ws.GetObject<List<Commit<T>>>();
-                Console.WriteLine($"[{Name}] Got some new websocket data. Telling repo to pull it...");
+                // Console.WriteLine($"[{Name}] Got some new websocket data. Telling repo to pull it...");
                 if (_ws.State != WebSocketState.Open)
                 {
-                    Console.WriteLine($"[{Name}] WARNING! Websocket state: {_ws.State} is not connected! Will stop monitoring!");
+                    // Console.WriteLine($"[{Name}] WARNING! Websocket state: {_ws.State} is not connected! Will stop monitoring!");
                     return;
                 }
                 if (commits.Any())
