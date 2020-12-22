@@ -52,9 +52,9 @@ namespace AiurEventSyncer.Abstract
             var commitsToPush = ContextRepository.Commits.AfterCommitId(PushPointer).ToList();
             if (commitsToPush.Any())
             {
-                // Console.WriteLine($"[{Name}] Pushing remote: {Name}... Pushing content: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))}");
+                Console.WriteLine($"[{Name}] Pushing remote: {Name}... Pushing content: {string.Join(',', commitsToPush.Select(t => t.Item.ToString()))}");
                 await Upload(commitsToPush, PushPointer);
-                // Console.WriteLine($"[{Name}] Push remote '{Name}' completed.");
+                Console.WriteLine($"[{Name}] Push remote '{Name}' completed.");
                 PushPointer = commitsToPush.Last().Id;
             }
             PushLock.Release();
@@ -67,7 +67,7 @@ namespace AiurEventSyncer.Abstract
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             await PullLock.WaitAsync();
-            // Console.WriteLine($"[{Name}] Active Pulling!");
+            Console.WriteLine($"[{Name}] Active Pulling!");
             var downloadResult = await Download(PullPointer);
             if (downloadResult.Any())
             {
