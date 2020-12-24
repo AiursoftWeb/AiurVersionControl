@@ -3,6 +3,8 @@ using AiurEventSyncer.Tools;
 using AiurStore.Abstracts;
 using AiurStore.Models;
 using AiurStore.Providers.MemoryProvider;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,12 +21,21 @@ namespace AiurEventSyncer.Models
         public Commit<T> Head => Commits.LastOrDefault();
         public ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>>();
 
+        private readonly ILogger<Repository<T>> _logger;
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
-        public Repository(InOutDatabase<Commit<T>> dbProvider) { _commits = dbProvider; }
-        public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
+        public Repository(
+            InOutDatabase<Commit<T>> dbProvider,
+            ILogger<Repository<T>> logger)
+        { 
+            _commits = dbProvider;
+            _logger = logger;
+        }
+        public Repository() : this(new MemoryAiurStoreDb<Commit<T>>(), null) 
+        {
+        }
 
         public void Commit(T content)
         {
@@ -39,7 +50,7 @@ namespace AiurEventSyncer.Models
 
         private void OnNewCommits(List<Commit<T>> newCommits)
         {
-            Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
+            _logger?.LogInformation($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
             Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
             var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits)).ToList();
             Console.WriteLine($"[{Name}] Broadcasting and auto pushing... Totally: {notiyTasks.Count} listeners.");
