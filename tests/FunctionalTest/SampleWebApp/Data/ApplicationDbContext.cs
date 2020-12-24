@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Models;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SampleWebApp.Data
 {

@@ -27,7 +27,7 @@ namespace AiurEventSyncer.WebExtends
                     await ws.SendObject(newCommits.Where(t => !firstPullResult.Any(p => p.Id == t.Id)));
                 }
                 var connectionId = Guid.NewGuid();
-                repository.OnNewCommitsSubscribers[connectionId]= pushEvent;
+                repository.Register(connectionId, pushEvent);
                 while (ws.State == WebSocketState.Open)
                 {
                     try
@@ -41,7 +41,7 @@ namespace AiurEventSyncer.WebExtends
                         break;
                     }
                 }
-                repository.OnNewCommitsSubscribers.TryRemove(connectionId, out _);
+                repository.UnRegister(connectionId);
                 return new EmptyResult();
             }
             else

@@ -4,7 +4,6 @@ using AiurStore.Providers.DbQueryProvider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SampleWebApp.Data;
-using System.Linq;
 
 namespace SampleWebApp.Services
 {

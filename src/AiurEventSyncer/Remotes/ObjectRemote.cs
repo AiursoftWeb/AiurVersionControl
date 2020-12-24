@@ -31,17 +31,17 @@ namespace AiurEventSyncer.Remotes
         protected async override Task PullAndMonitor()
         {
             await PullAsync();
-            _fakeRemoteRepository.OnNewCommitsSubscribers[_id] = async (c) =>
+            _fakeRemoteRepository.Register(_id, async (c) =>
             {
                 await PullLock.WaitAsync();
                 await ContextRepository.OnPulled(c.ToList(), this);
                 PullLock.Release();
-            };
+            });
         }
 
         protected override Task Disconnect()
         {
-            _fakeRemoteRepository.OnNewCommitsSubscribers.TryRemove(_id, out _);
+            _fakeRemoteRepository.UnRegister(_id);
             return Task.CompletedTask;
         }
     }

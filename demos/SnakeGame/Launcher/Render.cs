@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SnakeGame.Services;
+using System;
 using System.Threading.Tasks;
-using SnakeGame.Services;
 
 namespace SnakeGame.Launcher
 {

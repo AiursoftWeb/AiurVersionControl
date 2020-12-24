@@ -17,9 +17,9 @@ namespace AiurEventSyncer.Models
         public string Name { get; init; } = string.Empty;
         public IAfterable<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
-        public ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> OnNewCommitsSubscribers { get; set; } = new ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>>();
 
         private readonly InOutDatabase<Commit<T>> _commits;
+        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onNewCommitsSubscribers = default;
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
@@ -29,6 +29,16 @@ namespace AiurEventSyncer.Models
         }
 
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
+
+        public void Register(Guid key, Func<List<Commit<T>>, Task> action)
+        {
+            _onNewCommitsSubscribers[key] = action;
+        }
+
+        public void UnRegister(Guid key)
+        {
+            _onNewCommitsSubscribers.TryRemove(key, out _);
+        }
 
         public void Commit(T content)
         {
@@ -43,7 +53,7 @@ namespace AiurEventSyncer.Models
 
         private void OnNewCommits(List<Commit<T>> newCommits)
         {
-            var notiyTasks = OnNewCommitsSubscribers.ToList();
+            var notiyTasks = _onNewCommitsSubscribers.ToList();
             if (notiyTasks.Any())
             {
                 _notifyingQueue.QueueNew(async () =>

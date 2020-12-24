@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SnakeGame.Models;
+using System;
 using System.Collections.Generic;
-using SnakeGame.Models;
 
 namespace SnakeGame.Services.Implements
 {

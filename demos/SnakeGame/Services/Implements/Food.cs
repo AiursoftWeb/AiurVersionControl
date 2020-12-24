@@ -1,5 +1,5 @@
-﻿using System;
-using SnakeGame.Models;
+﻿using SnakeGame.Models;
+using System;
 
 namespace SnakeGame.Services.Implements
 {

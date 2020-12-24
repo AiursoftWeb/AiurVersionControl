@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
+using System;
+using System.Collections.Generic;
 using Action = SnakeGame.Models.Action;
 
 namespace SnakeGame.Services.Implements

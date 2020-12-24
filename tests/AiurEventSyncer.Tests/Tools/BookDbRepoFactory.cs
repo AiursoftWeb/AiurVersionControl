@@ -2,7 +2,6 @@
 using AiurEventSyncer.Tests.Models;
 using AiurStore.Providers.DbQueryProvider;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace AiurEventSyncer.Tests.Tools
 {

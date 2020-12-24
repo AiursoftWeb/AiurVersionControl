@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using SnakeGame.Launcher;
 using SnakeGame.Models;
 using SnakeGame.Services.Implements;
+using System;
+using System.Threading.Tasks;
 using Action = SnakeGame.Models.Action;
 
 namespace SnakeGame.Services

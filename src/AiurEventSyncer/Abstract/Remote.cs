@@ -34,7 +34,7 @@ namespace AiurEventSyncer.Abstract
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.OnNewCommitsSubscribers[Guid.NewGuid()] = async (c) => await PushAsync();
+                ContextRepository.Register(Guid.NewGuid(), async (c) => await PushAsync());
             }
             if (AutoPull)
             {
