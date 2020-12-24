@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using System;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -200,6 +201,37 @@ namespace SampleWebApp.Tests.IntegrationTests
             subscriber.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
+        }
+
+        [TestMethod]
+        public async Task TimeTest()
+        {
+            var repo = new Repository<LogItem>() { Name = "Test local repo" };
+            
+            DateTime beginTime = DateTime.Now;
+            for (int i = 0; i < 100; i++)
+            {
+                repo.Commit(new LogItem { Message = "1" });
+                Console.WriteLine(DateTime.Now);
+            }
+            
+            DateTime beginTime2 = DateTime.Now;
+            for (int i = 0; i < 100; i++)
+            {
+                repo.Commit(new LogItem { Message = "2" });
+                Console.WriteLine(DateTime.Now);
+            }
+            
+            DateTime beginTime3 = DateTime.Now;
+            for (int i = 0; i < 100; i++)
+            {
+                repo.Commit(new LogItem { Message = "3" });
+                Console.WriteLine(DateTime.Now);
+            }
+            
+            DateTime endTime = DateTime.Now;
+
+            Assert.IsTrue(2 * (beginTime2 - beginTime) > (endTime - beginTime3));
         }
     }
 
