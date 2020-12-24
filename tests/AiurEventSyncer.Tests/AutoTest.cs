@@ -71,9 +71,9 @@ namespace AiurEventSyncer.Tests
             b.Assert(5, 10);
 
             a.Commit(100);
-            b.Commit(200);
-            a.Assert(5, 10, 100, 200);
-            b.Assert(5, 10, 100, 200);
+            b.Commit(200); // This is faster. Because while B is saving 200, A hasn't push 100.
+            a.Assert(5, 10, 200, 100);
+            b.Assert(5, 10, 200, 100);
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace AiurEventSyncer.Tests
             //   A   C   E
 
             var a = new Repository<int>();
-            var b = BookDbRepoFactory.BuildRepo<int>();
+            var b = BookDbRepoFactory.BuildIntRepo();
             var c = new Repository<int>();
             var d = new Repository<int>();
             var e = new Repository<int>();
@@ -110,7 +110,7 @@ namespace AiurEventSyncer.Tests
             //   sender    subscriber1,2,3
 
             var senderserver = new Repository<int>();
-            var server = BookDbRepoFactory.BuildRepo<int>();
+            var server = BookDbRepoFactory.BuildIntRepo();
             var subscriber1 = new Repository<int>() { Name = "subscriber1" };
             var subscriber2 = new Repository<int>() { Name = "subscriber2" };
             var subscriber3 = new Repository<int>() { Name = "subscriber3" };
@@ -132,7 +132,7 @@ namespace AiurEventSyncer.Tests
         public async Task DropTest()
         {
             var sender = new Repository<int>() { Name = "Sender" };
-            var server = BookDbRepoFactory.BuildRepo<int>();
+            var server = BookDbRepoFactory.BuildIntRepo();
             var subscriber = new Repository<int>() { Name = "Subscriber" };
             await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
 

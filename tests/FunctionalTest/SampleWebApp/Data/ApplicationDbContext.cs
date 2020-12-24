@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AiurEventSyncer.Models;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SampleWebApp.Data
 {
     public class LogItem
     {
+        public int Id { get; set; }
+
         public string Message { get; set; }
 
         public override string ToString()
@@ -22,12 +26,6 @@ namespace SampleWebApp.Data
         }
     }
 
-    public class InDbEntity
-    {
-        public int Id { get; set; }
-        public string Content { get; set; }
-    }
-
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -35,6 +33,6 @@ namespace SampleWebApp.Data
         {
         }
 
-        public DbSet<InDbEntity> InDbEntities { get; set; }
+        public DbSet<Commit<LogItem>> InDbEntities { get; set; }
     }
 }

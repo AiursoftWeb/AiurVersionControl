@@ -6,13 +6,13 @@ namespace SampleWebApp.Services
 {
     public class RepositoryContainer 
     {
-        private readonly RepositoryFactory<LogItem> _repositoryFactory;
+        private readonly RepositoryFactory _repositoryFactory;
         private static IServiceScopeFactory _serviceScopeFactory;
         private readonly object _obj = new object();
         private Repository<LogItem> _logItemRepository;
 
         public RepositoryContainer(
-            RepositoryFactory<LogItem> repositoryFactory,
+            RepositoryFactory repositoryFactory,
             IServiceScopeFactory serviceScopeFactory)
         {
             _repositoryFactory = repositoryFactory;

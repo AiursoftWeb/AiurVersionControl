@@ -3,26 +3,26 @@ using System.Collections.Generic;
 
 namespace AiurStore.Providers.MemoryProvider
 {
-    public class MemoryStoreProvider : IStoreProvider
+    public class MemoryStoreProvider<T> : IStoreProvider<T>
     {
-        private readonly List<string> _store = new List<string>();
+        private readonly List<T> _store = new List<T>();
 
         public void Clear()
         {
             _store.Clear();
         }
 
-        public IEnumerable<string> GetAll()
+        public IEnumerable<T> GetAll()
         {
             return _store;
         }
 
-        public void Add(string newItem)
+        public void Add(T newItem)
         {
             _store.Add(newItem);
         }
 
-        public void Insert(int index, string newItem)
+        public void Insert(int index, T newItem)
         {
             _store.Insert(index, newItem);
         }

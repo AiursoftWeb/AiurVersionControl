@@ -2,11 +2,11 @@
 
 namespace AiurStore.Abstracts
 {
-    public interface IStoreProvider
+    public interface IStoreProvider<T>
     {
-        public IEnumerable<string> GetAll();
-        public void Add(string newItem);
+        public IEnumerable<T> GetAll();
+        public void Add(T newItem);
         public void Clear();
-        public void Insert(int index, string newItem);
+        public void Insert(int index, T newItem);
     }
 }

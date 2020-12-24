@@ -1,6 +1,7 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Tests.Models;
 using AiurStore.Providers.DbQueryProvider;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace AiurEventSyncer.Tests.Tools
@@ -19,22 +20,35 @@ namespace AiurEventSyncer.Tests.Tools
             }
         }
 
-        public static Repository<T> BuildRepo<T>()
+        public static Repository<Book> BuildBookRepo()
         {
             var context = ResetDb();
-            var store = DbQueryProviderTools.BuildFromDbSet<Commit<T>, SqlDbContext>(
+            var store = DbQueryProviderTools.BuildFromDbSet(
                 contextFactory: () => new SqlDbContext(),
-                queryFactory: (context) => context.Records.Where(t => t.Type == typeof(T).Name).Select(t => t.Content),
+                queryFactory: (context) => context.BookCommits.Include(t => t.Item),
                 addAction: (newItem, context) =>
                 {
-                    context.Records.Add(new InDbEntity
-                    {
-                        Content = newItem,
-                        Type = typeof(T).Name
-                    });
+                    context.BookCommits.Add(newItem);
                     context.SaveChanges();
                 });
-            return new Repository<T>(store)
+            return new Repository<Book>(store)
+            {
+                Name = "Server"
+            };
+        }
+
+        public static Repository<int> BuildIntRepo()
+        {
+            var context = ResetDb();
+            var store = DbQueryProviderTools.BuildFromDbSet(
+                contextFactory: () => new SqlDbContext(),
+                queryFactory: (context) => context.IntCommits,
+                addAction: (newItem, context) =>
+                {
+                    context.IntCommits.Add(newItem);
+                    context.SaveChanges();
+                });
+            return new Repository<int>(store)
             {
                 Name = "Server"
             };
