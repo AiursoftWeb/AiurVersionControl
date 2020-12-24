@@ -4,7 +4,7 @@ namespace AiurStore.Providers.DbQueryProvider
 {
     public class DummyQueryDb<T> : InOutDatabase<T>
     {
-        protected override void OnConfiguring(InOutDbOptions options)
+        protected override void OnConfiguring(InOutDbOptions<T> options)
         {
 
         }

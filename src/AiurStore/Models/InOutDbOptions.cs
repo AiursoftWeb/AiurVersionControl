@@ -2,8 +2,8 @@
 
 namespace AiurStore.Models
 {
-    public class InOutDbOptions
+    public class InOutDbOptions<T>
     {
-        public IStoreProvider Provider { get; set; }
+        public IStoreProvider<T> Provider { get; set; }
     }
 }

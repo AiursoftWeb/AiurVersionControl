@@ -204,34 +204,20 @@ namespace SampleWebApp.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public async Task TimeTest()
+        public async Task PerformanceTest()
         {
             var repo = new Repository<LogItem>() { Name = "Test local repo" };
-            
-            DateTime beginTime = DateTime.Now;
-            for (int i = 0; i < 100; i++)
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
+
+            var beginTime = DateTime.Now;
+            for (int i = 0; i < 1000; i++)
             {
                 repo.Commit(new LogItem { Message = "1" });
-                Console.WriteLine(DateTime.Now);
             }
             
-            DateTime beginTime2 = DateTime.Now;
-            for (int i = 0; i < 100; i++)
-            {
-                repo.Commit(new LogItem { Message = "2" });
-                Console.WriteLine(DateTime.Now);
-            }
-            
-            DateTime beginTime3 = DateTime.Now;
-            for (int i = 0; i < 100; i++)
-            {
-                repo.Commit(new LogItem { Message = "3" });
-                Console.WriteLine(DateTime.Now);
-            }
-            
-            DateTime endTime = DateTime.Now;
+            var endTime = DateTime.Now;
 
-            Assert.IsTrue(2 * (beginTime2 - beginTime) > (endTime - beginTime3));
+            Assert.IsTrue((endTime - beginTime) < TimeSpan.FromSeconds(0.5));
         }
     }
 

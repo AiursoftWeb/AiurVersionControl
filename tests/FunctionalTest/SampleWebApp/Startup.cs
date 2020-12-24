@@ -24,7 +24,7 @@ namespace SampleWebApp
             services.AddControllersWithViews();
             services.AddSingleton<StoreFactory>();
             services.AddSingleton<RepositoryContainer>();
-            services.AddSingleton<RepositoryFactory<LogItem>>();
+            services.AddSingleton<RepositoryFactory>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
