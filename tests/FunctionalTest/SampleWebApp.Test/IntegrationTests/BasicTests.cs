@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using System;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -200,6 +201,23 @@ namespace SampleWebApp.Tests.IntegrationTests
             subscriber.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
+        }
+
+        [TestMethod]
+        public async Task PerformanceTest()
+        {
+            var repo = new Repository<LogItem>() { Name = "Test local repo" };
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
+
+            var beginTime = DateTime.Now;
+            for (int i = 0; i < 1000; i++)
+            {
+                repo.Commit(new LogItem { Message = "1" });
+            }
+            
+            var endTime = DateTime.Now;
+
+            Assert.IsTrue((endTime - beginTime) < TimeSpan.FromSeconds(0.5));
         }
     }
 

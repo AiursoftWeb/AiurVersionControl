@@ -50,14 +50,16 @@ namespace AiurEventSyncer.Models
 
         private void OnNewCommits(List<Commit<T>> newCommits)
         {
-            _logger?.LogInformation($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
-            Console.WriteLine($"[{Name}] Current db: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
-            var notiyTasks = OnNewCommitsSubscribers.Select(t => t.Value(newCommits)).ToList();
-            Console.WriteLine($"[{Name}] Broadcasting and auto pushing... Totally: {notiyTasks.Count} listeners.");
-            _notifyingQueue.QueueNew(async () =>
+            Console.WriteLine($"[{Name}] New commits: {string.Join(',', newCommits.Select(t => t.Item.ToString()))} added locally!");
+            var notiyTasks = OnNewCommitsSubscribers.ToList();
+            if (notiyTasks.Any())
             {
-                await Task.WhenAll(notiyTasks);
-            });
+                Console.WriteLine($"[{Name}] Broadcasting and auto pushing... Totally: {notiyTasks.Count} listeners.");
+                _notifyingQueue.QueueNew(async () =>
+                {
+                    await Task.WhenAll(notiyTasks.Select(t => t.Value(newCommits)));
+                });
+            }
         }
 
         public async Task OnPulled(List<Commit<T>> subtraction, Remote<T> remoteRecord)
@@ -71,7 +73,7 @@ namespace AiurEventSyncer.Models
             {
                 Console.WriteLine($"[{Name}] Trying to save pulled commit : {commit}...");
                 var inserted = OnPulledCommit(commit, remoteRecord.PullPointer);
-                Console.WriteLine($"[{Name}] New commit {commit.Item} saved! Now local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+                Console.WriteLine($"[{Name}] New commit {commit.Item} saved!");
                 if (remoteRecord.PullPointer == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
@@ -96,7 +98,7 @@ namespace AiurEventSyncer.Models
 
         private bool OnPulledCommit(Commit<T> subtract, string position)
         {
-            Console.WriteLine($"[{Name}] Pull process is loading commit: '{subtract.Item}' to local database: {string.Join(',', Commits.Select(t => t.Item.ToString()))}");
+            Console.WriteLine($"[{Name}] Pull process is loading commit: '{subtract.Item}' to local database.");
             var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
             if (localAfter is not null)
             {

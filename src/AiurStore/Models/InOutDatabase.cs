@@ -9,22 +9,22 @@ namespace AiurStore.Models
 {
     public abstract class InOutDatabase<T> : IEnumerable<T>, IAfterable<T>
     {
-        public IStoreProvider Provider { get; set; }
+        public IStoreProvider<T> Provider { get; set; }
         private object _obj = new object();
         public InOutDatabase()
         {
-            var options = new InOutDbOptions();
-            this.OnConfiguring(options);
+            var options = new InOutDbOptions<T>();
+            OnConfiguring(options);
             Provider = options.Provider;
         }
 
-        protected abstract void OnConfiguring(InOutDbOptions options);
+        protected abstract void OnConfiguring(InOutDbOptions<T> options);
 
         public void Add(T newObject)
         {
             lock (_obj)
             {
-                Provider.Add(JsonTools.Serialize(newObject));
+                Provider.Add(newObject);
             }
         }
 
@@ -40,7 +40,7 @@ namespace AiurStore.Models
         {
             lock (_obj)
             {
-                Provider.Insert(index, JsonTools.Serialize(newObject));
+                Provider.Insert(index, newObject);
             }
         }
 
@@ -90,7 +90,7 @@ namespace AiurStore.Models
             List<T> copy = null;
             lock(_obj)
             {
-                copy = Provider.GetAll().Select(t => JsonTools.Deserialize<T>(t)).ToList();
+                copy = Provider.GetAll().ToList();
             }
             return copy.GetEnumerator();
         }

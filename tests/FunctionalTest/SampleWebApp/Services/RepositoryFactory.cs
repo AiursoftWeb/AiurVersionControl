@@ -1,8 +1,9 @@
 ﻿using AiurEventSyncer.Models;
+using SampleWebApp.Data;
 
 namespace SampleWebApp.Services
 {
-    public class RepositoryFactory<T>
+    public class RepositoryFactory
     {
         private readonly StoreFactory _storeFactory;
 
@@ -11,10 +12,10 @@ namespace SampleWebApp.Services
             _storeFactory = storeFactory;
         }
 
-        public Repository<T> BuildRepo()
+        public Repository<LogItem> BuildRepo()
         {
-            var store = _storeFactory.BuildStore<T>();
-            return new Repository<T>(store)
+            var store = _storeFactory.BuildStore();
+            return new Repository<LogItem>(store)
             {
                 Name = "SERVER"
             };
