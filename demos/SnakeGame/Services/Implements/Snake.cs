@@ -9,7 +9,7 @@ namespace SnakeGame.Services.Implements
         private readonly List<Position> _body = new List<Position>();
         public Position Head => _body[0];
         // Use for erase tail.
-        private Position _lastPosition = new Position{ X = 0, Y = 0 };
+        private Position _lastPosition = default;
         public int Count => this._body.Count;
 
         public Snake(Position p, int count = 1)
@@ -35,13 +35,6 @@ namespace SnakeGame.Services.Implements
             }
             this.Head.X += inputDirection.X;
             this.Head.Y += inputDirection.Y;
-            
-            // Erase tail
-            if (_lastPosition != null && !_lastPosition.Equals(this._body[^1]))
-            {
-                Console.SetCursorPosition(_lastPosition.X, _lastPosition.Y);
-                Console.WriteLine(" ");
-            }
         }
 
         protected override void DrawObject()
@@ -51,6 +44,12 @@ namespace SnakeGame.Services.Implements
                 Console.SetCursorPosition(p.X, p.Y);
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("█");
+            }
+            // Erase tail
+            if (_lastPosition != null && !_lastPosition.Equals(this._body[^1]))
+            {
+                Console.SetCursorPosition(_lastPosition.X, _lastPosition.Y);
+                Console.WriteLine(" ");
             }
         }
 

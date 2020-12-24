@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
+using SnakeGame.Models;
 using Action = SnakeGame.Models.Action;
 
 namespace SnakeGame.Services.Implements
@@ -22,6 +23,7 @@ namespace SnakeGame.Services.Implements
 
         private Snake doRecurrent(Snake snake, IEnumerable<Commit<Action>> commits, int offset = 0)
         {
+            Position foodPosition = new Position{ X = 0, Y = 0 };
             foreach (var commit in commits)
             {
                 switch (commit.Item.Type)
@@ -31,14 +33,15 @@ namespace SnakeGame.Services.Implements
                         break;
                     case ActionType.Eat:
                         snake.AddBody();
-                        
-                        // Draw next food
-                        Console.SetCursorPosition(commit.Item.Direction.X + offset, commit.Item.Direction.Y);
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.Write("█");
-                        
+                        foodPosition.X = commit.Item.Direction.X + offset;
+                        foodPosition.Y = commit.Item.Direction.Y;
                         break;
                 }
+            }
+
+            if (foodPosition.X != 0 && foodPosition.Y != 0)
+            {
+                GameObject.Draw(foodPosition, ConsoleColor.DarkRed);
             }
 
             return snake;
