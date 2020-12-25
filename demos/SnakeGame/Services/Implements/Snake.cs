@@ -6,10 +6,10 @@ namespace SnakeGame.Services.Implements
 {
     public class Snake : GameObject
     {
-        private readonly List<Position> _body = new List<Position>();
+        private readonly List<Position> _body = new();
         public Position Head => _body[0];
         // Use for erase tail.
-        private Position _lastPosition = default;
+        private Position _lastPosition;
         public int Count => this._body.Count;
 
         public Snake(Position p, int count = 1)

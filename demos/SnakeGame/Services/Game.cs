@@ -13,7 +13,7 @@ namespace SnakeGame.Services
     {
         public bool IsGameEnd { get; set; }
         private readonly Repository<Action> _repo;
-        private readonly Position _direction = new Position{ X = 0, Y = 0 };
+        private readonly Position _direction = new();
         private readonly Grid _grid;
         private readonly Food _food;
         private readonly Position _originalSnakePosition;
