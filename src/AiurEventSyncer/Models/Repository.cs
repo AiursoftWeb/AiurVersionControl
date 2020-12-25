@@ -63,7 +63,7 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        public async Task OnPulled(List<Commit<T>> subtraction, Remote<T> remoteRecord)
+        public async Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             var newCommitsSaved = new List<Commit<T>>();
             var pushingPushPointer = false;

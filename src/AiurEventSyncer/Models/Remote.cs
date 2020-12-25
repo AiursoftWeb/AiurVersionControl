@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Abstract;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AiurEventSyncer.Abstract
+namespace AiurEventSyncer.Models
 {
-    public abstract class Remote<T>
+    public abstract class Remote<T> : IRemote<T>
     {
         public string Name { get; init; } = "remote name";
         public bool AutoPush { get; init; }

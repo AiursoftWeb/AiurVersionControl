@@ -11,6 +11,6 @@ namespace AiurEventSyncer.Abstract
         void Register(Guid key, Func<List<Commit<T>>, Task> action);
         void UnRegister(Guid key);
         IAfterable<Commit<T>> Commits { get; }
-        Task OnPulled(List<Commit<T>> subtraction, Remote<T> remoteRecord);
+        Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord);
     }
 }
