@@ -19,7 +19,7 @@ namespace AiurEventSyncer.Models
         public Commit<T> Head => Commits.LastOrDefault();
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onNewCommitsSubscribers = default;
+        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onNewCommitsSubscribers = new();
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
