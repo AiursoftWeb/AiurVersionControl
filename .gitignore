@@ -6,3 +6,4 @@ Properties
 TestResults
 *.db
 *.Development.*
+*.user
