@@ -10,8 +10,8 @@ namespace AiurEventSyncer.Remotes
 {
     public class ObjectRemote<T> : Remote<T>
     {
-        private Repository<T> _fakeRemoteRepository;
-        protected readonly Guid _id = Guid.NewGuid();
+        private readonly Repository<T> _fakeRemoteRepository;
+        private readonly Guid _id = Guid.NewGuid();
 
         public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false) : base(autoPush, autoPull)
         {

@@ -8,7 +8,7 @@ namespace AiurStore.Providers.FileProvider
 {
     public class FileStoreProvider<T> : IStoreProvider<T>
     {
-        private string _path;
+        private readonly string _path;
 
         public FileStoreProvider(string path)
         {

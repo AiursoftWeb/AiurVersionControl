@@ -13,13 +13,13 @@ namespace AiurEventSyncer.Remotes
 {
     public class WebSocketRemote<T> : Remote<T>
     {
-        private readonly ClientWebSocket _ws;
         private readonly string _endPoint;
+        private ClientWebSocket _ws;
 
         public WebSocketRemote(string endPoint) : base(true, true)
         {
-            _ws = new ClientWebSocket();
             _endPoint = endPoint;
+            _ws = new ClientWebSocket();
         }
 
         protected override async Task Upload(List<Commit<T>> commits, string pushPointer)
@@ -85,6 +85,8 @@ namespace AiurEventSyncer.Remotes
             {
                 await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
+            _ws.Dispose();
+            _ws = new ClientWebSocket();
         }
     }
 }

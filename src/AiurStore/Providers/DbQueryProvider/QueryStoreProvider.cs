@@ -8,7 +8,7 @@ namespace AiurStore.Providers.DbQueryProvider
     public class QueryStoreProvider<DbContext, T> : IStoreProvider<T>
     {
         private readonly Func<DbContext> _contextFactory;
-        private Func<DbContext, IQueryable<T>> _queryFactory;
+        private readonly Func<DbContext, IQueryable<T>> _queryFactory;
         private readonly Action<T, DbContext> _addAction;
 
         public QueryStoreProvider(

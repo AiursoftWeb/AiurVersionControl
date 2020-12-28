@@ -9,7 +9,7 @@ namespace SampleConsoleApp
 {
     class Program
     {
-        public async static Task Main(string[] args)
+        public async static Task Main()
         {
             Console.WriteLine("Please enter the ares endpoint URL.");
             var endpointUrl = Console.ReadLine();
