@@ -131,12 +131,15 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public async Task DropTest()
         {
+            //     server
+            //    /       \
+            //   sender    subscriber
             var sender = new Repository<int>() { Name = "Sender" };
             var server = BookDbRepoFactory.BuildIntRepo();
             var subscriber = new Repository<int>() { Name = "Subscriber" };
             await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
 
-            var origin = await new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" }
+            var subscription = await new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" }
                 .AttachAsync(subscriber);
 
             sender.Commit(5);
@@ -144,11 +147,40 @@ namespace AiurEventSyncer.Tests
             server.Assert(5, 10);
             subscriber.Assert(5, 10);
 
-            await origin.DropAsync();
+            await subscription.DetachAsync();
             sender.Commit(100);
             sender.Commit(200);
             server.Assert(5, 10, 100, 200);
             subscriber.Assert(5, 10);
+        }
+
+        [TestMethod]
+        public async Task ReattachTest()
+        {
+            //     server
+            //    /       \
+            //   sender    subscriber
+            var sender = new Repository<int>() { Name = "Sender" };
+            var server = BookDbRepoFactory.BuildIntRepo();
+            var subscriber = new Repository<int>() { Name = "Subscriber" };
+            await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
+
+            var subscription = await new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" }
+                .AttachAsync(subscriber);
+
+            sender.Commit(5);
+            sender.Commit(10);
+            server.Assert(5, 10);
+            subscriber.Assert(5, 10);
+
+            await subscription.DetachAsync();
+            sender.Commit(100);
+            sender.Commit(200);
+            server.Assert(5, 10, 100, 200);
+            subscriber.Assert(5, 10);
+
+            await subscription.AttachAsync(subscriber);
+            subscriber.Assert(5, 10, 100, 200);
         }
     }
 }

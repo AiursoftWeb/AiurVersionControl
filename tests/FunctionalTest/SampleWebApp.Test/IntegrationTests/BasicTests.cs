@@ -186,7 +186,7 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
 
-            await subscriberRemote.DropAsync();
+            await subscriberRemote.DetachAsync();
 
             sender.Commit(new LogItem { Message = "X" });
             sender.Commit(new LogItem { Message = "Z" });

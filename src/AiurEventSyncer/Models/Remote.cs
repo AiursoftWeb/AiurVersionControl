@@ -44,7 +44,7 @@ namespace AiurEventSyncer.Models
             return this;
         }
 
-        public async Task DropAsync()
+        public async Task DetachAsync()
         {
             if (ContextRepository == null)
             {
