@@ -6,7 +6,7 @@ namespace SnakeGame
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             // Game with Observer
             await Render.StartGameWithObserver(

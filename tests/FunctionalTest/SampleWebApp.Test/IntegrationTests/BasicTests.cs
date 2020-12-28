@@ -203,6 +203,50 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "H" });
         }
 
+
+        [TestMethod]
+        public async Task ReattachTest()
+        {
+            var sender = new Repository<LogItem>();
+            var subscriber = new Repository<LogItem>();
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
+
+            var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber); ;
+
+            sender.Commit(new LogItem { Message = "G" });
+            sender.Commit(new LogItem { Message = "H" });
+
+            sender.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+
+            await subscriberRemote.DetachAsync();
+
+            sender.Commit(new LogItem { Message = "X" });
+            sender.Commit(new LogItem { Message = "Z" });
+
+            await Task.Delay(30);
+
+            sender.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+
+            await subscriberRemote.AttachAsync(subscriber);
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+        }
+
         [TestMethod]
         public async Task PerformanceTest()
         {
@@ -229,11 +273,11 @@ namespace SampleWebApp.Tests.IntegrationTests
             repo2.WaitTill(expectedCount, 9).Wait();
             var commits = repo.Commits.ToArray();
             var commit2s = repo2.Commits.ToArray();
-            if (commits.Count() != commit2s.Count() || commits.Count() != expectedCount)
+            if (commits.Length != commit2s.Length || commits.Length != expectedCount)
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo '{repo.Name}' don't match! Expected: {string.Join(',', commit2s.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
             }
-            for (int i = 0; i < commits.Count(); i++)
+            for (int i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Id.Equals(commit2s[i].Id))
                 {
@@ -245,7 +289,7 @@ namespace SampleWebApp.Tests.IntegrationTests
         {
             repo.WaitTill(array.Length, 9).Wait();
             var commits = repo.Commits.ToArray();
-            for (int i = 0; i < commits.Count(); i++)
+            for (int i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {

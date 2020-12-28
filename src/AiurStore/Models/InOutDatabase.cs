@@ -9,7 +9,7 @@ namespace AiurStore.Models
     public abstract class InOutDatabase<T> : IEnumerable<T>, IAfterable<T>
     {
         public IStoreProvider<T> Provider { get; set; }
-        private object _obj = new object();
+        private readonly object _obj = new object();
         public InOutDatabase()
         {
             var options = new InOutDbOptions<T>();

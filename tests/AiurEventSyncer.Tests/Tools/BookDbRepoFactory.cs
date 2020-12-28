@@ -7,7 +7,7 @@ namespace AiurEventSyncer.Tests.Tools
 {
     public static class BookDbRepoFactory
     {
-        private static object _obj = new object();
+        private static readonly object _obj = new object();
         public static SqlDbContext ResetDb()
         {
             lock (_obj)

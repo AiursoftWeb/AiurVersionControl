@@ -27,7 +27,7 @@ namespace SampleWebApp
             services.AddSingleton<RepositoryFactory>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseDeveloperExceptionPage();
             app.UseWebSockets();
