@@ -22,7 +22,10 @@ namespace AiurEventSyncer.Tests
             await new ObjectRemote<Book>(dbRepo, false, true).AttachAsync(localRepo2);
 
             localRepo.Commit(new Book { Name = "Love" });
-            await Task.Delay(30);
+            while (!localRepo2.Commits.Any() || !dbRepo.Commits.Any())
+            {
+                await Task.Delay(10);
+            }
 
             Assert.IsTrue(localRepo.Commits.FirstOrDefault().Item.Name == "Love");
             Assert.IsTrue(dbRepo.Commits.FirstOrDefault().Item.Name == "Love");
