@@ -1,5 +1,4 @@
-﻿using AiurEventSyncer.Abstract;
-using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes.Models;
 using AiurEventSyncer.Tools;
 using System;
