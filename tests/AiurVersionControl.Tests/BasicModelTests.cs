@@ -1,7 +1,6 @@
 ﻿using AiurVersionControl.Models;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.Tests
 {
