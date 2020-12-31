@@ -1,6 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurStore.Models;
-using AiurStore.Providers.DbQueryProvider;
+using AiurStore.Providers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SampleWebApp.Data;
@@ -18,21 +18,23 @@ namespace SampleWebApp.Services
 
         public InOutDatabase<Commit<LogItem>> BuildStore()
         {
-            return DbQueryProviderTools.BuildFromDbSet(
-                contextFactory: () =>
+            return new DbSetDb<Commit<LogItem>, Commit<LogItem>, ApplicationDbContext>(
+                contextFactory: () => 
                 {
                     var scope = _scopeFactory.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    return context;
+                    return scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                },
+                dbSetFactory: (context) =>
+                {
+                    return context.InDbEntities;
                 },
                 queryFactory: (context) =>
                 {
-                    return context.InDbEntities.Include(t => t.Item);
+                    return context.Include(t => t.Item);
                 },
                 addAction: (newItem, context) =>
                 {
-                    context.InDbEntities.Add(newItem);
-                    context.SaveChanges();
+                    context.Add(newItem);
                 });
         }
     }

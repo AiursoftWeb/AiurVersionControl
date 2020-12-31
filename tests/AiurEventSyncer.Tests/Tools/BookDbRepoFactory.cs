@@ -1,6 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Tests.Models;
-using AiurStore.Providers.DbQueryProvider;
+using AiurStore.Providers;
 using Microsoft.EntityFrameworkCore;
 
 namespace AiurEventSyncer.Tests.Tools
@@ -22,35 +22,25 @@ namespace AiurEventSyncer.Tests.Tools
         public static Repository<Book> BuildBookRepo()
         {
             var context = ResetDb();
-            var store = DbQueryProviderTools.BuildFromDbSet(
+            var store = new DbSetDb<Commit<Book>, Commit<Book>, SqlDbContext>(
                 contextFactory: () => new SqlDbContext(),
-                queryFactory: (context) => context.BookCommits.Include(t => t.Item),
-                addAction: (newItem, context) =>
-                {
-                    context.BookCommits.Add(newItem);
-                    context.SaveChanges();
-                });
-            return new Repository<Book>(store)
-            {
-                Name = "Server"
-            };
+                dbSetFactory: (context) => context.BookCommits,
+                queryFactory: (dbSet) => dbSet.Include(t => t.Item),
+                addAction: (newItem, dbSet) => dbSet.Add(newItem)
+            );
+            return new Repository<Book>(store);
         }
 
         public static Repository<int> BuildIntRepo()
         {
             var context = ResetDb();
-            var store = DbQueryProviderTools.BuildFromDbSet(
+            var store = new DbSetDb<Commit<int>, Commit<int>, SqlDbContext>(
                 contextFactory: () => new SqlDbContext(),
-                queryFactory: (context) => context.IntCommits,
-                addAction: (newItem, context) =>
-                {
-                    context.IntCommits.Add(newItem);
-                    context.SaveChanges();
-                });
-            return new Repository<int>(store)
-            {
-                Name = "Server"
-            };
+                dbSetFactory: (context) => context.IntCommits,
+                queryFactory: (dbSet) => dbSet,
+                addAction: (newItem, dbSet) => dbSet.Add(newItem)
+            );
+            return new Repository<int>(store);
         }
     }
 }

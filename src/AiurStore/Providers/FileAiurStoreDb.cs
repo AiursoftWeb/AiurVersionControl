@@ -1,21 +1,22 @@
-﻿using AiurStore.Abstracts;
-using AiurStore.Tools;
+﻿using AiurStore.Models;
 using System.Collections.Generic;
+using AiurStore.Tools;
 using System.IO;
 using System.Linq;
 
-namespace AiurStore.Providers.FileProvider
+namespace AiurStore.Providers
 {
-    public class FileStoreProvider<T> : IStoreProvider<T>
+    public class FileAiurStoreDb<T> : InOutDatabase<T>
     {
         private readonly string _path;
 
-        public FileStoreProvider(string path)
+        public FileAiurStoreDb(string path)
         {
             _path = path;
+
         }
 
-        public IEnumerable<T> GetAll()
+        public override IEnumerable<T> GetAll()
         {
             if (!File.Exists(_path))
             {
@@ -24,13 +25,13 @@ namespace AiurStore.Providers.FileProvider
             return File.ReadLines(_path).Select(t => JsonTools.Deserialize<T>(t));
         }
 
-        public void Add(T newItem)
+        public override void Add(T newItem)
         {
             using var fileSteam = File.AppendText(_path);
             fileSteam.WriteLine(JsonTools.Serialize(newItem));
         }
 
-        public void Clear()
+        public override void Clear()
         {
             if (File.Exists(_path))
             {
@@ -38,7 +39,7 @@ namespace AiurStore.Providers.FileProvider
             }
         }
 
-        public void Insert(int index, T newItem)
+        public override void Insert(int index, T newItem)
         {
             if (!File.Exists(_path))
             {

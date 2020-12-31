@@ -8,40 +8,10 @@ namespace AiurStore.Models
 {
     public abstract class InOutDatabase<T> : IEnumerable<T>, IAfterable<T>
     {
-        public IStoreProvider<T> Provider { get; set; }
-        private readonly object _obj = new object();
-        public InOutDatabase()
-        {
-            var options = new InOutDbOptions<T>();
-            OnConfiguring(options);
-            Provider = options.Provider;
-        }
-
-        protected abstract void OnConfiguring(InOutDbOptions<T> options);
-
-        public void Add(T newObject)
-        {
-            lock (_obj)
-            {
-                Provider.Add(newObject);
-            }
-        }
-
-        public void Clear()
-        {
-            lock (_obj)
-            {
-                Provider.Clear();
-            }
-        }
-
-        public void Insert(int index, T newObject)
-        {
-            lock (_obj)
-            {
-                Provider.Insert(index, newObject);
-            }
-        }
+        public abstract IEnumerable<T> GetAll();
+        public abstract void Add(T newItem);
+        public abstract void Clear();
+        public abstract void Insert(int index, T newItem);
 
         public void InsertAfter(Func<T, bool> predicate, T newObject)
         {
@@ -53,19 +23,16 @@ namespace AiurStore.Models
 
         public IEnumerable<T> After(Func<T, bool> func)
         {
-            lock (_obj)
+            var yielding = false;
+            foreach (var item in this)
             {
-                var yielding = false;
-                foreach (var item in this)
+                if (yielding)
                 {
-                    if (yielding)
-                    {
-                        yield return item;
-                    }
-                    if (func(item))
-                    {
-                        yielding = true;
-                    }
+                    yield return item;
+                }
+                if (func(item))
+                {
+                    yielding = true;
                 }
             }
         }
@@ -86,12 +53,7 @@ namespace AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            List<T> copy = null;
-            lock(_obj)
-            {
-                copy = Provider.GetAll().ToList();
-            }
-            return copy.GetEnumerator();
+            return GetAll().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -2,7 +2,7 @@
 using AiurEventSyncer.Tools;
 using AiurStore.Abstracts;
 using AiurStore.Models;
-using AiurStore.Providers.MemoryProvider;
+using AiurStore.Providers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

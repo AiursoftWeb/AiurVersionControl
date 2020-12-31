@@ -1,7 +1,5 @@
 ﻿using AiurStore.Models;
-using AiurStore.Providers.DbQueryProvider;
-using AiurStore.Providers.FileProvider;
-using AiurStore.Providers.MemoryProvider;
+using AiurStore.Providers;
 using AiurStore.Tests.TestDbs;
 using AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,6 +12,7 @@ namespace AiurStore.Tests
     public class DbOperationsTest
     {
         private SqlDbContext dbContext;
+
         [TestInitialize]
         public void Init()
         {
@@ -23,11 +22,16 @@ namespace AiurStore.Tests
         }
 
         [TestMethod]
-        [DataRow(typeof(FileAiurStoreDb<string>))]
-        [DataRow(typeof(MemoryAiurStoreDb<string>))]
-        public void BasicTest(Type dbType)
+        public void BasicTest()
         {
-            var store = Activator.CreateInstance(dbType) as InOutDatabase<string>;
+            var memoryDb = new MemoryAiurStoreDb<string>();
+            var fileDb = new FileAiurStoreDb<string>("aiur-store.txt");
+            TestDb(memoryDb);
+            TestDb(fileDb);
+        }
+
+        private static void TestDb(InOutDatabase<string> store)
+        {
             store.Clear();
             store.Add("House");
             store.Add("Home");
@@ -40,26 +44,28 @@ namespace AiurStore.Tests
         [TestMethod]
         public void QueryDbTest()
         {
-            var store = DbQueryProviderTools.BuildFromDbSet<string, SqlDbContext>(
+            var store = new DbSetDb<string, InDbEntity, SqlDbContext>(
                 contextFactory: () => dbContext,
-                queryFactory: (context) => context.Records.Where(t => t.Filter == "Demo Filter!").Select(t => t.Content),
-                addAction: (newItem, context) =>
+                dbSetFactory: (context) => context.Records,
+                queryFactory: (dbSet) => dbSet.Where(t => t.Filter == "Demo Filter!").Select(t => t.Content),
+                addAction: (newItem, dbSet) =>
                 {
-                    context.Records.Add(new InDbEntity
+                    dbSet.Add(new InDbEntity
                     {
                         Content = newItem,
                         Filter = "Demo Filter!"
                     });
-                    context.Records.Add(new InDbEntity
+                    dbSet.Add(new InDbEntity
                     {
                         Content = "Dirty item",
                         Filter = "Can't pass filter!"
                     });
-                    context.SaveChanges();
-                });
-            store.Add("House");
-            store.Add("Home");
-            store.Add("Room");
+                })
+            {
+                "House",
+                "Home",
+                "Room"
+            };
             TestExtends.AssertDb(store, "House", "Home", "Room");
         }
     }
