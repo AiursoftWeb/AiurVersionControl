@@ -167,8 +167,7 @@ namespace AiurEventSyncer.Tests
             _demoRepo.Assert(1, 2, 3, 20, 10, 300);
 
             await origin.PullAsync();
-
-            localRepo.Assert(1, 2, 3, 20, 10, 300, 20);
+            localRepo.Assert(1, 2, 3, 20, 10, 20, 10, 300);
             _demoRepo.Assert(1, 2, 3, 20, 10, 300);
         }
     }

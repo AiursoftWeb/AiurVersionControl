@@ -179,7 +179,7 @@ namespace AiurEventSyncer.Tests
             await origin.PushAsync();
 
             localRepo.Assert(4, 5, 6);
-            remoteRepo.Assert(1, 4, 5, 4, 6);
+            remoteRepo.Assert(1, 4, 5, 4, 5, 6);
         }
 
         [TestMethod]

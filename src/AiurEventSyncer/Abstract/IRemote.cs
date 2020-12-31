@@ -1,8 +1,10 @@
-﻿namespace AiurEventSyncer.Abstract
+﻿using AiurEventSyncer.Models;
+
+namespace AiurEventSyncer.Abstract
 {
     public interface IRemote<T>
     {
-        public string PullPointer { get; set; }
-        public string PushPointer { get; set; }
+        public Commit<T> PullPointer { get; set; }
+        public Commit<T> PushPointer { get; set; }
     }
 }

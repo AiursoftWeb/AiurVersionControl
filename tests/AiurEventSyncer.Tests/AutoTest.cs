@@ -84,7 +84,7 @@ namespace AiurEventSyncer.Tests
             //   A   C   E
 
             var a = new Repository<int>();
-            var b = BookDbRepoFactory.BuildIntRepo();
+            var b = new Repository<int>();
             var c = new Repository<int>();
             var d = new Repository<int>();
             var e = new Repository<int>();
@@ -110,7 +110,7 @@ namespace AiurEventSyncer.Tests
             //   sender    subscriber1,2,3
 
             var senderserver = new Repository<int>();
-            var server = BookDbRepoFactory.BuildIntRepo();
+            var server = new Repository<int>();
             var subscriber1 = new Repository<int>() { Name = "subscriber1" };
             var subscriber2 = new Repository<int>() { Name = "subscriber2" };
             var subscriber3 = new Repository<int>() { Name = "subscriber3" };
@@ -135,7 +135,7 @@ namespace AiurEventSyncer.Tests
             //    /       \
             //   sender    subscriber
             var sender = new Repository<int>() { Name = "Sender" };
-            var server = BookDbRepoFactory.BuildIntRepo();
+            var server = new Repository<int>();
             var subscriber = new Repository<int>() { Name = "Subscriber" };
             await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
 
@@ -161,7 +161,7 @@ namespace AiurEventSyncer.Tests
             //    /       \
             //   sender    subscriber
             var sender = new Repository<int>() { Name = "Sender" };
-            var server = BookDbRepoFactory.BuildIntRepo();
+            var server = new Repository<int>();
             var subscriber = new Repository<int>() { Name = "Subscriber" };
             await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
 

@@ -14,7 +14,7 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public async Task PushToAndPullFrom()
         {
-            var dbRepo = BookDbRepoFactory.BuildBookRepo();
+            var dbRepo = new Repository<Book>();
             var localRepo = new Repository<Book>();
             await new ObjectRemote<Book>(dbRepo, true).AttachAsync(localRepo);
 

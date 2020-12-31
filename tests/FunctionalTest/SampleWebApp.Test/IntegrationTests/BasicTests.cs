@@ -2,7 +2,7 @@
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SampleWebApp.Data;
+using SampleWebApp.Models;
 using SampleWebApp.Services;
 using System;
 using System.Linq;
@@ -44,7 +44,8 @@ namespace SampleWebApp.Tests.IntegrationTests
             await Task.Delay(500); // Wait for the pull to update pointer.
             Assert.IsNotNull(remote.PullPointer);
 
-            RepositoryContainer.GetRepositoryForTest().Assert(
+            var remoteRepo = RepositoryContainer.GetRepositoryForTest();
+            remoteRepo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" });
 
@@ -141,9 +142,12 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "H" },
                 new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
-            Assert.AreEqual(subscriber1.Head.Id, remote1.PushPointer, remote1.PullPointer);
-            Assert.AreEqual(subscriber2.Head.Id, remote2.PushPointer, remote2.PullPointer);
-            Assert.AreEqual(subscriber3.Head.Id, remote3.PushPointer, remote3.PullPointer);
+            Assert.AreEqual(subscriber1.Head, remote1.PushPointer);
+            Assert.AreEqual(subscriber2.Head, remote2.PushPointer);
+            Assert.AreEqual(subscriber3.Head, remote3.PushPointer);
+            Assert.AreEqual(subscriber1.Head, remote1.PullPointer);
+            Assert.AreEqual(subscriber2.Head, remote2.PullPointer);
+            Assert.AreEqual(subscriber3.Head, remote3.PullPointer);
         }
 
 

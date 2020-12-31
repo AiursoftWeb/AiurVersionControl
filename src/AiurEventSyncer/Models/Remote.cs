@@ -13,8 +13,8 @@ namespace AiurEventSyncer.Models
         public string Name { get; init; } = "remote name";
         public bool AutoPush { get; init; }
         public bool AutoPull { get; init; }
-        public string PullPointer { get; set; }
-        public string PushPointer { get; set; }
+        public Commit<T> PullPointer { get; set; }
+        public Commit<T> PushPointer { get; set; }
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         protected IRepository<T> ContextRepository { get; set; }
@@ -56,11 +56,11 @@ namespace AiurEventSyncer.Models
         public async Task PushAsync()
         {
             await PushLock.WaitAsync();
-            var commitsToPush = ContextRepository.Commits.AfterCommitId(PushPointer).ToList();
+            var commitsToPush = ContextRepository.Commits.GetAllAfter(PushPointer).ToList();
             if (commitsToPush.Any())
             {
-                await Upload(commitsToPush, PushPointer);
-                PushPointer = commitsToPush.Last().Id;
+                await Upload(commitsToPush);
+                PushPointer = commitsToPush.Last();
             }
             PushLock.Release();
         }
@@ -72,7 +72,7 @@ namespace AiurEventSyncer.Models
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             await PullLock.WaitAsync();
-            var downloadResult = await Download(PullPointer);
+            var downloadResult = await Download(PullPointer?.Id);
             if (downloadResult.Any())
             {
                 await ContextRepository.OnPulled(downloadResult, this);
@@ -91,7 +91,7 @@ namespace AiurEventSyncer.Models
 
         protected abstract Task PullAndMonitor();
 
-        protected abstract Task Upload(List<Commit<T>> commits, string pushPointer);
+        protected abstract Task Upload(List<Commit<T>> commits);
 
         protected abstract Task<List<Commit<T>>> Download(string pointer);
     }

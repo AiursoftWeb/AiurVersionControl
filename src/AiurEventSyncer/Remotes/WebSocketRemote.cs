@@ -21,13 +21,13 @@ namespace AiurEventSyncer.Remotes
             _ws = new ClientWebSocket();
         }
 
-        protected override async Task Upload(List<Commit<T>> commits, string pushPointer)
+        protected override async Task Upload(List<Commit<T>> commits)
         {
             if (_ws.State != WebSocketState.Open)
             {
                 throw new InvalidOperationException($"[{Name}] Websocket not connected! State: {_ws.State}");
             }
-            var model = new PushModel<T> { Commits = commits, Start = PushPointer };
+            var model = new PushModel<T> { Commits = commits, Start = PushPointer?.Id };
             await _ws.SendObject(model);
         }
 
@@ -42,7 +42,7 @@ namespace AiurEventSyncer.Remotes
             {
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
-            await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + PullPointer), CancellationToken.None);
+            await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + PullPointer?.Id), CancellationToken.None);
             if (_ws.State == WebSocketState.Open)
             {
                 var commits = await _ws.GetObject<List<Commit<T>>>();

@@ -19,7 +19,7 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await websocket.AcceptWebSocketAsync();
                 // Send pull result.
-                var firstPullResult = repository.Commits.AfterCommitId(startPosition).ToList();
+                var firstPullResult = repository.Commits.GetAllAfter(t => t.Id == startPosition).ToList();
                 await ws.SendObject(firstPullResult);
                 async Task pushEvent(List<Commit<T>> newCommits)
                 {

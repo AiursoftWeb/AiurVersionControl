@@ -1,6 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using Microsoft.Extensions.DependencyInjection;
-using SampleWebApp.Data;
+using SampleWebApp.Models;
 
 namespace SampleWebApp.Services
 {

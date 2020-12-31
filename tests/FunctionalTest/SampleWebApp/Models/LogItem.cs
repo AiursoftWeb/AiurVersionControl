@@ -1,7 +1,9 @@
-﻿using AiurEventSyncer.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SampleWebApp.Data
+namespace SampleWebApp.Models
 {
     public class LogItem
     {
@@ -23,15 +25,5 @@ namespace SampleWebApp.Data
         {
             return Message.GetHashCode();
         }
-    }
-
-    public class ApplicationDbContext : DbContext
-    {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
-
-        public DbSet<Commit<LogItem>> InDbEntities { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace AiurStore.Tests.Tools
 {
     public class TestExtends
     {
-        public static void AssertDb<T>(InOutDatabase<T> db, params T[] array)
+        public static void AssertDb<T>(InOutDatabase<T> db, params T[] array) where T : class
         {
             for (int i = 0; i < db.Count(); i++)
             {
