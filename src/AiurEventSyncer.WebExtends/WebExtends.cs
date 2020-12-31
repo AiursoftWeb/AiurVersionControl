@@ -36,7 +36,7 @@ namespace AiurEventSyncer.WebExtends
                         var pushedCommits = await ws.GetObject<PushModel<T>>();
                         await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
                     }
-                    catch (WebSocketException)
+                    catch
                     {
                         break;
                     }

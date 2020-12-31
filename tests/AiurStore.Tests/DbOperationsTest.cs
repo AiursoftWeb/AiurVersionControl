@@ -2,6 +2,7 @@
 using AiurStore.Providers;
 using AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace AiurStore.Tests
 {
@@ -23,9 +24,16 @@ namespace AiurStore.Tests
             store.Add("House");
             store.Add("Home");
             store.Add("Room");
-            store.InsertAfter(t => t.StartsWith("Hom"), "Home2");
-            store.InsertAfter(t => false, "Trash");
-            TestExtends.AssertDb(store, "House", "Home", "Home2", "Room");
+            TestExtends.AssertDb(store, "House", "Home", "Room");
+
+            var afterHouse = store.GetAllAfter("House").ToArray();
+            Assert.AreEqual("Home", afterHouse[0]);
+            Assert.AreEqual("Room", afterHouse[1]);
+
+            var afternull = store.GetAllAfter(afterWhich: null).ToArray();
+            Assert.AreEqual("House", afternull[0]);
+            Assert.AreEqual("Home", afternull[1]);
+            Assert.AreEqual("Room", afternull[2]);
         }
     }
 }
