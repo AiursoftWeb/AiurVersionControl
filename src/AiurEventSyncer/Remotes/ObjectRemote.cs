@@ -1,5 +1,4 @@
 ﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +16,14 @@ namespace AiurEventSyncer.Remotes
             _fakeRemoteRepository = localRepository;
         }
 
-        protected override Task Upload(List<Commit<T>> commits, string pushPointer)
+        protected override Task Upload(List<Commit<T>> commits)
         {
-            return _fakeRemoteRepository.OnPushed(commits, PushPointer);
+            return _fakeRemoteRepository.OnPushed(commits, PushPointer?.Id);
         }
 
         protected override Task<List<Commit<T>>> Download(string pointer)
         {
-            return Task.FromResult(_fakeRemoteRepository.Commits.AfterCommitId(PullPointer).ToList());
+            return Task.FromResult(_fakeRemoteRepository.Commits.GetAllAfter(t => t.Id == pointer).ToList());
         }
 
         protected async override Task PullAndMonitor()

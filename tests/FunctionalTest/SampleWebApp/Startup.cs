@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SampleWebApp.Data;
 using SampleWebApp.Services;
 
 namespace SampleWebApp
@@ -17,11 +15,7 @@ namespace SampleWebApp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllersWithViews();
-            services.AddSingleton<StoreFactory>();
             services.AddSingleton<RepositoryContainer>();
             services.AddSingleton<RepositoryFactory>();
         }

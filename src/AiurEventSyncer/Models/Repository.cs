@@ -1,8 +1,7 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
-using AiurStore.Abstracts;
 using AiurStore.Models;
-using AiurStore.Providers.MemoryProvider;
+using AiurStore.Providers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace AiurEventSyncer.Models
     public class Repository<T> : IRepository<T>
     {
         public string Name { get; init; } = string.Empty;
-        public IAfterable<Commit<T>> Commits => _commits;
+        public InOutDatabase<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
 
         private readonly InOutDatabase<Commit<T>> _commits;
@@ -84,12 +83,12 @@ namespace AiurEventSyncer.Models
             await _pullingLock.WaitAsync();
             foreach (var commit in subtraction)
             {
-                var (appended, inserted) = OnPulledCommit(commit, remoteRecord.PullPointer);
+                var (appended, inserted, pointer) = OnPulledCommit(commit, remoteRecord.PullPointer);
                 if (remoteRecord.PullPointer == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
                 }
-                remoteRecord.PullPointer = commit.Id;
+                remoteRecord.PullPointer = pointer;
                 if (pushingPushPointer == true)
                 {
                     remoteRecord.PushPointer = remoteRecord.PullPointer;
@@ -106,23 +105,26 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        private (bool appended, bool inserted) OnPulledCommit(Commit<T> subtract, string position)
+        private (bool appended, bool inserted, Commit<T> pointer) OnPulledCommit(Commit<T> subtract, Commit<T> position)
         {
-            var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
+            var localAfter = _commits.GetAllAfter(position).FirstOrDefault();
             if (localAfter is not null)
             {
                 if (localAfter.Id != subtract.Id)
                 {
-                    _commits.InsertAfterCommitId(position, subtract);
-                    return (false, true);
+                    _commits.InsertAfter(position, subtract);
+                    return (false, true, subtract);
+                }
+                else
+                {
+                    return (false, false, localAfter);
                 }
             }
             else
             {
                 _commits.Add(subtract);
-                return (true, false);
+                return (true, false, subtract);
             }
-            return (false, false);
         }
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
@@ -147,7 +149,7 @@ namespace AiurEventSyncer.Models
 
         private bool OnPushedCommit(Commit<T> subtract, string position)
         {
-            var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
+            var localAfter = _commits.GetAllAfter(t => t.Id == position).FirstOrDefault();
             if (localAfter is not null)
             {
                 if (subtract.Id != localAfter.Id)

@@ -1,11 +1,7 @@
 ﻿using AiurStore.Models;
-using AiurStore.Providers.DbQueryProvider;
-using AiurStore.Providers.FileProvider;
-using AiurStore.Providers.MemoryProvider;
-using AiurStore.Tests.TestDbs;
+using AiurStore.Providers;
 using AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Linq;
 
 namespace AiurStore.Tests
@@ -13,54 +9,31 @@ namespace AiurStore.Tests
     [TestClass]
     public class DbOperationsTest
     {
-        private SqlDbContext dbContext;
-        [TestInitialize]
-        public void Init()
+        [TestMethod]
+        public void BasicTest()
         {
-            dbContext = new SqlDbContext();
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
+            var memoryDb = new MemoryAiurStoreDb<string>();
+            //var fileDb = new FileAiurStoreDb<string>("aiur-store.txt");
+            TestDb(memoryDb);
+            //TestDb(fileDb);
         }
 
-        [TestMethod]
-        [DataRow(typeof(FileAiurStoreDb<string>))]
-        [DataRow(typeof(MemoryAiurStoreDb<string>))]
-        public void BasicTest(Type dbType)
+        private static void TestDb(InOutDatabase<string> store)
         {
-            var store = Activator.CreateInstance(dbType) as InOutDatabase<string>;
             store.Clear();
             store.Add("House");
             store.Add("Home");
             store.Add("Room");
-            store.InsertAfter(t => t.StartsWith("Hom"), "Home2");
-            store.InsertAfter(t => false, "Trash");
-            TestExtends.AssertDb(store, "House", "Home", "Home2", "Room");
-        }
-
-        [TestMethod]
-        public void QueryDbTest()
-        {
-            var store = DbQueryProviderTools.BuildFromDbSet<string, SqlDbContext>(
-                contextFactory: () => dbContext,
-                queryFactory: (context) => context.Records.Where(t => t.Filter == "Demo Filter!").Select(t => t.Content),
-                addAction: (newItem, context) =>
-                {
-                    context.Records.Add(new InDbEntity
-                    {
-                        Content = newItem,
-                        Filter = "Demo Filter!"
-                    });
-                    context.Records.Add(new InDbEntity
-                    {
-                        Content = "Dirty item",
-                        Filter = "Can't pass filter!"
-                    });
-                    context.SaveChanges();
-                });
-            store.Add("House");
-            store.Add("Home");
-            store.Add("Room");
             TestExtends.AssertDb(store, "House", "Home", "Room");
+
+            var afterHouse = store.GetAllAfter("House").ToArray();
+            Assert.AreEqual("Home", afterHouse[0]);
+            Assert.AreEqual("Room", afterHouse[1]);
+
+            var afternull = store.GetAllAfter(afterWhich: null).ToArray();
+            Assert.AreEqual("House", afternull[0]);
+            Assert.AreEqual("Home", afternull[1]);
+            Assert.AreEqual("Room", afternull[2]);
         }
     }
 }

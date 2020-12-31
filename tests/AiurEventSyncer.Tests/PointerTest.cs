@@ -86,8 +86,8 @@ namespace AiurEventSyncer.Tests
             localRepo.CommitObject(square1);
             await origin.PushAsync();
 
-            Assert.AreEqual(origin.PushPointer, square1.Id);
-            Assert.AreEqual(origin.PullPointer, commit3Id);
+            Assert.AreEqual(origin.PushPointer.Id, square1.Id);
+            Assert.AreEqual(origin.PullPointer.Id, commit3Id);
 
             var tri1 = new Commit<int> { Item = 11111 };
             var tri2 = new Commit<int> { Item = 22222 };
@@ -104,8 +104,8 @@ namespace AiurEventSyncer.Tests
             localRepo.Assert(1, 2, 3, 111, 11111, 22222, 222);
             remoteRepo.Assert(1, 2, 3, 111, 11111, 22222);
 
-            Assert.AreEqual(origin.PushPointer, tri2.Id);
-            Assert.AreEqual(origin.PullPointer, tri2.Id);
+            Assert.AreEqual(origin.PushPointer.Id, tri2.Id);
+            Assert.AreEqual(origin.PullPointer.Id, tri2.Id);
         }
 
         [TestMethod]
@@ -122,23 +122,23 @@ namespace AiurEventSyncer.Tests
             localRepo.CommitObject(square1);
             await origin.PushAsync();
 
-            Assert.AreEqual(origin.PushPointer, square1.Id);
-            Assert.AreEqual(origin.PullPointer, commit3Id);
+            Assert.AreEqual(origin.PushPointer.Id, square1.Id);
+            Assert.AreEqual(origin.PullPointer.Id, commit3Id);
             localRepo.Assert(1, 2, 3, 111);
             remoteRepo.Assert(1, 2, 3, 111);
 
             var square2 = new Commit<int> { Item = 222 };
             localRepo.CommitObject(square2);
 
-            Assert.AreEqual(origin.PushPointer, square1.Id);
-            Assert.AreEqual(origin.PullPointer, commit3Id);
+            Assert.AreEqual(origin.PushPointer.Id, square1.Id);
+            Assert.AreEqual(origin.PullPointer.Id, commit3Id);
             localRepo.Assert(1, 2, 3, 111, 222);
             remoteRepo.Assert(1, 2, 3, 111);
 
             await origin.PullAsync();
 
-            Assert.AreEqual(origin.PushPointer, square1.Id);
-            Assert.AreEqual(origin.PullPointer, square1.Id);
+            Assert.AreEqual(origin.PushPointer.Id, square1.Id);
+            Assert.AreEqual(origin.PullPointer.Id, square1.Id);
             localRepo.Assert(1, 2, 3, 111, 222);
             remoteRepo.Assert(1, 2, 3, 111);
         }

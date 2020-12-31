@@ -1,6 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
-using SampleWebApp.Data;
+using SampleWebApp.Models;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;

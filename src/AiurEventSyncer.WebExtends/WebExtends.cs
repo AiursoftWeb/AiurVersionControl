@@ -19,7 +19,7 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await websocket.AcceptWebSocketAsync();
                 // Send pull result.
-                var firstPullResult = repository.Commits.AfterCommitId(startPosition).ToList();
+                var firstPullResult = repository.Commits.GetAllAfter(t => t.Id == startPosition).ToList();
                 await ws.SendObject(firstPullResult);
                 async Task pushEvent(List<Commit<T>> newCommits)
                 {
@@ -36,7 +36,7 @@ namespace AiurEventSyncer.WebExtends
                         var pushedCommits = await ws.GetObject<PushModel<T>>();
                         await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
                     }
-                    catch (WebSocketException)
+                    catch
                     {
                         break;
                     }

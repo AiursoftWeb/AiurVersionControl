@@ -1,5 +1,4 @@
 ﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.Tools;
 using SnakeGame.Models;
 using System;
 using System.Collections.Generic;
@@ -12,16 +11,16 @@ namespace SnakeGame.Services.Implements
         public Snake Recurrent(Snake snake, Repository<Action> repo, int offset = 0)
         {
             var commits = repo.Commits;
-            return doRecurrent(snake, commits, offset);
+            return DoRecurrent(snake, commits, offset);
         }
 
         public Snake RecurrentFromId(Snake snake, Repository<Action> repo, string position = null)
         {
-            var commits = repo.Commits.AfterCommitId(position);
-            return doRecurrent(snake, commits);
+            var commits = repo.Commits.GetAllAfter(t => t.Id == position);
+            return DoRecurrent(snake, commits);
         }
 
-        private Snake doRecurrent(Snake snake, IEnumerable<Commit<Action>> commits, int offset = 0)
+        private static Snake DoRecurrent(Snake snake, IEnumerable<Commit<Action>> commits, int offset = 0)
         {
             Position foodPosition = new Position{ X = 0, Y = 0 };
             foreach (var commit in commits)
