@@ -5,6 +5,7 @@ namespace AiurStore.Providers.MemoryProvider
 {
     public class MemoryStoreProvider<T> : IStoreProvider<T>
     {
+#warning Use linked list for better performance.
         private readonly List<T> _store = new List<T>();
 
         public void Clear()

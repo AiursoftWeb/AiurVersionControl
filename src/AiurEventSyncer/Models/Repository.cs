@@ -19,25 +19,33 @@ namespace AiurEventSyncer.Models
         public Commit<T> Head => Commits.LastOrDefault();
 
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onNewCommitsSubscribers = new();
+        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onAppendCommitsAsyncSubscribers = new();
+        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onAppendCommitsSubscribers = new();
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
-        { 
+        {
             _commits = dbProvider;
         }
 
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
-        public void Register(Guid key, Func<List<Commit<T>>, Task> action)
+        public void Register(Guid key, Func<List<Commit<T>>, Task> action, bool async = true)
         {
-            _onNewCommitsSubscribers[key] = action;
+            if (async)
+            {
+                _onAppendCommitsAsyncSubscribers[key] = action;
+            }
+            else
+            {
+                _onAppendCommitsSubscribers[key] = action;
+            }
         }
 
         public void UnRegister(Guid key)
         {
-            _onNewCommitsSubscribers.TryRemove(key, out _);
+            _ = _onAppendCommitsAsyncSubscribers.TryRemove(key, out _) || _onAppendCommitsSubscribers.TryRemove(key, out _);
         }
 
         public void Commit(T content)
@@ -48,18 +56,23 @@ namespace AiurEventSyncer.Models
         public void CommitObject(Commit<T> commitObject)
         {
             _commits.Add(commitObject);
-            OnNewCommits(new List<Commit<T>>{ commitObject });
+            OnAppendCommits(new List<Commit<T>> { commitObject });
         }
 
-        private void OnNewCommits(List<Commit<T>> newCommits)
+        private void OnAppendCommits(List<Commit<T>> newCommits)
         {
-            var notiyTasks = _onNewCommitsSubscribers.ToList();
-            if (notiyTasks.Any())
+            var asyncNotiyTasks = _onAppendCommitsAsyncSubscribers.ToList();
+            var notiyTasks = _onAppendCommitsSubscribers.ToList();
+            if (asyncNotiyTasks.Any())
             {
                 _notifyingQueue.QueueNew(async () =>
                 {
-                    await Task.WhenAll(notiyTasks.Select(t => t.Value(newCommits)));
+                    await Task.WhenAll(tasks: asyncNotiyTasks.Select(t => t.Value(newCommits)));
                 });
+            }
+            if (notiyTasks.Any())
+            {
+                Task.WhenAll(notiyTasks.Select(t => t.Value(newCommits))).Wait();
             }
         }
 
@@ -71,7 +84,7 @@ namespace AiurEventSyncer.Models
             await _pullingLock.WaitAsync();
             foreach (var commit in subtraction)
             {
-                var inserted = OnPulledCommit(commit, remoteRecord.PullPointer);
+                var (appended, inserted) = OnPulledCommit(commit, remoteRecord.PullPointer);
                 if (remoteRecord.PullPointer == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
@@ -81,7 +94,7 @@ namespace AiurEventSyncer.Models
                 {
                     remoteRecord.PushPointer = remoteRecord.PullPointer;
                 }
-                if (inserted)
+                if (appended)
                 {
                     newCommitsSaved.Add(commit);
                 }
@@ -89,11 +102,11 @@ namespace AiurEventSyncer.Models
             _pullingLock.Release();
             if (newCommitsSaved.Any())
             {
-                OnNewCommits(newCommitsSaved);
+                OnAppendCommits(newCommitsSaved);
             }
         }
 
-        private bool OnPulledCommit(Commit<T> subtract, string position)
+        private (bool appended, bool inserted) OnPulledCommit(Commit<T> subtract, string position)
         {
             var localAfter = _commits.AfterCommitId(position).FirstOrDefault();
             if (localAfter is not null)
@@ -101,15 +114,15 @@ namespace AiurEventSyncer.Models
                 if (localAfter.Id != subtract.Id)
                 {
                     _commits.InsertAfterCommitId(position, subtract);
-                    return true;
+                    return (false, true);
                 }
             }
             else
             {
                 _commits.Add(subtract);
-                return true;
+                return (true, false);
             }
-            return false;
+            return (false, false);
         }
 
         public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
@@ -128,7 +141,7 @@ namespace AiurEventSyncer.Models
             _pullingLock.Release();
             if (newCommitsSaved.Any())
             {
-                OnNewCommits(newCommitsSaved);
+                OnAppendCommits(newCommitsSaved);
             }
         }
 
