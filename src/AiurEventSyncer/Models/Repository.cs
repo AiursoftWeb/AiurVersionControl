@@ -149,7 +149,7 @@ namespace AiurEventSyncer.Models
 
         private bool OnPushedCommit(Commit<T> subtract, string position)
         {
-            var localAfter = _commits.GetAllAfter(t => t.Id == position).FirstOrDefault();
+            var localAfter = _commits.GetCommitsAfterId(position).FirstOrDefault();
             if (localAfter is not null)
             {
                 if (subtract.Id != localAfter.Id)

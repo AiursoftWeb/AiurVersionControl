@@ -1,4 +1,5 @@
 ﻿using AiurStore.Models;
+using AiurStore.Tools;
 using System;
 using System.Collections.Generic;
 
@@ -29,27 +30,27 @@ namespace AiurStore.Providers
 
         public override IEnumerable<T> GetAllAfter(Func<T, bool> prefix)
         {
-            var element = SearchFromLast(prefix);
-            return GetAllAfter(element?.Value);
+            var node = SearchFromLast(prefix);
+            if (node == null)
+            {
+                return _store;
+            }
+            else
+            {
+                return node.Next.YieldAfter();
+            }
         }
 
         public override IEnumerable<T> GetAllAfter(T afterWhich)
         {
             if (afterWhich == null)
             {
-                foreach (var item in _store)
-                {
-                    yield return item;
-                }
+                return _store;
             }
             else
             {
-                var start = _store.FindLast(afterWhich)?.Next;
-                while (start != null)
-                {
-                    yield return start.Value;
-                    start = start.Next;
-                }
+                var start = _store.FindLast(afterWhich);
+                return start?.Next.YieldAfter();
             }
         }
 

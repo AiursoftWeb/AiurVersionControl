@@ -1,4 +1,6 @@
 ﻿using AiurEventSyncer.Models;
+using AiurEventSyncer.Tools;
+using AiurStore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +25,7 @@ namespace AiurEventSyncer.Remotes
 
         protected override Task<List<Commit<T>>> Download(string pointer)
         {
-            return Task.FromResult(_fakeRemoteRepository.Commits.GetAllAfter(t => t.Id == pointer).ToList());
+            return Task.FromResult(_fakeRemoteRepository.Commits.GetCommitsAfterId(pointer).ToList());
         }
 
         protected async override Task PullAndMonitor()
