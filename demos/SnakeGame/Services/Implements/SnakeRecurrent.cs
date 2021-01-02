@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
-using AiurStore.Models;
 using SnakeGame.Models;
 using System;
 using System.Collections.Generic;

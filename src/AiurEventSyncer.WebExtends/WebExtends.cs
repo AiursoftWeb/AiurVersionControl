@@ -1,7 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes.Models;
 using AiurEventSyncer.Tools;
-using AiurStore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;

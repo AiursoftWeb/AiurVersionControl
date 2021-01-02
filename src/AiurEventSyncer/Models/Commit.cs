@@ -1,5 +1,4 @@
 ﻿using AiurEventSyncer.Abstract;
-using AiurStore.Models;
 using System;
 
 namespace AiurEventSyncer.Models

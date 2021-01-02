@@ -1,7 +1,6 @@
 ﻿using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Models;
-using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Threading.Tasks;
