@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AiurStore.Models
 {
-    public abstract class InOutDatabase<T> : IEnumerable<T> where T: class
+    public abstract class InOutDatabase<T> : IEnumerable<T>
     {
         public abstract IEnumerable<T> GetAll();
         public abstract IEnumerable<T> GetAllAfter(T afterWhich);

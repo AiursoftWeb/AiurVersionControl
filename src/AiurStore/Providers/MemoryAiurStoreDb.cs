@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace AiurStore.Providers
 {
-    public class MemoryAiurStoreDb<T> : InOutDatabase<T> where T : class
+    public class MemoryAiurStoreDb<T> : InOutDatabase<T>
     {
         private readonly LinkedList<T> _store = new LinkedList<T>();
 
@@ -20,7 +20,7 @@ namespace AiurStore.Providers
                 }
                 start = start.Previous;
             }
-            return null;
+            throw new InvalidOperationException("Result no found.");
         }
 
         public override IEnumerable<T> GetAll()
@@ -31,14 +31,7 @@ namespace AiurStore.Providers
         public override IEnumerable<T> GetAllAfter(Func<T, bool> prefix)
         {
             var node = SearchFromLast(prefix);
-            if (node == null)
-            {
-                return _store;
-            }
-            else
-            {
-                return node.Next.YieldAfter();
-            }
+            return ListExtends.YieldFrom(node.Next);
         }
 
         public override IEnumerable<T> GetAllAfter(T afterWhich)
@@ -50,7 +43,7 @@ namespace AiurStore.Providers
             else
             {
                 var start = _store.FindLast(afterWhich);
-                return start?.Next.YieldAfter();
+                return ListExtends.YieldFrom(start.Next);
             }
         }
 

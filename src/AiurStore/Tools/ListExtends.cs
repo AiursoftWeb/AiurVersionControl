@@ -4,7 +4,7 @@ namespace AiurStore.Tools
 {
     public static class ListExtends
     {
-        public static IEnumerable<T> YieldAfter<T>(this LinkedListNode<T> node)
+        public static IEnumerable<T> YieldFrom<T>(LinkedListNode<T> node)
         {
             while (node != null)
             {

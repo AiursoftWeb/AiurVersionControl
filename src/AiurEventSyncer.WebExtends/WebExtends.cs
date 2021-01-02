@@ -25,7 +25,7 @@ namespace AiurEventSyncer.WebExtends
                 async Task pushEvent(List<Commit<T>> newCommits)
                 {
                     // Broadcast new commits.
-                    await ws.SendObject(newCommits.Where(t => !firstPullResult.Any(p => p.Id == t.Id)));
+                    await ws.SendObject(newCommits);
                 }
                 var connectionId = Guid.NewGuid();
                 repository.Register(connectionId, pushEvent);
