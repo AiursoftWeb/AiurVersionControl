@@ -1,10 +1,11 @@
 ﻿using AiurStore.Models;
+using AiurStore.Tools;
 using System;
 using System.Collections.Generic;
 
 namespace AiurStore.Providers
 {
-    public class MemoryAiurStoreDb<T> : InOutDatabase<T> where T : class
+    public class MemoryAiurStoreDb<T> : InOutDatabase<T>
     {
         private readonly LinkedList<T> _store = new LinkedList<T>();
 
@@ -19,7 +20,7 @@ namespace AiurStore.Providers
                 }
                 start = start.Previous;
             }
-            return null;
+            throw new InvalidOperationException("Result no found.");
         }
 
         public override IEnumerable<T> GetAll()
@@ -29,27 +30,20 @@ namespace AiurStore.Providers
 
         public override IEnumerable<T> GetAllAfter(Func<T, bool> prefix)
         {
-            var element = SearchFromLast(prefix);
-            return GetAllAfter(element?.Value);
+            var node = SearchFromLast(prefix);
+            return ListExtends.YieldFrom(node.Next);
         }
 
         public override IEnumerable<T> GetAllAfter(T afterWhich)
         {
             if (afterWhich == null)
             {
-                foreach (var item in _store)
-                {
-                    yield return item;
-                }
+                return _store;
             }
             else
             {
-                var start = _store.FindLast(afterWhich)?.Next;
-                while (start != null)
-                {
-                    yield return start.Value;
-                    start = start.Next;
-                }
+                var start = _store.FindLast(afterWhich);
+                return ListExtends.YieldFrom(start.Next);
             }
         }
 

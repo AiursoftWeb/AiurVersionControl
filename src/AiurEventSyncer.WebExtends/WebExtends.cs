@@ -19,12 +19,12 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await websocket.AcceptWebSocketAsync();
                 // Send pull result.
-                var firstPullResult = repository.Commits.GetAllAfter(t => t.Id == startPosition).ToList();
+                var firstPullResult = repository.Commits.GetCommitsAfterId(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
                 async Task pushEvent(List<Commit<T>> newCommits)
                 {
                     // Broadcast new commits.
-                    await ws.SendObject(newCommits.Where(t => !firstPullResult.Any(p => p.Id == t.Id)));
+                    await ws.SendObject(newCommits);
                 }
                 var connectionId = Guid.NewGuid();
                 repository.Register(connectionId, pushEvent);

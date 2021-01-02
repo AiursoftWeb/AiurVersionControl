@@ -10,7 +10,7 @@ namespace AiurEventSyncer.Tests.Tools
         {
             repo.WaitTill(array.Length, 9).Wait();
             var commits = repo.Commits.ToArray();
-            for (int i = 0; i < commits.Count(); i++)
+            for (int i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
