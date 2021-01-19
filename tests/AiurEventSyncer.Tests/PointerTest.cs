@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Abstract;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

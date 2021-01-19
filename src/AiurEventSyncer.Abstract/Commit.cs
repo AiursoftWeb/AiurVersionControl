@@ -1,9 +1,8 @@
-﻿using AiurEventSyncer.Abstract;
-using System;
+﻿using System;
 
-namespace AiurEventSyncer.Models
+namespace AiurEventSyncer.Abstract
 {
-    public class Commit<T> : ICommit
+    public class Commit<T>
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("D");
         public T Item { get; set; }

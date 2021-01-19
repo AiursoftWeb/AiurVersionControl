@@ -1,4 +1,6 @@
-﻿using AiurEventSyncer.Models;
+﻿using AiurEventSyncer;
+using AiurEventSyncer.Abstract;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using SnakeGame.Models;
 using System;
@@ -17,7 +19,7 @@ namespace SnakeGame.Services.Implements
 
         public Snake RecurrentFromId(Snake snake, Repository<Action> repo, string position = null)
         {
-            var commits = repo.Commits.GetCommitsAfterId(position);
+            var commits = repo.Commits.GetCommitsAfterId<Commit<Action>, Action>(position);
             return DoRecurrent(snake, commits);
         }
 

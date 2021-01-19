@@ -25,7 +25,7 @@ namespace AiurEventSyncer.ConnectionProviders
 
         public Task<List<Commit<T>>> Download(string pointer)
         {
-            return Task.FromResult(_fakeRemoteRepository.Commits.GetCommitsAfterId(pointer).ToList());
+            return Task.FromResult(_fakeRemoteRepository.Commits.GetCommitsAfterId<Commit<T>, T>(pointer).ToList());
         }
 
         public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition)

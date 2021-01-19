@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Abstract;
+using AiurEventSyncer.Models;
 using System.Collections.Generic;
 
 namespace AiurEventSyncer.ConnectionProviders.Models

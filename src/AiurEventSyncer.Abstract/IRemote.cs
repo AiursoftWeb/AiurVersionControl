@@ -1,6 +1,4 @@
-﻿using AiurEventSyncer.Models;
-
-namespace AiurEventSyncer.Abstract
+﻿namespace AiurEventSyncer.Abstract
 {
     public interface IRemote<T>
     {

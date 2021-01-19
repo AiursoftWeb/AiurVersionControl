@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using AiurEventSyncer.Abstract;
 
 namespace AiurEventSyncer.WebExtends
 {
@@ -20,7 +21,7 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await websocket.AcceptWebSocketAsync();
                 // Send pull result.
-                var firstPullResult = repository.Commits.GetCommitsAfterId(startPosition).ToList();
+                var firstPullResult = repository.Commits.GetCommitsAfterId<Commit<T>, T>(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
                 async Task pushEvent(List<Commit<T>> newCommits)
                 {

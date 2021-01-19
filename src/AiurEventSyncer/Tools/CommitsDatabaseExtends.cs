@@ -1,4 +1,5 @@
 ﻿using AiurEventSyncer.Abstract;
+using AiurEventSyncer.Models;
 using AiurStore.Models;
 using System.Collections.Generic;
 
@@ -6,7 +7,7 @@ namespace AiurEventSyncer.Tools
 {
     public static class CommitsDatabaseExtends
     {
-        public static IEnumerable<T> GetCommitsAfterId<T>(this InOutDatabase<T> database, string id) where T : class, ICommit
+        public static IEnumerable<T> GetCommitsAfterId<T, D>(this InOutDatabase<T> database, string id) where T : Commit<D>
         {
             if (string.IsNullOrWhiteSpace(id))
             {
