@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 
 namespace AiurEventSyncer.WebExtends
 {
-    public class ActionBuilder
+    public static class ActionBuilder
     {
-        public async Task<IActionResult> BuildWebActionResultAsync<T>(WebSocketManager websocket, Repository<T> repository, string startPosition)
+        public static async Task<IActionResult> RepositoryAsync<T>(this ControllerBase controller, Repository<T> repository, string startPosition)
         {
+            var websocket = controller.HttpContext.WebSockets;
             if (websocket.IsWebSocketRequest)
             {
                 var ws = await websocket.AcceptWebSocketAsync();
