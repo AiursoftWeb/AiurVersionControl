@@ -19,7 +19,7 @@ namespace AiurEventSyncer.Models
 
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onAppendCommitsAsyncSubscribers = new();
-        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onAppendCommitsSubscribers = new();
+        private readonly ConcurrentDictionary<Guid, Action<List<Commit<T>>>> _onAppendCommitsSubscribers = new();
         private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
@@ -34,7 +34,7 @@ namespace AiurEventSyncer.Models
             _onAppendCommitsAsyncSubscribers[key] = action;
         }
 
-        public void Register(Guid key, Func<List<Commit<T>>, Task> action)
+        public void Register(Guid key, Action<List<Commit<T>>> action)
         {
             _onAppendCommitsSubscribers[key] = action;
         }
@@ -68,7 +68,8 @@ namespace AiurEventSyncer.Models
             }
             if (notiyTasks.Any())
             {
-                Task.WhenAll(notiyTasks.Select(t => t.Value(newCommits))).Wait();
+                var tasks = notiyTasks.Select(t => Task.Run(() => t.Value(newCommits)));
+                Task.WhenAll(tasks).Wait();
             }
         }
 

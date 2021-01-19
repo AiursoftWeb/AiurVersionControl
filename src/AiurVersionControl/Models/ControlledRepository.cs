@@ -20,7 +20,6 @@ namespace AiurVersionControl.Models
                 {
                     newCommit.Item.Apply(WorkSpace);
                 }
-                return Task.CompletedTask;
             });
         }
 
