@@ -21,7 +21,7 @@ namespace AiurVersionControl.Models
                     newCommit.Item.Apply(WorkSpace);
                 }
                 return Task.CompletedTask;
-            }, async: false);
+            });
         }
 
         public void ApplyChange(IModification<T> newModification)

@@ -33,7 +33,7 @@ namespace AiurEventSyncer.Models
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.Register(Guid.NewGuid(), async (c) => await PushAsync());
+                ContextRepository.RegisterAsyncTask(Guid.NewGuid(), async (c) => await PushAsync());
             }
             if (AutoPull)
             {

@@ -29,17 +29,14 @@ namespace AiurEventSyncer.Models
         }
 
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
-
-        public void Register(Guid key, Func<List<Commit<T>>, Task> action, bool async = true)
+        public void RegisterAsyncTask(Guid key, Func<List<Commit<T>>, Task> action)
         {
-            if (async)
-            {
-                _onAppendCommitsAsyncSubscribers[key] = action;
-            }
-            else
-            {
-                _onAppendCommitsSubscribers[key] = action;
-            }
+            _onAppendCommitsAsyncSubscribers[key] = action;
+        }
+
+        public void Register(Guid key, Func<List<Commit<T>>, Task> action)
+        {
+            _onAppendCommitsSubscribers[key] = action;
         }
 
         public void UnRegister(Guid key)

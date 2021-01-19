@@ -27,7 +27,7 @@ namespace AiurEventSyncer.WebExtends
                     await ws.SendObject(newCommits);
                 }
                 var connectionId = Guid.NewGuid();
-                repository.Register(connectionId, pushEvent);
+                repository.RegisterAsyncTask(connectionId, pushEvent);
                 while (ws.State == WebSocketState.Open)
                 {
                     try

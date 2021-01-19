@@ -30,7 +30,7 @@ namespace AiurEventSyncer.Remotes
         protected async override Task PullAndMonitor()
         {
             await PullAsync();
-            _fakeRemoteRepository.Register(_id, async (c) =>
+            _fakeRemoteRepository.RegisterAsyncTask(_id, async (c) =>
             {
                 await PullLock.WaitAsync();
                 await ContextRepository.OnPulled(c.ToList(), this);
