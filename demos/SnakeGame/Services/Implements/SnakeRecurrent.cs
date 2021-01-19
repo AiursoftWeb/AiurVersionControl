@@ -1,5 +1,4 @@
-﻿using AiurEventSyncer;
-using AiurEventSyncer.Abstract;
+﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using SnakeGame.Models;

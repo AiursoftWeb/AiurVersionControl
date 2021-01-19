@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.ConnectionProviders.Models;
-using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;

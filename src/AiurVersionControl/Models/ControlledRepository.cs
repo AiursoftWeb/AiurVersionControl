@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Models;
 using System;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.Models
 {
