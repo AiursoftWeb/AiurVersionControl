@@ -1,7 +1,7 @@
 ﻿using AiurEventSyncer.Models;
 using System.Collections.Generic;
 
-namespace AiurEventSyncer.Remotes.Models
+namespace AiurEventSyncer.ConnectionProviders.Models
 {
     public class PushModel<T>
     {
