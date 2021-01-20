@@ -11,14 +11,14 @@ namespace AiurStore.Providers
 
         private LinkedListNode<T> SearchFromLast(Func<T, bool> prefix)
         {
-            var start = _store.Last;
-            while (start != null)
+            var last = _store.Last;
+            while (last != null)
             {
-                if (prefix(start.Value))
+                if (prefix(last.Value))
                 {
-                    return start;
+                    return last;
                 }
-                start = start.Previous;
+                last = last.Previous;
             }
             throw new InvalidOperationException("Result no found.");
         }
@@ -31,7 +31,7 @@ namespace AiurStore.Providers
         public override IEnumerable<T> GetAllAfter(Func<T, bool> prefix)
         {
             var node = SearchFromLast(prefix);
-            return ListExtends.YieldFrom(node.Next);
+            return ListExtends.YieldAfter(node);
         }
 
         public override IEnumerable<T> GetAllAfter(T afterWhich)
@@ -43,7 +43,7 @@ namespace AiurStore.Providers
             else
             {
                 var start = _store.FindLast(afterWhich);
-                return ListExtends.YieldFrom(start.Next);
+                return ListExtends.YieldAfter(start);
             }
         }
 

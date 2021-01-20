@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Abstract;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +16,14 @@ namespace AiurEventSyncer.Models
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         protected IRepository<T> ContextRepository { get; set; }
+        private IConnectionProvider<T> ConnectionProvider { get; set; }
 
-        public Remote(bool autoPush = false, bool autoPull = false)
+        public Remote(
+            IConnectionProvider<T> provider,
+            bool autoPush = false, 
+            bool autoPull = false)
         {
+            ConnectionProvider = provider;
             AutoPush = autoPush;
             AutoPull = autoPull;
         }
@@ -37,7 +41,12 @@ namespace AiurEventSyncer.Models
             }
             if (AutoPull)
             {
-                await PullAndMonitor();
+                await ConnectionProvider.PullAndMonitor(onData: async data => 
+                {
+                    await PullLock.WaitAsync();
+                    await ContextRepository.OnPulled(data.ToList(), this);
+                    PullLock.Release();
+                }, PullPointer?.Id);
             }
             return this;
         }
@@ -58,7 +67,7 @@ namespace AiurEventSyncer.Models
             var commitsToPush = ContextRepository.Commits.GetAllAfter(PushPointer).ToList();
             if (commitsToPush.Any())
             {
-                await Upload(commitsToPush);
+                await ConnectionProvider.Upload(commitsToPush, PushPointer?.Id);
                 PushPointer = commitsToPush.Last();
             }
             PushLock.Release();
@@ -71,7 +80,7 @@ namespace AiurEventSyncer.Models
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             await PullLock.WaitAsync();
-            var downloadResult = await Download(PullPointer?.Id);
+            var downloadResult = await ConnectionProvider.Download(PullPointer?.Id);
             if (downloadResult.Any())
             {
                 await ContextRepository.OnPulled(downloadResult, this);
@@ -82,16 +91,8 @@ namespace AiurEventSyncer.Models
         public async Task StopMonitoring()
         {
             await PushLock.WaitAsync();
-            await Disconnect();
+            await ConnectionProvider.Disconnect();
             PushLock.Release();
         }
-
-        protected abstract Task Disconnect();
-
-        protected abstract Task PullAndMonitor();
-
-        protected abstract Task Upload(List<Commit<T>> commits);
-
-        protected abstract Task<List<Commit<T>>> Download(string pointer);
     }
 }

@@ -1,7 +1,7 @@
-﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.Remotes.Models;
+﻿using AiurEventSyncer.Abstract;
+using AiurEventSyncer.ConnectionProviders.Models;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace AiurEventSyncer.WebExtends
             {
                 var ws = await websocket.AcceptWebSocketAsync();
                 // Send pull result.
-                var firstPullResult = repository.Commits.GetCommitsAfterId(startPosition).ToList();
+                var firstPullResult = repository.Commits.GetCommitsAfterId<Commit<T>, T>(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
                 async Task pushEvent(List<Commit<T>> newCommits)
                 {

@@ -1,47 +1,14 @@
-﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AiurEventSyncer.ConnectionProviders;
+using AiurEventSyncer.Models;
 
 namespace AiurEventSyncer.Remotes
 {
     public class ObjectRemote<T> : Remote<T>
     {
-        private readonly Repository<T> _fakeRemoteRepository;
-        private readonly Guid _id = Guid.NewGuid();
-
-        public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false) : base(autoPush, autoPull)
+        public ObjectRemote(Repository<T> localRepository, bool autoPush = false, bool autoPull = false)
+            :base (new FakeConnection<T>(localRepository), autoPush, autoPull)
         {
-            _fakeRemoteRepository = localRepository;
-        }
 
-        protected override Task Upload(List<Commit<T>> commits)
-        {
-            return _fakeRemoteRepository.OnPushed(commits, PushPointer?.Id);
-        }
-
-        protected override Task<List<Commit<T>>> Download(string pointer)
-        {
-            return Task.FromResult(_fakeRemoteRepository.Commits.GetCommitsAfterId(pointer).ToList());
-        }
-
-        protected async override Task PullAndMonitor()
-        {
-            await PullAsync();
-            _fakeRemoteRepository.RegisterAsyncTask(_id, async (c) =>
-            {
-                await PullLock.WaitAsync();
-                await ContextRepository.OnPulled(c.ToList(), this);
-                PullLock.Release();
-            });
-        }
-
-        protected override Task Disconnect()
-        {
-            _fakeRemoteRepository.UnRegister(_id);
-            return Task.CompletedTask;
         }
     }
 }
