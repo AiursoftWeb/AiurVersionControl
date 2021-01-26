@@ -47,9 +47,7 @@ namespace AiurVersionControl.Tests
             Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
             await remote.PullAsync();
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
-
-#warning This test case is still not passing. This is our next work item.
-            // Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
         }
     }
 }
