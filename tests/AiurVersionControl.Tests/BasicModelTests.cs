@@ -1,6 +1,9 @@
-﻿using AiurVersionControl.Models;
+﻿using AiurEventSyncer.ConnectionProviders;
+using AiurEventSyncer.Remotes;
+using AiurVersionControl.Models;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace AiurVersionControl.Tests
 {
@@ -26,6 +29,23 @@ namespace AiurVersionControl.Tests
             Assert.AreEqual(5, repo.WorkSpace.NumberStore);
             repo.ApplyChange(new AddModification(50));
             Assert.AreEqual(55, repo.WorkSpace.NumberStore);
+        }
+
+        [TestMethod]
+        public async Task RemoteWithWorkSpaceTest()
+        {
+            var repo = new ControlledRepository<NumberWorkSpace>();
+            repo.ApplyChange(new AddModification(5));
+            repo.ApplyChange(new AddModification(50));
+
+            var repo2 = new ControlledRepository<NumberWorkSpace>();
+            var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
+            var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection);
+            await remote.AttachAsync(repo);
+            await remote.PushAsync();
+
+            Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
         }
     }
 }
