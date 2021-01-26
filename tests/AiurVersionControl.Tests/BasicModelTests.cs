@@ -44,9 +44,36 @@ namespace AiurVersionControl.Tests
             await remote.AttachAsync(repo);
 
             await remote.PushAsync();
+            Assert.AreEqual(55, repo.WorkSpace.NumberStore);
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
             Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
+
             await remote.PullAsync();
+            Assert.AreEqual(55, repo.WorkSpace.NumberStore);
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+        }
+
+        [TestMethod]
+        public async Task RemoteWithWorkSpaceAutoTest()
+        {
+            var repo = new ControlledRepository<NumberWorkSpace>();
+            var repo2 = new ControlledRepository<NumberWorkSpace>();
+            var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
+            var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection, true, true);
+            await remote.AttachAsync(repo);
+
+            Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(0, repo.WorkSpace.NumberStore);
+            Assert.AreEqual(0, repo2.WorkSpace.NumberStore);
+
+            repo.ApplyChange(new AddModification(5));
+            repo.ApplyChange(new AddModification(50));
+
+            await Task.Delay(30);
+
+            Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(55, repo.WorkSpace.NumberStore);
             Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
         }
     }

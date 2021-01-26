@@ -75,13 +75,13 @@ namespace AiurEventSyncer.Models
 
         public async Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
-            var newCommitsSaved = new List<Commit<T>>();
+            var newCommitsAppended = new List<Commit<T>>();
             var pushingPushPointer = false;
 
             await _pullingLock.WaitAsync();
             foreach (var commit in subtraction)
             {
-                var (appended, inserted, pointer) = OnPulledCommit(commit, remoteRecord.PullPointer);
+                var (resultMode, pointer) = OnPulledCommit(commit, remoteRecord.PullPointer);
                 if (remoteRecord.PullPointer == remoteRecord.PushPointer)
                 {
                     pushingPushPointer = true;
@@ -100,19 +100,19 @@ namespace AiurEventSyncer.Models
                 {
                     remoteRecord.PushPointer = remoteRecord.PullPointer;
                 }
-                if (appended)
+                if (resultMode == InsertMode.Appended)
                 {
-                    newCommitsSaved.Add(commit);
+                    newCommitsAppended.Add(commit);
                 }
             }
             _pullingLock.Release();
-            if (newCommitsSaved.Any())
+            if (newCommitsAppended.Any())
             {
-                OnAppendCommits(newCommitsSaved);
+                OnAppendCommits(newCommitsAppended);
             }
         }
 
-        private (bool appended, bool inserted, Commit<T> pointer) OnPulledCommit(Commit<T> subtract, Commit<T> position)
+        private (InsertMode result, Commit<T> pointer) OnPulledCommit(Commit<T> subtract, Commit<T> position)
         {
             var localAfter = _commits.GetAllAfter(position).FirstOrDefault();
             if (localAfter is not null)
@@ -120,17 +120,17 @@ namespace AiurEventSyncer.Models
                 if (localAfter.Id != subtract.Id)
                 {
                     _commits.InsertAfter(position, subtract);
-                    return (false, true, subtract);
+                    return (InsertMode.MiddleInserted, subtract);
                 }
                 else
                 {
-                    return (false, false, localAfter);
+                    return (InsertMode.Ignored, localAfter);
                 }
             }
             else
             {
                 _commits.Add(subtract);
-                return (true, false, subtract);
+                return (InsertMode.Appended, subtract);
             }
         }
 
