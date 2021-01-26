@@ -14,6 +14,9 @@ namespace AiurVersionControl.Models
         {
         }
 
-
+        public override void OnPullPointerMoved(Commit<IModification<T>> pointer)
+        {
+            pointer.Item.Apply(RemoteWorkSpace);
+        }
     }
 }

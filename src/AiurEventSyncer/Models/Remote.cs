@@ -94,5 +94,9 @@ namespace AiurEventSyncer.Models
             await ConnectionProvider.Disconnect();
             PushLock.Release();
         }
+
+        public virtual void OnPullPointerMoved(Commit<T> pointer)
+        {
+        }
     }
 }

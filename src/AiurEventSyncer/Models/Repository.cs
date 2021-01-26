@@ -86,7 +86,16 @@ namespace AiurEventSyncer.Models
                 {
                     pushingPushPointer = true;
                 }
-                remoteRecord.PullPointer = pointer;
+                if (remoteRecord.PullPointer != pointer)
+                {
+                    remoteRecord.PullPointer = pointer;
+                    remoteRecord.OnPullPointerMoved(pointer);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Update pointer failed. Seems it inserted to the same position.");
+                }
+
                 if (pushingPushPointer == true)
                 {
                     remoteRecord.PushPointer = remoteRecord.PullPointer;
