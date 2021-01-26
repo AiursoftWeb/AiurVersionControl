@@ -9,12 +9,9 @@ namespace AiurVersionControl.Models
 
         public ControlledRepository()
         {
+            WorkSpace = new T();
             Register(Guid.NewGuid(), (commits) =>
             {
-                if (WorkSpace == null)
-                {
-                    WorkSpace = new T();
-                }
                 foreach (var newCommit in commits)
                 {
                     newCommit.Item.Apply(WorkSpace);
