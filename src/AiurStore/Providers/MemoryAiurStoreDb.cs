@@ -20,7 +20,7 @@ namespace AiurStore.Providers
                 }
                 last = last.Previous;
             }
-            throw new InvalidOperationException("Result no found.");
+            throw new InvalidOperationException("Result not found.");
         }
 
         public override IEnumerable<T> GetAll()
@@ -66,6 +66,7 @@ namespace AiurStore.Providers
             else
             {
                 var which = _store.FindLast(afterWhich);
+                if (which == null) throw new KeyNotFoundException($"Insertion point {nameof(afterWhich)} not found.");
                 _store.AddAfter(which, newItem);
             }
         }
