@@ -72,7 +72,7 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        public void OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
+        public void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             var newCommitsAppended = new List<Commit<T>>();
             var pushingPushPointer = false;

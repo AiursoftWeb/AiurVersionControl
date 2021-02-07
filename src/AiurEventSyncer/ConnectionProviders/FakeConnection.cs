@@ -1,5 +1,4 @@
 ﻿using AiurEventSyncer.Abstract;
-using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
@@ -10,10 +9,10 @@ namespace AiurEventSyncer.ConnectionProviders
 {
     public class FakeConnection<T> : IConnectionProvider<T>
     {
-        private readonly Repository<T> _fakeRemoteRepository;
+        private readonly IRepository<T> _fakeRemoteRepository;
         private readonly Guid _id = Guid.NewGuid();
 
-        public FakeConnection(Repository<T> localRepository)
+        public FakeConnection(IRepository<T> localRepository)
         {
             _fakeRemoteRepository = localRepository;
         }
