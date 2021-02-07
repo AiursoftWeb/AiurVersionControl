@@ -20,7 +20,8 @@ namespace AiurEventSyncer.ConnectionProviders
 
         public Task Upload(List<Commit<T>> commits, string pointerId)
         {
-            return _fakeRemoteRepository.OnPushed(commits, pointerId);
+            _fakeRemoteRepository.OnPushed(commits, pointerId);
+            return Task.CompletedTask;
         }
 
         public Task<List<Commit<T>>> Download(string pointer)

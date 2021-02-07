@@ -20,7 +20,6 @@ namespace AiurEventSyncer.Models
         private readonly InOutDatabase<Commit<T>> _commits;
         private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onAppendCommitsAsyncSubscribers = new();
         private readonly ConcurrentDictionary<Guid, Action<List<Commit<T>>>> _onAppendCommitsSubscribers = new();
-        private readonly SemaphoreSlim _pullingLock = new SemaphoreSlim(1);
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
@@ -73,39 +72,40 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        public async Task OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
+        public void OnPulled(List<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             var newCommitsAppended = new List<Commit<T>>();
             var pushingPushPointer = false;
 
-            await _pullingLock.WaitAsync();
-            foreach (var commit in subtraction)
+            lock (this)
             {
-                var (resultMode, pointer) = OnPulledCommit(commit, remoteRecord.PullPointer);
-                if (remoteRecord.PullPointer == remoteRecord.PushPointer)
+                foreach (var commit in subtraction)
                 {
-                    pushingPushPointer = true;
-                }
-                if (remoteRecord.PullPointer != pointer)
-                {
-                    remoteRecord.PullPointer = pointer;
-                    remoteRecord.OnPullPointerMoved(pointer);
-                }
-                else
-                {
-                    throw new InvalidOperationException("Update pointer failed. Seems it inserted to the same position.");
-                }
+                    var (resultMode, pointer) = OnPulledCommit(commit, remoteRecord.PullPointer);
+                    if (remoteRecord.PullPointer == remoteRecord.PushPointer)
+                    {
+                        pushingPushPointer = true;
+                    }
+                    if (remoteRecord.PullPointer != pointer)
+                    {
+                        remoteRecord.PullPointer = pointer;
+                        remoteRecord.OnPullPointerMoved(pointer);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Update pointer failed. Seems it inserted to the same position.");
+                    }
 
-                if (pushingPushPointer == true)
-                {
-                    remoteRecord.PushPointer = remoteRecord.PullPointer;
-                }
-                if (resultMode == InsertMode.Appended)
-                {
-                    newCommitsAppended.Add(commit);
+                    if (pushingPushPointer == true)
+                    {
+                        remoteRecord.PushPointer = remoteRecord.PullPointer;
+                    }
+                    if (resultMode == InsertMode.Appended)
+                    {
+                        newCommitsAppended.Add(commit);
+                    }
                 }
             }
-            _pullingLock.Release();
             if (newCommitsAppended.Any())
             {
                 OnAppendCommits(newCommitsAppended);
@@ -134,23 +134,24 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        public async Task OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
+        public void OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
         {
-            var newCommitsSaved = new List<Commit<T>>();
-            await _pullingLock.WaitAsync();
-            foreach (var commit in commitsToPush) // 4,5,6
+            var newCommitsAppended = new List<Commit<T>>();
+            lock (this)
             {
-                var inserted = OnPushedCommit(commit, startPosition);
-                startPosition = commit.Id;
-                if (inserted)
+                foreach (var commit in commitsToPush) // 4,5,6
                 {
-                    newCommitsSaved.Add(commit);
+                    var appended = OnPushedCommit(commit, startPosition);
+                    startPosition = commit.Id;
+                    if (appended)
+                    {
+                        newCommitsAppended.Add(commit);
+                    }
                 }
             }
-            _pullingLock.Release();
-            if (newCommitsSaved.Any())
+            if (newCommitsAppended.Any())
             {
-                OnAppendCommits(newCommitsSaved);
+                OnAppendCommits(newCommitsAppended);
             }
         }
 
@@ -159,7 +160,11 @@ namespace AiurEventSyncer.Models
             var localAfter = _commits.GetCommitsAfterId<Commit<T>, T>(position).FirstOrDefault();
             if (localAfter is not null)
             {
-                if (subtract.Id != localAfter.Id)
+                if (subtract.Id == localAfter.Id)
+                {
+                    return false;
+                }
+                else
                 {
                     _commits.Add(subtract);
                     return true;
@@ -170,7 +175,6 @@ namespace AiurEventSyncer.Models
                 _commits.Add(subtract);
                 return true;
             }
-            return false;
         }
     }
 }

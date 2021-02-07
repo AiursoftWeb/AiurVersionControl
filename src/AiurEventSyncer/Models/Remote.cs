@@ -44,7 +44,7 @@ namespace AiurEventSyncer.Models
                 await ConnectionProvider.PullAndMonitor(onData: async data => 
                 {
                     await PullLock.WaitAsync();
-                    await ContextRepository.OnPulled(data.ToList(), this);
+                    ContextRepository.OnPulled(data.ToList(), this);
                     PullLock.Release();
                 }, PullPointer?.Id);
             }
@@ -83,7 +83,7 @@ namespace AiurEventSyncer.Models
             var downloadResult = await ConnectionProvider.Download(PullPointer?.Id);
             if (downloadResult.Any())
             {
-                await ContextRepository.OnPulled(downloadResult, this);
+                ContextRepository.OnPulled(downloadResult, this);
             }
             PullLock.Release();
         }
