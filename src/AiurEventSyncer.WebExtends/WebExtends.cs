@@ -35,7 +35,7 @@ namespace AiurEventSyncer.WebExtends
                     {
                         // Waitting for pushed commits.
                         var pushedCommits = await ws.GetObject<PushModel<T>>();
-                        await repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
+                        repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
                     }
                     catch
                     {
