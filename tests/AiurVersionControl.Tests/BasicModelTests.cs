@@ -76,5 +76,57 @@ namespace AiurVersionControl.Tests
             Assert.AreEqual(55, repo.WorkSpace.NumberStore);
             Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
         }
+
+        [TestMethod]
+        public async Task RemoteWithMergeWorkSpaceTest()
+        {
+            var repo = new ControlledRepository<NumberWorkSpace>();
+            var repo2 = new ControlledRepository<NumberWorkSpace>();
+            var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
+            var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection, false, false);
+            await remote.AttachAsync(repo);
+
+            Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(0, repo.WorkSpace.NumberStore);
+            Assert.AreEqual(0, repo2.WorkSpace.NumberStore);
+
+            repo.ApplyChange(new AddModification(5));
+            repo.ApplyChange(new AddModification(50));
+
+            Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(55, repo.WorkSpace.NumberStore); // 5, 50
+            Assert.AreEqual(0, repo2.WorkSpace.NumberStore); // 0
+
+            await remote.PushAsync();
+            Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(55, repo.WorkSpace.NumberStore); // 5, 50
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);// 5, 50
+
+            await remote.PullAsync();
+            Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(55, repo.WorkSpace.NumberStore); // 5, 50
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);// 5, 50
+
+            repo.ApplyChange(new AddModification(100));
+            Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(155, repo.WorkSpace.NumberStore);// 5, 50, 100
+            Assert.AreEqual(55, repo2.WorkSpace.NumberStore);// 5, 50
+
+            repo2.ApplyChange(new AddModification(1000));
+            Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(155, repo.WorkSpace.NumberStore);  // 5, 50, 100
+            Assert.AreEqual(1055, repo2.WorkSpace.NumberStore);// 5, 50, 1000
+
+            await remote.PushAsync();
+            Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
+            Assert.AreEqual(155, repo.WorkSpace.NumberStore);  // 5, 50, 100
+            Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
+
+            await remote.PullAsync();
+            Assert.AreEqual(1155, remote.RemoteWorkSpace.NumberStore);
+            // Uncomment this line to enable this test case.
+            // Assert.AreEqual(1155, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100
+            Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
+        }
     }
 }
