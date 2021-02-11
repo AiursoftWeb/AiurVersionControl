@@ -1,5 +1,8 @@
 ﻿using AiurEventSyncer.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using AiurEventSyncer.Abstract;
 
 namespace AiurVersionControl.Models
 {
@@ -22,6 +25,21 @@ namespace AiurVersionControl.Models
         public void ApplyChange(IModification<T> newModification)
         {
             Commit(newModification);
+        }
+
+        protected override void OnInsertedCommits(List<Commit<IModification<T>>> insertedCommits)
+        {
+            // Back then forth
+            var speedingCommits = Commits.GetAllAfter(insertedCommits.Last()).ToList();
+            for (int i = speedingCommits.Count - 1; i >= 0; i--)
+            {
+                speedingCommits[i].Item.Rollback(WorkSpace);
+            }
+            insertedCommits.AddRange(speedingCommits);
+            foreach (var commit in insertedCommits)
+            {
+                commit.Item.Apply(WorkSpace);
+            }
         }
     }
 }

@@ -72,9 +72,12 @@ namespace AiurEventSyncer.Models
             }
         }
 
+        protected virtual void OnInsertedCommits(List<Commit<T>> _) {}
+
         public void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             var newCommitsAppended = new List<Commit<T>>();
+            var newCommitsInserted = new List<Commit<T>>();
             var pushingPushPointer = false;
 
             lock (this)
@@ -104,11 +107,19 @@ namespace AiurEventSyncer.Models
                     {
                         newCommitsAppended.Add(commit);
                     }
+                    if (resultMode == InsertMode.MiddleInserted)
+                    {
+                        newCommitsInserted.Add(commit);
+                    }
                 }
             }
             if (newCommitsAppended.Any())
             {
                 OnAppendCommits(newCommitsAppended);
+            }
+            if (newCommitsInserted.Any())
+            {
+                OnInsertedCommits(newCommitsInserted);
             }
         }
 
