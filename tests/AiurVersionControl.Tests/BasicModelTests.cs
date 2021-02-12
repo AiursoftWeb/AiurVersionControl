@@ -125,7 +125,7 @@ namespace AiurVersionControl.Tests
             await remote.PullAsync();
             Assert.AreEqual(1155, remote.RemoteWorkSpace.NumberStore);
             // Uncomment this line to enable this test case.
-            // Assert.AreEqual(1155, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100
+            Assert.AreEqual(1155, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100
             Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
         }
     }
