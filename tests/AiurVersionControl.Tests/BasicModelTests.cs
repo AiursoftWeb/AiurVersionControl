@@ -61,6 +61,7 @@ namespace AiurVersionControl.Tests
             var repo2 = new ControlledRepository<NumberWorkSpace>();
             var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
             var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection, true, true);
+            var workspacePointer = repo.WorkSpace;
             await remote.AttachAsync(repo);
 
             Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
@@ -71,10 +72,11 @@ namespace AiurVersionControl.Tests
             repo.ApplyChange(new AddModification(50));
 
             await Task.Delay(30);
-
+            var workspacePointerNew = repo.WorkSpace;
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
             Assert.AreEqual(55, repo.WorkSpace.NumberStore);
             Assert.AreEqual(55, repo2.WorkSpace.NumberStore);
+            Assert.AreEqual(workspacePointer, workspacePointerNew);
         }
 
         [TestMethod]
