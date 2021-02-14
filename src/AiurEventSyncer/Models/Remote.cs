@@ -44,8 +44,8 @@ namespace AiurEventSyncer.Models
                 await ConnectionProvider.PullAndMonitor(onData: async data => 
                 {
                     await PullLock.WaitAsync();
-                    var inserted = ContextRepository.OnPulled(data.ToList(), this);
-                    PullComplete(inserted);
+                    var middleInserted = ContextRepository.OnPulled(data.ToList(), this);
+                    PullComplete(middleInserted);
                     PullLock.Release();
                 }, PullPointer?.Id);
             }
@@ -84,8 +84,8 @@ namespace AiurEventSyncer.Models
             var downloadResult = await ConnectionProvider.Download(PullPointer?.Id);
             if (downloadResult.Any())
             {
-                var inserted = ContextRepository.OnPulled(downloadResult, this);
-                PullComplete(inserted);
+                var middleInserted = ContextRepository.OnPulled(downloadResult, this);
+                PullComplete(middleInserted);
             }
             PullLock.Release();
         }
@@ -101,7 +101,7 @@ namespace AiurEventSyncer.Models
         {
         }
 
-        public virtual void PullComplete(bool inserted)
+        public virtual void PullComplete(bool middleInserted)
         {
         }
     }

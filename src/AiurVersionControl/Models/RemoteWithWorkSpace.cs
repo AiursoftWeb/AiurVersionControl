@@ -20,24 +20,24 @@ namespace AiurVersionControl.Models
             pointer.Item.Apply(RemoteWorkSpace);
         }
 
-        public override void PullComplete(bool inserted)
+        public override void PullComplete(bool middleInserted)
         {
             if (ContextRepository is not ControlledRepository<T>)
             {
                 // In this case, the user is trying to use a RemoteWithWorkSpace attached to a typical Repository.
                 return;
             }
-            var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
-            if (!localNewCommits.Any() && !inserted)
+
+            if (middleInserted)
             {
-                return;
+                var fork = RemoteWorkSpace.Clone() as T;
+                var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
+                foreach (var localNewCommit in localNewCommits)
+                {
+                    localNewCommit.Item.Apply(fork);
+                }
+                (ContextRepository as ControlledRepository<T>).WorkSpace = fork;
             }
-            var fork = RemoteWorkSpace.Clone() as T;
-            foreach (var localNewCommit in localNewCommits)
-            {
-                localNewCommit.Item.Apply(fork);
-            }
-            (ContextRepository as ControlledRepository<T>).WorkSpace = fork;
         }
     }
 }
