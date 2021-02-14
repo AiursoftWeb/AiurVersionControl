@@ -5,8 +5,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AiurVersionControl.Models
 {
-    public abstract class WorkSpace
+    public abstract class WorkSpace : ICloneable
     {
-        public abstract WorkSpace Clone();
+        public abstract object Clone();
     }
 }
