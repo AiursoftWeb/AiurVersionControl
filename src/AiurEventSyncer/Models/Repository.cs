@@ -67,7 +67,7 @@ namespace AiurEventSyncer.Models
             }
             if (notiyTasks.Any())
             {
-                var tasks = notiyTasks.Select(t => Task.Run(() => t.Value(newCommits)));
+                var tasks = notiyTasks.Select(t => Task.Run(() => t.Value(newCommits))).ToArray();
                 Task.WhenAll(tasks).Wait();
             }
         }
