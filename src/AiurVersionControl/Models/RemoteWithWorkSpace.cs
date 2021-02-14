@@ -20,7 +20,7 @@ namespace AiurVersionControl.Models
             pointer.Item.Apply(RemoteWorkSpace);
         }
 
-        public override void PullComplete(bool middleInserted)
+        public override void OnPullInsert()
         {
             if (ContextRepository is not ControlledRepository<T>)
             {
@@ -28,16 +28,13 @@ namespace AiurVersionControl.Models
                 return;
             }
 
-            if (middleInserted)
+            var fork = RemoteWorkSpace.Clone() as T;
+            var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
+            foreach (var localNewCommit in localNewCommits)
             {
-                var fork = RemoteWorkSpace.Clone() as T;
-                var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
-                foreach (var localNewCommit in localNewCommits)
-                {
-                    localNewCommit.Item.Apply(fork);
-                }
-                (ContextRepository as ControlledRepository<T>).WorkSpace = fork;
+                localNewCommit.Item.Apply(fork);
             }
+            (ContextRepository as ControlledRepository<T>).WorkSpace = fork;
         }
     }
 }

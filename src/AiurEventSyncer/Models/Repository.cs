@@ -72,7 +72,7 @@ namespace AiurEventSyncer.Models
             }
         }
 
-        public bool OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)
+        public void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             var newCommitsAppended = new List<Commit<T>>();
             var pushingPushPointer = false;
@@ -115,8 +115,10 @@ namespace AiurEventSyncer.Models
             {
                 OnAppendCommits(newCommitsAppended);
             }
-
-            return inserted;
+            if (inserted)
+            {
+                remoteRecord.OnPullInsert();
+            }
         }
 
         private (InsertMode result, Commit<T> pointer) OnPulledCommit(Commit<T> subtract, Commit<T> position)
