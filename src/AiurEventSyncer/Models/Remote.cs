@@ -98,5 +98,9 @@ namespace AiurEventSyncer.Models
         public virtual void OnPullPointerMoved(Commit<T> pointer)
         {
         }
+
+        public virtual void OnPullInsert()
+        {
+        }
     }
 }

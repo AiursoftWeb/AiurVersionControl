@@ -76,6 +76,7 @@ namespace AiurEventSyncer.Models
         {
             var newCommitsAppended = new List<Commit<T>>();
             var pushingPushPointer = false;
+            var inserted = false;
 
             lock (this)
             {
@@ -104,11 +105,19 @@ namespace AiurEventSyncer.Models
                     {
                         newCommitsAppended.Add(commit);
                     }
+                    if (resultMode == InsertMode.MiddleInserted)
+                    {
+                        inserted = true;
+                    }
                 }
             }
             if (newCommitsAppended.Any())
             {
                 OnAppendCommits(newCommitsAppended);
+            }
+            if (inserted)
+            {
+                remoteRecord.OnPullInsert();
             }
         }
 

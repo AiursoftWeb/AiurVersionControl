@@ -18,17 +18,18 @@ namespace AiurVersionControl.Models
         public override void OnPullPointerMoved(Commit<IModification<T>> pointer)
         {
             pointer.Item.Apply(RemoteWorkSpace);
+        }
+
+        public override void OnPullInsert()
+        {
             if (ContextRepository is not ControlledRepository<T>)
             {
                 // In this case, the user is trying to use a RemoteWithWorkSpace attached to a typical Repository.
                 return;
             }
-            var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
-            if (!localNewCommits.Any())
-            {
-                return;
-            }
+
             var fork = RemoteWorkSpace.Clone() as T;
+            var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
             foreach (var localNewCommit in localNewCommits)
             {
                 localNewCommit.Item.Apply(fork);
