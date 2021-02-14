@@ -8,7 +8,7 @@ namespace AiurVersionControl.Models
 {
     public class ControlledRepository<T> : Repository<IModification<T>> where T : WorkSpace, new()
     {
-        public T WorkSpace { get; private set; }
+        public T WorkSpace { get; set; }
 
         public ControlledRepository()
         {
@@ -25,21 +25,6 @@ namespace AiurVersionControl.Models
         public void ApplyChange(IModification<T> newModification)
         {
             Commit(newModification);
-        }
-
-        protected override void OnInsertedCommits(List<Commit<IModification<T>>> insertedCommits)
-        {
-            // Back then forth
-            var speedingCommits = Commits.GetAllAfter(insertedCommits.Last()).ToList();
-            for (int i = speedingCommits.Count - 1; i >= 0; i--)
-            {
-                speedingCommits[i].Item.Rollback(WorkSpace);
-            }
-            insertedCommits.AddRange(speedingCommits);
-            foreach (var commit in insertedCommits)
-            {
-                commit.Item.Apply(WorkSpace);
-            }
         }
     }
 }

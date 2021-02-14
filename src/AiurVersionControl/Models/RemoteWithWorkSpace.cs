@@ -1,11 +1,12 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
+using System.Linq;
 
 namespace AiurVersionControl.Models
 {
     public class RemoteWithWorkSpace<T> : Remote<IModification<T>> where T : WorkSpace, new()
     {
-        public T RemoteWorkSpace { get; set; } = new T();
+        public T RemoteWorkSpace { get; } = new T();
 
         public RemoteWithWorkSpace(
             IConnectionProvider<IModification<T>> provider,
@@ -17,6 +18,21 @@ namespace AiurVersionControl.Models
         public override void OnPullPointerMoved(Commit<IModification<T>> pointer)
         {
             pointer.Item.Apply(RemoteWorkSpace);
+            if (ContextRepository is not ControlledRepository<T>)
+            {
+                return;
+            }
+            var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
+            if (!localNewCommits.Any())
+            {
+                return;
+            }
+            var fork = RemoteWorkSpace.Clone() as T;
+            foreach (var localNewCommit in localNewCommits)
+            {
+                localNewCommit.Item.Apply(fork);
+            }
+            (ContextRepository as ControlledRepository<T>).WorkSpace = fork;
         }
     }
 }

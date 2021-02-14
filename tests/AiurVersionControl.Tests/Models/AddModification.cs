@@ -15,10 +15,5 @@ namespace AiurVersionControl.Tests.Models
         {
             workspace.NumberStore += _amount;
         }
-        
-        public void Rollback(NumberWorkSpace workspace)
-        {
-            workspace.NumberStore -= _amount;
-        }
     }
 }
