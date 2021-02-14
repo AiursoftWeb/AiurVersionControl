@@ -6,6 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\AiurObserver\AiurObserver.csproj" />
 		<ProjectReference Include="..\AiurStore\AiurStore.csproj" />
 	</ItemGroup>
 

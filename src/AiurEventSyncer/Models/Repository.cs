@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
+using AiurObserver;
 using AiurStore.Models;
 using AiurStore.Providers;
 using System;

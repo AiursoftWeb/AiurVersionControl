@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AiurEventSyncer.Abstract
+namespace AiurObserver
 {
     public interface IAsyncObservable<out T>
     {

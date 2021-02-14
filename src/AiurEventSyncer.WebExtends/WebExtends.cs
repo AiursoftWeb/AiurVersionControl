@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Abstract;
+﻿using AiurObserver;
+using AiurEventSyncer.Abstract;
 using AiurEventSyncer.ConnectionProviders.Models;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
