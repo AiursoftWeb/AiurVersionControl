@@ -1,9 +1,6 @@
-﻿using AiurEventSyncer.Models;
-using System;
+﻿using AiurEventSyncer.Abstract;
+using AiurEventSyncer.Models;
 using System.Collections.Generic;
-using System.Linq;
-using AiurEventSyncer.Abstract;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.Models
 {

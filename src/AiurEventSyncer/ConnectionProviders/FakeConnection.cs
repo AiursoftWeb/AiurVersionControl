@@ -1,6 +1,6 @@
-﻿using AiurObserver;
-using AiurEventSyncer.Abstract;
+﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
+using AiurObserver;
 using System;
 using System.Collections.Generic;
 using System.Linq;

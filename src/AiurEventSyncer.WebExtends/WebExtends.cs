@@ -1,11 +1,10 @@
-﻿using AiurObserver;
-using AiurEventSyncer.Abstract;
+﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.ConnectionProviders.Models;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
+using AiurObserver;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
