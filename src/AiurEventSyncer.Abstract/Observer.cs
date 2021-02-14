@@ -49,24 +49,24 @@ namespace AiurEventSyncer.Abstract
 
     public class AsyncObserver<T> : IAsyncObserver<T>
     {
-        private readonly Func<T, Task> onNext;
+        private readonly Func<T, Task> onHappen;
 
-        public AsyncObserver(Func<T, Task> onNext)
+        public AsyncObserver(Func<T, Task> onHappen)
         {
-            this.onNext = onNext;
+            this.onHappen = onHappen;
         }
 
         public Task OnHappen(T value)
         {
-            return onNext(value);
+            return onHappen(value);
         }
     }
 
     public static class Extensions
     {
-        public static IDisposable Subscribe<T>(this IAsyncObservable<T> source, Func<T, Task> onNext)
+        public static IDisposable Subscribe<T>(this IAsyncObservable<T> source, Func<T, Task> onHappen)
         {
-            return source.Subscribe(new AsyncObserver<T>(onNext));
+            return source.Subscribe(new AsyncObserver<T>(onHappen));
         }
     }
 }

@@ -32,7 +32,7 @@ namespace AiurEventSyncer.ConnectionProviders
         {
             var pulledData = await Download(startPosition);
             await onData(pulledData);
-            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onNext: (commits) => onData(commits));
+            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onHappen: (commits) => onData(commits));
         }
 
         public Task Disconnect()
