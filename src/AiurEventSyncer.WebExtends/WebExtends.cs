@@ -22,13 +22,11 @@ namespace AiurEventSyncer.WebExtends
                 // Send pull result.
                 var firstPullResult = repository.Commits.GetCommitsAfterId<Commit<T>, T>(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
-                async Task pushEvent(List<Commit<T>> newCommits)
-                {
-                    // Broadcast new commits.
-                    await ws.SendObject(newCommits);
-                }
                 var connectionId = Guid.NewGuid();
-                repository.RegisterAsyncTask(connectionId, pushEvent);
+                var subscription = repository.AppendCommitsHappened.Subscribe(async (newCommits) =>
+                {
+                    await ws.SendObject(newCommits);
+                });
                 while (ws.State == WebSocketState.Open)
                 {
                     try
@@ -42,7 +40,7 @@ namespace AiurEventSyncer.WebExtends
                         break;
                     }
                 }
-                repository.UnRegister(connectionId);
+                subscription.Dispose();
                 return new EmptyResult();
             }
             else

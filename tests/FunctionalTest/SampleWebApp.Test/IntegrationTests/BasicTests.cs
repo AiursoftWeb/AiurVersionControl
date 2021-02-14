@@ -159,7 +159,7 @@ namespace SampleWebApp.Tests.IntegrationTests
                 .AttachAsync(repoA);
 
             var repoB = new Repository<LogItem>() { Name = "Repo B" };
-            await new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Connection to server for Repo B" }
+            await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoB);
 
             repoA.Commit(new LogItem { Message = "G" });

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AiurEventSyncer.Abstract;
+using System.Threading.Tasks;
 
 namespace AiurVersionControl.Models
 {
@@ -13,13 +14,15 @@ namespace AiurVersionControl.Models
         public ControlledRepository()
         {
             WorkSpace = new T();
-            Register(Guid.NewGuid(), (commits) =>
+        }
+
+        protected override void OnAppendCommits(List<Commit<IModification<T>>> newCommits)
+        {
+            foreach (var newCommit in newCommits)
             {
-                foreach (var newCommit in commits)
-                {
-                    newCommit.Item.Apply(WorkSpace);
-                }
-            });
+                newCommit.Item.Apply(WorkSpace);
+            }
+            base.OnAppendCommits(newCommits);
         }
 
         public void ApplyChange(IModification<T> newModification)
