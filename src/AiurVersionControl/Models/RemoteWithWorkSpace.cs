@@ -18,13 +18,17 @@ namespace AiurVersionControl.Models
         public override void OnPullPointerMoved(Commit<IModification<T>> pointer)
         {
             pointer.Item.Apply(RemoteWorkSpace);
+        }
+
+        public override void PullComplete(bool inserted)
+        {
             if (ContextRepository is not ControlledRepository<T>)
             {
                 // In this case, the user is trying to use a RemoteWithWorkSpace attached to a typical Repository.
                 return;
             }
             var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
-            if (!localNewCommits.Any())
+            if (!localNewCommits.Any() && !inserted)
             {
                 return;
             }

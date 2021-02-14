@@ -44,7 +44,8 @@ namespace AiurEventSyncer.Models
                 await ConnectionProvider.PullAndMonitor(onData: async data => 
                 {
                     await PullLock.WaitAsync();
-                    ContextRepository.OnPulled(data.ToList(), this);
+                    var inserted = ContextRepository.OnPulled(data.ToList(), this);
+                    PullComplete(inserted);
                     PullLock.Release();
                 }, PullPointer?.Id);
             }
@@ -83,7 +84,8 @@ namespace AiurEventSyncer.Models
             var downloadResult = await ConnectionProvider.Download(PullPointer?.Id);
             if (downloadResult.Any())
             {
-                ContextRepository.OnPulled(downloadResult, this);
+                var inserted = ContextRepository.OnPulled(downloadResult, this);
+                PullComplete(inserted);
             }
             PullLock.Release();
         }
@@ -96,6 +98,10 @@ namespace AiurEventSyncer.Models
         }
 
         public virtual void OnPullPointerMoved(Commit<T> pointer)
+        {
+        }
+
+        public virtual void PullComplete(bool inserted)
         {
         }
     }

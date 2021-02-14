@@ -11,7 +11,7 @@ namespace AiurEventSyncer.Abstract
         void Register(Guid key, Action<List<Commit<T>>> action);
         void UnRegister(Guid key);
         InOutDatabase<Commit<T>> Commits { get; }
-        void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord);
+        bool OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord);
         void OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition);
     }
 }
