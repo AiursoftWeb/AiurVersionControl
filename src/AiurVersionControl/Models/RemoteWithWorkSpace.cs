@@ -20,6 +20,7 @@ namespace AiurVersionControl.Models
             pointer.Item.Apply(RemoteWorkSpace);
             if (ContextRepository is not ControlledRepository<T>)
             {
+                // In this case, the user is trying to use a RemoteWithWorkSpace attached to a typical Repository.
                 return;
             }
             var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
