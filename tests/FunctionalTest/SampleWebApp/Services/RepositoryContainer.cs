@@ -37,5 +37,12 @@ namespace SampleWebApp.Services
             var self = scope.ServiceProvider.GetRequiredService<RepositoryContainer>();
             return self.GetLogItemRepository();
         }
+
+        public static void ResetRepositoryForTest()
+        {
+            var scope = _serviceScopeFactory.CreateScope();
+            var self = scope.ServiceProvider.GetRequiredService<RepositoryContainer>();
+            self._logItemRepository = null;
+        }
     }
 }

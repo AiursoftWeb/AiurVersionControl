@@ -14,21 +14,23 @@ namespace SampleWebApp.Tests.IntegrationTests
     public class BasicTests
     {
         private const int _port = 15151;
-        private readonly string _endpointUrl = $"ws://localhost:{_port}/repo.ares";
-        private IHost _server;
+        private static readonly string _endpointUrl = $"ws://localhost:{_port}/repo.ares";
+        private static IHost _server;
 
         [TestInitialize]
         public async Task CreateServer()
         {
-            _server = Program.BuildHost(null, _port);
-            await _server.StartAsync();
+            if (_server == null)
+            {
+                _server = Program.BuildHost(null, _port);
+                await _server.StartAsync();
+            }
         }
 
         [TestCleanup]
-        public async Task CleanServer()
+        public void CleanServer()
         {
-            await _server.StopAsync();
-            _server.Dispose();
+            RepositoryContainer.ResetRepositoryForTest();
         }
 
         [TestMethod]
@@ -41,7 +43,7 @@ namespace SampleWebApp.Tests.IntegrationTests
             repo.Commit(new LogItem { Message = "1" });
             repo.Commit(new LogItem { Message = "2" });
 
-            await Task.Delay(500); // Wait for the pull to update pointer.
+            await Task.Delay(50); // Wait for the pull to update pointer.
             Assert.IsNotNull(remote.PullPointer);
 
             var remoteRepo = RepositoryContainer.GetRepositoryForTest();
