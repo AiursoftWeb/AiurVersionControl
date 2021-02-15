@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.ConnectionProviders;
 using AiurVersionControl.Models;
+using AiurVersionControl.Remotes;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.Serialization;
@@ -39,8 +40,7 @@ namespace AiurVersionControl.Tests
             repo.ApplyChange(new AddModification(50));
 
             var repo2 = new ControlledRepository<NumberWorkSpace>();
-            var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
-            var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection);
+            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2, false, false);
             await remote.AttachAsync(repo);
 
             await remote.PushAsync();
@@ -59,10 +59,10 @@ namespace AiurVersionControl.Tests
         {
             var repo = new ControlledRepository<NumberWorkSpace>();
             var repo2 = new ControlledRepository<NumberWorkSpace>();
-            var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
-            var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection, true, true);
-            var workspacePointer = repo.WorkSpace;
+
+            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2, true, true);
             await remote.AttachAsync(repo);
+            var workspacePointer = repo.WorkSpace;
 
             Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
             Assert.AreEqual(0, repo.WorkSpace.NumberStore);
@@ -86,8 +86,7 @@ namespace AiurVersionControl.Tests
         {
             var repo = new ControlledRepository<NumberWorkSpace>();
             var repo2 = new ControlledRepository<NumberWorkSpace>();
-            var connection = new FakeConnection<IModification<NumberWorkSpace>>(repo2);
-            var remote = new RemoteWithWorkSpace<NumberWorkSpace>(connection, false, false);
+            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2, false, false);
             await remote.AttachAsync(repo);
 
             Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);

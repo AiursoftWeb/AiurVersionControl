@@ -27,7 +27,7 @@ namespace AiurVersionControl.Models
                 return;
             }
 
-            var fork = RemoteWorkSpace.Clone() as T;
+            var fork = (T)RemoteWorkSpace.Clone();
             var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
             foreach (var localNewCommit in localNewCommits)
             {
