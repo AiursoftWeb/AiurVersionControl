@@ -17,16 +17,15 @@ namespace AiurEventSyncer.Models
         public Commit<T> Head => Commits.LastOrDefault();
         public IAsyncObservable<List<Commit<T>>> AppendCommitsHappened => _subscribersManager;
 
-        private readonly AsyncObservable<List<Commit<T>>> _subscribersManager = new AsyncObservable<List<Commit<T>>>();
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
+        private readonly AsyncObservable<List<Commit<T>>> _subscribersManager = new();
+        private readonly TaskQueue _notifyingQueue = new();
 
-        public Repository(InOutDatabase<Commit<T>> dbProvider)
+        public Repository(InOutDatabase<Commit<T>> dbProvider = null)
         {
+            dbProvider ??= new MemoryAiurStoreDb<Commit<T>>();
             _commits = dbProvider;
         }
-
-        public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
 
         public void Commit(T content)
         {
