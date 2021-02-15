@@ -1,4 +1,5 @@
 ﻿using AiurEventSyncer.Abstract;
+using AiurObserver;
 using System;
 using System.Linq;
 using System.Threading;
@@ -37,7 +38,7 @@ namespace AiurEventSyncer.Models
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.RegisterAsyncTask(Guid.NewGuid(), async (c) => await PushAsync());
+                ContextRepository.AppendCommitsHappened.Subscribe(async (c) => await PushAsync());
             }
             if (AutoPull)
             {

@@ -1,12 +1,11 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
+using AiurObserver;
 using AiurStore.Models;
 using AiurStore.Providers;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Models
@@ -16,10 +15,10 @@ namespace AiurEventSyncer.Models
         public string Name { get; init; } = string.Empty;
         public InOutDatabase<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
+        public IAsyncObservable<List<Commit<T>>> AppendCommitsHappened => _subscribersManager;
 
+        private readonly AsyncObservable<List<Commit<T>>> _subscribersManager = new AsyncObservable<List<Commit<T>>>();
         private readonly InOutDatabase<Commit<T>> _commits;
-        private readonly ConcurrentDictionary<Guid, Func<List<Commit<T>>, Task>> _onAppendCommitsAsyncSubscribers = new();
-        private readonly ConcurrentDictionary<Guid, Action<List<Commit<T>>>> _onAppendCommitsSubscribers = new();
         private readonly TaskQueue _notifyingQueue = new TaskQueue(1);
 
         public Repository(InOutDatabase<Commit<T>> dbProvider)
@@ -28,20 +27,6 @@ namespace AiurEventSyncer.Models
         }
 
         public Repository() : this(new MemoryAiurStoreDb<Commit<T>>()) { }
-        public void RegisterAsyncTask(Guid key, Func<List<Commit<T>>, Task> action)
-        {
-            _onAppendCommitsAsyncSubscribers[key] = action;
-        }
-
-        public void Register(Guid key, Action<List<Commit<T>>> action)
-        {
-            _onAppendCommitsSubscribers[key] = action;
-        }
-
-        public void UnRegister(Guid key)
-        {
-            _ = _onAppendCommitsAsyncSubscribers.TryRemove(key, out _) || _onAppendCommitsSubscribers.TryRemove(key, out _);
-        }
 
         public void Commit(T content)
         {
@@ -54,21 +39,14 @@ namespace AiurEventSyncer.Models
             OnAppendCommits(new List<Commit<T>> { commitObject });
         }
 
-        private void OnAppendCommits(List<Commit<T>> newCommits)
+        protected virtual void OnAppendCommits(List<Commit<T>> newCommits)
         {
-            var asyncNotiyTasks = _onAppendCommitsAsyncSubscribers.ToList();
-            var notiyTasks = _onAppendCommitsSubscribers.ToList();
-            if (asyncNotiyTasks.Any())
+            var subscriberTasks = _subscribersManager
+                .Observers
+                .Select(t => t.OnHappen(newCommits));
+            if (subscriberTasks.Any())
             {
-                _notifyingQueue.QueueNew(async () =>
-                {
-                    await Task.WhenAll(tasks: asyncNotiyTasks.Select(t => t.Value(newCommits)));
-                });
-            }
-            if (notiyTasks.Any())
-            {
-                var tasks = notiyTasks.Select(t => Task.Run(() => t.Value(newCommits))).ToArray();
-                Task.WhenAll(tasks).Wait();
+                _notifyingQueue.QueueNew(() => Task.WhenAll(subscriberTasks));
             }
         }
 
@@ -148,7 +126,7 @@ namespace AiurEventSyncer.Models
             var newCommitsAppended = new List<Commit<T>>();
             lock (this)
             {
-                foreach (var commit in commitsToPush) // 4,5,6
+                foreach (var commit in commitsToPush)
                 {
                     var appended = OnPushedCommit(commit, startPosition);
                     startPosition = commit.Id;

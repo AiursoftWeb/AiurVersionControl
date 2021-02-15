@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
-using System.Linq;
 
 namespace AiurVersionControl.Models
 {

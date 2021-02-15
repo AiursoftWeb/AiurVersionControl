@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Tools;
+using AiurObserver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace AiurEventSyncer.ConnectionProviders
     public class FakeConnection<T> : IConnectionProvider<T>
     {
         private readonly IRepository<T> _fakeRemoteRepository;
-        private readonly Guid _id = Guid.NewGuid();
+        private IDisposable _subscription;
 
         public FakeConnection(IRepository<T> localRepository)
         {
@@ -32,12 +33,15 @@ namespace AiurEventSyncer.ConnectionProviders
         {
             var pulledData = await Download(startPosition);
             await onData(pulledData);
-            _fakeRemoteRepository.RegisterAsyncTask(_id, onData);
+            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onHappen: (commits) => onData(commits));
         }
 
         public Task Disconnect()
         {
-            _fakeRemoteRepository.UnRegister(_id);
+            if (_subscription != null)
+            {
+                _subscription.Dispose();
+            }
             return Task.CompletedTask;
         }
     }

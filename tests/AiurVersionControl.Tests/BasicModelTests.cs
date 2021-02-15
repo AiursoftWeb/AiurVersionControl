@@ -1,5 +1,4 @@
 ﻿using AiurEventSyncer.ConnectionProviders;
-using AiurEventSyncer.Remotes;
 using AiurVersionControl.Models;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -71,7 +70,7 @@ namespace AiurVersionControl.Tests
             repo.ApplyChange(new AddModification(5));
             repo.ApplyChange(new AddModification(50));
 
-            await Task.Delay(30);
+            await Task.Delay(10);
             var workspacePointerNew = repo.WorkSpace;
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
             Assert.AreEqual(55, repo.WorkSpace.NumberStore);
