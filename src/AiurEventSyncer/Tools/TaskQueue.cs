@@ -8,7 +8,6 @@ namespace AiurEventSyncer.Tools
     public class TaskQueue 
     {
         private readonly SafeQueue<Func<Task>> _pendingTaskFactories = new SafeQueue<Func<Task>>();
-        private readonly object loc = new object();
         private readonly int _depth;
         private Task _engine = Task.CompletedTask;
 
@@ -22,7 +21,7 @@ namespace AiurEventSyncer.Tools
             _pendingTaskFactories.Enqueue(taskFactory);
             Task.Factory.StartNew(() =>
             {
-                lock (loc)
+                lock (this)
                 {
                     if (_engine.IsCompleted)
                     {

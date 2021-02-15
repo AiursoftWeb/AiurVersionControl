@@ -38,7 +38,7 @@ namespace AiurEventSyncer.Models
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.AppendCommitsHappened.Subscribe(async (c) => await PushAsync());
+                ContextRepository.AppendCommitsHappened.Subscribe((c) => PushAsync());
             }
             if (AutoPull)
             {

@@ -259,10 +259,14 @@ namespace SampleWebApp.Tests.IntegrationTests
             var repo = new Repository<LogItem>() { Name = "Test local repo" };
             await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
 
+            var repo2 = new Repository<LogItem>() { Name = "Test local repo 2" };
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo2);
+
             var beginTime = DateTime.Now;
             for (int i = 0; i < 1000; i++)
             {
                 repo.Commit(new LogItem { Message = "1" });
+                repo2.Commit(new LogItem { Message = "2" });
             }
             
             var endTime = DateTime.Now;
