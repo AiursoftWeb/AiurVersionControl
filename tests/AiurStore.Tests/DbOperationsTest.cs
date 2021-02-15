@@ -13,9 +13,7 @@ namespace AiurStore.Tests
         public void BasicTest()
         {
             var memoryDb = new MemoryAiurStoreDb<string>();
-            //var fileDb = new FileAiurStoreDb<string>("aiur-store.txt");
             TestDb(memoryDb);
-            //TestDb(fileDb);
         }
 
         private static void TestDb(InOutDatabase<string> store)

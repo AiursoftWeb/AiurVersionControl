@@ -2,6 +2,7 @@
 using AiurVersionControl.Models;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace AiurVersionControl.Tests
@@ -79,7 +80,9 @@ namespace AiurVersionControl.Tests
         }
 
         [TestMethod]
-        public async Task RemoteWithMergeWorkSpaceTest()
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task RemoteWithMergeWorkSpaceTest(bool commitBefore)
         {
             var repo = new ControlledRepository<NumberWorkSpace>();
             var repo2 = new ControlledRepository<NumberWorkSpace>();
@@ -122,12 +125,21 @@ namespace AiurVersionControl.Tests
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
             Assert.AreEqual(155, repo.WorkSpace.NumberStore);  // 5, 50, 100
             Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
-
-            await remote.PullAsync();
-            Assert.AreEqual(1155, remote.RemoteWorkSpace.NumberStore);
-            // Uncomment this line to enable this test case.
-            Assert.AreEqual(1155, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100
-            Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
+            if (commitBefore)
+            {
+                repo.ApplyChange(new AddModification(3));
+                await remote.PullAsync();
+                Assert.AreEqual(1155, remote.RemoteWorkSpace.NumberStore);
+                Assert.AreEqual(1158, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100, 3
+                Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
+            }
+            else
+            {
+                await remote.PullAsync();
+                Assert.AreEqual(1155, remote.RemoteWorkSpace.NumberStore);
+                Assert.AreEqual(1155, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100
+                Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
+            }
         }
     }
 }

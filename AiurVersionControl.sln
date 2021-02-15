@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurEventSyncer.Abstract", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurObserver", "src\AiurObserver\AiurObserver.csproj", "{84A04EEA-9F05-4390-993F-3511C90ED4FE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurVersionControl.CRUD", "src\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj", "{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +205,18 @@ Global
 		{84A04EEA-9F05-4390-993F-3511C90ED4FE}.Release|x64.Build.0 = Release|Any CPU
 		{84A04EEA-9F05-4390-993F-3511C90ED4FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{84A04EEA-9F05-4390-993F-3511C90ED4FE}.Release|x86.Build.0 = Release|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Debug|x64.Build.0 = Debug|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Release|x64.ActiveCfg = Release|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Release|x64.Build.0 = Release|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -222,6 +236,7 @@ Global
 		{50AEBBB4-B482-4F63-A2AE-EC291F7DDB82} = {A90D7799-3561-4453-B2A5-591953827AC6}
 		{5BFF7222-42E7-4AEF-8536-4D434BFAF2EB} = {24C2CE11-A0CD-44B8-9946-94A70F897534}
 		{84A04EEA-9F05-4390-993F-3511C90ED4FE} = {24C2CE11-A0CD-44B8-9946-94A70F897534}
+		{462A95E1-F0E2-4861-817F-1A9CBEC80B0B} = {24C2CE11-A0CD-44B8-9946-94A70F897534}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0188878-FDED-49EB-9F3D-9BDA29D52347}
