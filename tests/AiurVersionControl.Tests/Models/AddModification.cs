@@ -4,16 +4,18 @@ namespace AiurVersionControl.Tests.Models
 {
     public class AddModification : IModification<NumberWorkSpace>
     {
-        private readonly int _amount;
+        public int Amount { get; set; }
 
         public AddModification(int amount)
         {
-            _amount = amount;
+            Amount = amount;
         }
+        
+        public AddModification(){}
 
         public void Apply(NumberWorkSpace workspace)
         {
-            workspace.NumberStore += _amount;
+            workspace.NumberStore += Amount;
         }
     }
 }

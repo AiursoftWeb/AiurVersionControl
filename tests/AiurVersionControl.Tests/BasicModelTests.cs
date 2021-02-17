@@ -1,8 +1,14 @@
-﻿using AiurEventSyncer.ConnectionProviders;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using AiurEventSyncer.ConnectionProviders;
 using AiurVersionControl.Models;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using AiurEventSyncer.Abstract;
+using AiurEventSyncer.ConnectionProviders.Models;
+using AiurStore.Tools;
 
 namespace AiurVersionControl.Tests
 {
@@ -128,6 +134,35 @@ namespace AiurVersionControl.Tests
             // Uncomment this line to enable this test case.
             Assert.AreEqual(1155, repo.WorkSpace.NumberStore);  // 5, 50, 1000, 100
             Assert.AreEqual(1155, repo2.WorkSpace.NumberStore);// 5, 50, 1000, 100
+        }
+
+        [TestMethod]
+        public void JsonSerializeTest()
+        {
+            var repo = new ControlledRepository<NumberWorkSpace>();
+            
+            IModification<NumberWorkSpace> modification = new AddModification(100);
+            Object o = modification;
+            var commit = new Commit<IModification<NumberWorkSpace>> {Item = modification};
+            var things = new PushModel<IModification<NumberWorkSpace>>
+            {
+                Commits = new List<Commit<IModification<NumberWorkSpace>>> { commit },
+                Start = "start"
+            };
+
+            string serialize = JsonSerializer.Serialize(things, new JsonSerializerOptions
+            {
+                Converters = { new IModificationConverter() }
+            });
+
+            var deserialize = JsonSerializer.Deserialize<PushModel<IModification<NumberWorkSpace>>>(serialize,
+                new JsonSerializerOptions
+                {
+                    Converters = {new IModificationConverter()}
+                });
+            
+            deserialize.Commits[0].Item.Apply(repo.WorkSpace);
+            Assert.AreEqual(100, repo.WorkSpace.NumberStore);
         }
     }
 }
