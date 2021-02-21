@@ -8,7 +8,7 @@ namespace AiurVersionControl.CRUD
 {
     public class CollectionWorkSpace<T> : WorkSpace, IEnumerable<T>
     {
-        public List<T> List { get; private set; } = new();
+        public List<T> List { get; private set; } = new ();
 
         public CollectionWorkSpace()
         {
