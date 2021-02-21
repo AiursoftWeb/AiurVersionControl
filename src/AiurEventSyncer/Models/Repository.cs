@@ -40,9 +40,7 @@ namespace AiurEventSyncer.Models
 
         protected virtual void OnAppendCommits(List<Commit<T>> newCommits)
         {
-            var subscriberTasks = _subscribersManager
-                .Observers
-                .Select(t => t.OnHappen(newCommits));
+            var subscriberTasks =_subscribersManager.Boradcast(newCommits);
             if (subscriberTasks.Any())
             {
                 _notifyingQueue.QueueNew(() => Task.WhenAll(subscriberTasks));

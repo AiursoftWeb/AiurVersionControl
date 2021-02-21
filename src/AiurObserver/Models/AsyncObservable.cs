@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiurObserver
 {
     public class AsyncObservable<T> : IAsyncObservable<T>
     {
-        public readonly List<IAsyncObserver<T>> Observers = new List<IAsyncObserver<T>>();
+        private readonly List<IAsyncObserver<T>> _observers = new List<IAsyncObserver<T>>();
 
         public IDisposable Subscribe(IAsyncObserver<T> observer)
         {
-            if (!Observers.Contains(observer))
+            if (!_observers.Contains(observer))
             {
-                Observers.Add(observer);
+                _observers.Add(observer);
             }
-            return new Subscription<T>(Observers, observer);
+            return new Subscription<T>(_observers, observer);
+        }
+
+        public IEnumerable<Task> Boradcast(T newEvent)
+        {
+            return _observers.Select(t => t.OnHappen(newEvent));
         }
     }
 }

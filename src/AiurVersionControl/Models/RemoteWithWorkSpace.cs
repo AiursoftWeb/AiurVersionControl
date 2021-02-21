@@ -21,19 +21,16 @@ namespace AiurVersionControl.Models
 
         public override void OnPullInsert()
         {
-            if (ContextRepository is not ControlledRepository<T>)
+            if (ContextRepository is ControlledRepository<T> controlled)
             {
-                // In this case, the user is trying to use a RemoteWithWorkSpace attached to a typical Repository.
-                return;
+                var fork = (T)RemoteWorkSpace.Clone();
+                var localNewCommits = controlled.Commits.GetAllAfter(PullPointer);
+                foreach (var localNewCommit in localNewCommits)
+                {
+                    localNewCommit.Item.Apply(fork);
+                }
+                controlled.WorkSpace = fork;
             }
-
-            var fork = (T)RemoteWorkSpace.Clone();
-            var localNewCommits = ContextRepository.Commits.GetAllAfter(PullPointer);
-            foreach (var localNewCommit in localNewCommits)
-            {
-                localNewCommit.Item.Apply(fork);
-            }
-            (ContextRepository as ControlledRepository<T>).WorkSpace = fork;
         }
     }
 }
