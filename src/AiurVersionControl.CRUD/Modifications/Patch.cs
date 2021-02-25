@@ -4,36 +4,36 @@ using System.Linq;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
-    public class Patch<T> : IModification<CollectionWorkSpace<T>>
+    public class Patch<T, D1, D2> : IModification<CollectionWorkSpace<T>>
     {
-        public string _searchPropertyName { get; set; }
-        public object _expectValue { get; set; }
-        public string _patchPropertyName { get; set; }
-        public object _newValue { get; set; }
+        public string SearchPropertyName { get; set; }
+        public D1 ExpectValue { get; set; }
+        public string PatchPropertyName { get; set; }
+        public D2 NewValue { get; set; }
 
         [Obsolete(error: true, message: "This message is only for Newtonsoft.Json")]
         public Patch() { }
 
         public Patch(
             string searchPropertyName,
-            object expectValue,
+            D1 expectValue,
             string patchPropertyName,
-            object newValue)
+            D2 newValue)
         {
-            _searchPropertyName = searchPropertyName;
-            _expectValue = expectValue;
-            _patchPropertyName = patchPropertyName;
-            _newValue = newValue;
+            SearchPropertyName = searchPropertyName;
+            ExpectValue = expectValue;
+            PatchPropertyName = patchPropertyName;
+            NewValue = newValue;
         }
 
         public void Apply(CollectionWorkSpace<T> workspace)
         {
-            var property = typeof(T).GetProperty(_searchPropertyName);
-            var patchProperty = typeof(T).GetProperty(_patchPropertyName);
-            var toPatch = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(_expectValue) ?? false);
+            var property = typeof(T).GetProperty(SearchPropertyName);
+            var patchProperty = typeof(T).GetProperty(PatchPropertyName);
+            var toPatch = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(ExpectValue) ?? false);
             if (toPatch is not null)
             {
-                patchProperty.SetValue(toPatch, _newValue);
+                patchProperty.SetValue(toPatch, NewValue);
             }
         }
     }

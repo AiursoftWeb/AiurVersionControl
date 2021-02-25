@@ -42,7 +42,7 @@ namespace AiurVersionControl.CRUD.Tests
         }
 
         [TestMethod]
-        public void LamdbaModelToJsonTests()
+        public void DropModelToJsonTests()
         {
             var drop = new Drop<Book, int>(nameof(Book.Id), 1);
             var json = JsonTools.Serialize(drop);
@@ -55,6 +55,21 @@ namespace AiurVersionControl.CRUD.Tests
             repo.ApplyChange(convertedBack);
             var only = repo.Single();
             Assert.AreEqual(0, only.Id);
+        }
+
+        [TestMethod]
+        public void PatchModelToJsonTests()
+        {
+            var patch = new Patch<Book, int, string>(nameof(Book.Id), 1, nameof(Book.Title), "Patched");
+            var json = JsonTools.Serialize(patch);
+            var convertedBack = JsonTools.Deserialize<Patch<Book, int, string>>(json);
+            var repo = new CollectionRepository<Book>
+            {
+                new Book { Id = 1, Title = "Book second." }
+            };
+            repo.ApplyChange(convertedBack);
+            var only = repo.Single();
+            Assert.AreEqual("Patched", only.Title);
         }
     }
 }

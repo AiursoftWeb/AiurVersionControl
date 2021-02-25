@@ -18,12 +18,12 @@ namespace AiurVersionControl.CRUD
             ApplyChange(new Drop<T, D>(searchProperty, value));
         }
 
-        public void Patch(string searchPropertyName,
-            object expectValue,
+        public void Patch<D1, D2>(string searchPropertyName,
+            D1 expectValue,
             string patchPropertyName,
-            object newValue)
+            D2 newValue)
         {
-            ApplyChange(new Patch<T>(searchPropertyName, expectValue, patchPropertyName, newValue));
+            ApplyChange(new Patch<T, D1, D2>(searchPropertyName, expectValue, patchPropertyName, newValue));
         }
 
         public IEnumerator<T> GetEnumerator()
