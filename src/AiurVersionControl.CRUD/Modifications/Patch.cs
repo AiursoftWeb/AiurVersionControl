@@ -1,29 +1,39 @@
 ﻿using AiurVersionControl.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
-    public class Patch<T> : IModification<CollectionWorkSpace<T>>
+    public class Patch<T, D1, D2> : IModification<CollectionWorkSpace<T>>
     {
-        public Predicate<T> Searcher { get; set; }
-        public Action<T> Action { get; set; }
+        public string SearchPropertyName { get; set; }
+        public D1 ExpectValue { get; set; }
+        public string PatchPropertyName { get; set; }
+        public D2 NewValue { get; set; }
 
-        public Patch(Predicate<T> searcher, Action<T> action)
+        [Obsolete(error: true, message: "This message is only for Newtonsoft.Json")]
+        public Patch() { }
+
+        public Patch(
+            string searchPropertyName,
+            D1 expectValue,
+            string patchPropertyName,
+            D2 newValue)
         {
-            Searcher = searcher;
-            Action = action;
+            SearchPropertyName = searchPropertyName;
+            ExpectValue = expectValue;
+            PatchPropertyName = patchPropertyName;
+            NewValue = newValue;
         }
 
         public void Apply(CollectionWorkSpace<T> workspace)
         {
-            var found = workspace.List.Find(Searcher);
-            if (found != null)
+            var property = typeof(T).GetProperty(SearchPropertyName);
+            var patchProperty = typeof(T).GetProperty(PatchPropertyName);
+            var toPatch = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(ExpectValue) ?? false);
+            if (toPatch is not null)
             {
-                Action(found);
+                patchProperty.SetValue(toPatch, NewValue);
             }
         }
     }
