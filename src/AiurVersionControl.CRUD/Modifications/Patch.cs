@@ -6,13 +6,16 @@ namespace AiurVersionControl.CRUD.Modifications
 {
     public class Patch<T> : IModification<CollectionWorkSpace<T>>
     {
-        private readonly string _searchPropertyName;
-        private readonly object _expectValue;
-        private readonly string _patchPropertyName;
-        private readonly object _newValue;
+        public string _searchPropertyName { get; set; }
+        public object _expectValue { get; set; }
+        public string _patchPropertyName { get; set; }
+        public object _newValue { get; set; }
+
+        [Obsolete(error: true, message: "This message is only for Newtonsoft.Json")]
+        public Patch() { }
 
         public Patch(
-            string searchPropertyName, 
+            string searchPropertyName,
             object expectValue,
             string patchPropertyName,
             object newValue)

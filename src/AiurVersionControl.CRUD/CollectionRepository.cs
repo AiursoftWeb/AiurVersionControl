@@ -13,9 +13,9 @@ namespace AiurVersionControl.CRUD
             ApplyChange(new Add<T>(newItem));
         }
 
-        public void Drop(string searchProperty, object value)
+        public void Drop<D>(string searchProperty, D value)
         {
-            ApplyChange(new Drop<T>(searchProperty, value));
+            ApplyChange(new Drop<T, D>(searchProperty, value));
         }
 
         public void Patch(string searchPropertyName,

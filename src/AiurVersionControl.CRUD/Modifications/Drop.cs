@@ -1,23 +1,27 @@
 ﻿using AiurVersionControl.Models;
+using System;
 using System.Linq;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
-    public class Drop<T> : IModification<CollectionWorkSpace<T>>
+    public class Drop<T, D> : IModification<CollectionWorkSpace<T>>
     {
-        private readonly string _propertyName;
-        private readonly object _expectValue;
+        public string PropertyName { get; set; }
+        public D ExpectValue { get; set; }
 
-        public Drop(string propertyName, object expectValue)
+        [Obsolete(error: true, message: "This message is only for Newtonsoft.Json")]
+        public Drop() { }
+
+        public Drop(string propertyName, D expectValue)
         {
-            _propertyName = propertyName;
-            _expectValue = expectValue;
+            PropertyName = propertyName;
+            ExpectValue = expectValue;
         }
 
         public void Apply(CollectionWorkSpace<T> workspace)
         {
-            var property = typeof(T).GetProperty(_propertyName);
-            var toRemove = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(_expectValue) ?? false);
+            var property = typeof(T).GetProperty(PropertyName);
+            var toRemove = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(ExpectValue) ?? false);
             if (toRemove is not null)
             {
                 workspace.List.Remove(toRemove);

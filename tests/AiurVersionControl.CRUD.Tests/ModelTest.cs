@@ -39,16 +39,22 @@ namespace AiurVersionControl.CRUD.Tests
             var json = JsonTools.Serialize(add);
             var convertedBack = JsonTools.Deserialize<Add<Book>>(json);
             Assert.AreEqual(add.Item.Title, convertedBack.Item.Title);
-            Console.WriteLine(json);
         }
 
         [TestMethod]
         public void LamdbaModelToJsonTests()
         {
-            var drop = new Drop<Book>(nameof(Book.Id), 5);
+            var drop = new Drop<Book, int>(nameof(Book.Id), 1);
             var json = JsonTools.Serialize(drop);
-            var convertedBack = JsonTools.Deserialize<Drop<Book>>(json);
-            Console.WriteLine(json);
+            var convertedBack = JsonTools.Deserialize<Drop<Book, int>>(json);
+            var repo = new CollectionRepository<Book>
+            {
+                new Book { Id = 0, Title = "Book first." },
+                new Book { Id = 1, Title = "Book second." }
+            };
+            repo.ApplyChange(convertedBack);
+            var only = repo.Single();
+            Assert.AreEqual(0, only.Id);
         }
     }
 }
