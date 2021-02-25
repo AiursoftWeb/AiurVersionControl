@@ -1,24 +1,27 @@
 ﻿using AiurVersionControl.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
     public class Drop<T> : IModification<CollectionWorkSpace<T>>
     {
-        public Predicate<T> Searcher { get; set; }
+        private readonly string _propertyName;
+        private readonly object _expectValue;
 
-        public Drop(Predicate<T> searcher)
+        public Drop(string propertyName, object expectValue)
         {
-            Searcher = searcher;
+            _propertyName = propertyName;
+            _expectValue = expectValue;
         }
 
         public void Apply(CollectionWorkSpace<T> workspace)
         {
-            workspace.List.Remove(workspace.List.Find(Searcher));
+            var property = typeof(T).GetProperty(_propertyName);
+            var toRemove = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(_expectValue) ?? false);
+            if (toRemove is not null)
+            {
+                workspace.List.Remove(toRemove);
+            }
         }
     }
 }

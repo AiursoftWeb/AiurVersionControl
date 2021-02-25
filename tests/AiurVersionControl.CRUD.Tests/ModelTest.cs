@@ -19,11 +19,13 @@ namespace AiurVersionControl.CRUD.Tests
         [TestMethod]
         public void CRUDTest()
         {
-            var repo = new CollectionRepository<Book>();
-            repo.ApplyChange(new Add<Book>(new Book { Id = 0, Title = "Book first." }));
-            repo.ApplyChange(new Add<Book>(new Book { Id = 1, Title = "Book second." }));
-            repo.ApplyChange(new Drop<Book>(t => t.Id == 0));
-            repo.ApplyChange(new Patch<Book>(t => t.Id == 1, t => t.Title = "Book modified."));
+            var repo = new CollectionRepository<Book>
+            {
+                new Book { Id = 0, Title = "Book first." },
+                new Book { Id = 1, Title = "Book second." }
+            };
+            repo.Drop(nameof(Book.Id), 0);
+            repo.Patch(nameof(Book.Id), 1, nameof(Book.Title), "Book modified.");
 
             var only = repo.Single();
             Assert.AreEqual(1, only.Id);
@@ -43,12 +45,10 @@ namespace AiurVersionControl.CRUD.Tests
         [TestMethod]
         public void LamdbaModelToJsonTests()
         {
-            // This test will fail. I'm still trying to pass it.
-
-            //var drop = new Drop<Book>(t => t.Id == 0);
-            //var json = JsonTools.Serialize(drop);
-            //var convertedBack = JsonTools.Deserialize<Drop<Book>>(json);
-            //Console.WriteLine(json);
+            var drop = new Drop<Book>(nameof(Book.Id), 5);
+            var json = JsonTools.Serialize(drop);
+            var convertedBack = JsonTools.Deserialize<Drop<Book>>(json);
+            Console.WriteLine(json);
         }
     }
 }

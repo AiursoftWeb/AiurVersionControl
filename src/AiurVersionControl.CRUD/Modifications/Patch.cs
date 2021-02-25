@@ -1,29 +1,36 @@
 ﻿using AiurVersionControl.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
     public class Patch<T> : IModification<CollectionWorkSpace<T>>
     {
-        public Predicate<T> Searcher { get; set; }
-        public Action<T> Action { get; set; }
+        private readonly string _searchPropertyName;
+        private readonly object _expectValue;
+        private readonly string _patchPropertyName;
+        private readonly object _newValue;
 
-        public Patch(Predicate<T> searcher, Action<T> action)
+        public Patch(
+            string searchPropertyName, 
+            object expectValue,
+            string patchPropertyName,
+            object newValue)
         {
-            Searcher = searcher;
-            Action = action;
+            _searchPropertyName = searchPropertyName;
+            _expectValue = expectValue;
+            _patchPropertyName = patchPropertyName;
+            _newValue = newValue;
         }
 
         public void Apply(CollectionWorkSpace<T> workspace)
         {
-            var found = workspace.List.Find(Searcher);
-            if (found != null)
+            var property = typeof(T).GetProperty(_searchPropertyName);
+            var patchProperty = typeof(T).GetProperty(_patchPropertyName);
+            var toPatch = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(_expectValue) ?? false);
+            if (toPatch is not null)
             {
-                Action(found);
+                patchProperty.SetValue(toPatch, _newValue);
             }
         }
     }
