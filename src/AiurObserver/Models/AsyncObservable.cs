@@ -15,7 +15,7 @@ namespace AiurObserver
             {
                 _observers.Add(observer);
             }
-            return new Subscription<T>(_observers, observer);
+            return new AsyncSubscription<T>(_observers, observer);
         }
 
         public IEnumerable<Task> Boradcast(T newEvent)
