@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AiurObserver.Models
+namespace AiurObserver
 {
-    public class Subscription<T> : IDisposable
+    public class AsyncSubscription<T> : IDisposable
     {
-        private readonly List<IObserver<T>> _observers;
-        private readonly IObserver<T> _observer;
+        private readonly List<IAsyncObserver<T>> _observers;
+        private readonly IAsyncObserver<T> _observer;
 
-        internal Subscription(List<IObserver<T>> observers, IObserver<T> observer)
+        internal AsyncSubscription(List<IAsyncObserver<T>> observers, IAsyncObserver<T> observer)
         {
             _observers = observers;
             _observer = observer;

@@ -30,6 +30,7 @@ namespace AiurVersionControl.Models
                     localNewCommit.Item.Apply(fork);
                 }
                 controlled.WorkSpace = fork;
+                controlled.ForceBroadcastWorkSpaceChanged();
             }
         }
     }
