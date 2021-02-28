@@ -19,5 +19,10 @@ namespace AiurVersionControl.CRUD.Modifications
         {
             workspace.List.Add(Item);
         }
+
+        public override string ToString()
+        {
+            return $"Add a new {typeof(T).Name}";
+        }
     }
 }

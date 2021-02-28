@@ -6,8 +6,7 @@
         mc:Ignorable="d"
         xmlns:views="clr-namespace:AiurVersionControl.SampleWPF.Views"
         xmlns:viewModels="clr-namespace:AiurVersionControl.SampleWPF.ViewModels"
-        Title="Converter"
-        ResizeMode="NoResize"
+        Title="VersionControllled CRUD example."
         SizeToContent="WidthAndHeight" x:ClassModifier="internal"
         d:DataContext="{d:DesignInstance viewModels:ConverterPresenter}">
 

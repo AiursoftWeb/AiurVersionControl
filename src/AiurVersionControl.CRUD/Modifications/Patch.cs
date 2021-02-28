@@ -36,5 +36,10 @@ namespace AiurVersionControl.CRUD.Modifications
                 patchProperty.SetValue(toPatch, NewValue);
             }
         }
+
+        public override string ToString()
+        {
+            return $"Patch a {typeof(T).Name}";
+        }
     }
 }

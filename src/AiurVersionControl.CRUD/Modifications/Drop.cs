@@ -27,5 +27,10 @@ namespace AiurVersionControl.CRUD.Modifications
                 workspace.List.Remove(toRemove);
             }
         }
+
+        public override string ToString()
+        {
+            return $"Drop a {typeof(T).Name}";
+        }
     }
 }
