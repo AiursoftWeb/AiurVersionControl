@@ -3,20 +3,32 @@ using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
 {
-    internal sealed class Command : ICommand
+    public class RelayCommand<T> : ICommand
     {
-        private readonly Action<object?> _action;
+        readonly Action<T> _execute = null;
+        readonly Predicate<T> _canExecute = null;
 
-        public Command(Action<object?> action) => _action = action;
-
-        public void Execute(object? parameter) => _action(parameter);
-
-        public bool CanExecute(object? parameter) => true;
-
-        public event EventHandler? CanExecuteChanged
+        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
         {
-            add { }
-            remove { }
+            _execute = execute;
+            _canExecute = canExecute;
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute == null || _canExecute((T)parameter);
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, new EventArgs());
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute((T)parameter);
         }
     }
 }

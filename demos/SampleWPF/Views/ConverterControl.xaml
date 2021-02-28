@@ -13,10 +13,10 @@
         </Style>
     </FrameworkElement.Resources>
 
-    <StackPanel FocusManager.FocusedElement="{Binding ElementName=TextToConvert}" Width="300" Margin="15">
+    <StackPanel FocusManager.FocusedElement="{Binding ElementName=MyText}" Width="300" Margin="15">
 
-        <Label Content="Text To Convert" Target="{Binding ElementName=TextToConvert}" />
-        <TextBox Name="MyText" Text="{Binding SomeText}" />
+        <Label Content="Text To Convert" Target="{Binding ElementName=MyText}" />
+        <TextBox Name="MyText" Text="{Binding SomeText, UpdateSourceTrigger=PropertyChanged}" />
 
         <Label Content="Books" Target="{Binding ElementName=History}" />
         <ListBox Name="History"
@@ -38,7 +38,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Button Content="Convert"
+        <Button Content="Commit"
                 Command="{Binding Commit}"
                 IsDefault="True"
                 Margin="5" />

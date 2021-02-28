@@ -13,22 +13,36 @@ namespace AiurVersionControl.SampleWPF.ViewModels
     {
         public CollectionRepository<Book> Repository { get; set; } = new CollectionRepository<Book>();
 
-        public string SomeText { get; set; }
+        private readonly RelayCommand<object> _commit;
+        private string _someText;
 
-        public ICommand Commit => new Command(_ => 
+        public ICommand Commit => _commit;
+
+        public string SomeText
         {
-            if (string.IsNullOrWhiteSpace(SomeText))
+            get => _someText;
+            set
             {
-                return;
+                Update(ref _someText, value, nameof(SomeText));
+                _commit.RaiseCanExecuteChanged();
             }
+        }
 
-            Repository.Add(new Book
+        public ConverterPresenter()
+        {
+            _commit = new RelayCommand<object>(_ =>
             {
-                Title = SomeText.ToUpper(),
-                Id = 7
-            });
+                Repository.Add(new Book
+                {
+                    Title = SomeText.ToUpper(),
+                    Id = 7
+                });
 
-            SomeText = string.Empty;
-        });
+                SomeText = string.Empty;
+            }, _ =>
+            {
+                return !string.IsNullOrWhiteSpace(SomeText);
+            });
+        }
     }
 }

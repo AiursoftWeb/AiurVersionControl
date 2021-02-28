@@ -6,7 +6,7 @@ namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
 {
     internal abstract class Presenter : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected void Update<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
         {
@@ -17,7 +17,9 @@ namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
