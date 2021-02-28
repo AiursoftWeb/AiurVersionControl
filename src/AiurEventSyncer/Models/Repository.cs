@@ -14,7 +14,7 @@ namespace AiurEventSyncer.Models
     public class Repository<T> : IRepository<T>
     {
         public string Name { get; init; } = string.Empty;
-        public IOutDatabase<Commit<T>> Commits => _commits;
+        public IOutOnlyDatabase<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
         public IAsyncObservable<List<Commit<T>>> AppendCommitsHappened => _subscribersManager;
 

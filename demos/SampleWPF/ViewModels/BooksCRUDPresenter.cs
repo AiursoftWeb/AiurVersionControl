@@ -24,7 +24,7 @@ namespace AiurVersionControl.SampleWPF.ViewModels
 
         public CollectionRepository<Book> Repository { get; set; } = new CollectionRepository<Book>();
 
-        public IOutDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => Repository.Commits;
+        public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => Repository.Commits;
 
         public ICommand CommitAddNew => _commitAddNew;
 

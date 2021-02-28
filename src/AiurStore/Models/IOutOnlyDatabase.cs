@@ -7,7 +7,7 @@ namespace AiurStore.Models
     /// Describe a collection which can be queried after a statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IOutDatabase<T> : IEnumerable<T>
+    public interface IOutOnlyDatabase<T> : IEnumerable<T>
     {
         public IEnumerable<T> GetAll();
         public IEnumerable<T> GetAllAfter(T afterWhich);
