@@ -13,7 +13,7 @@ namespace AiurEventSyncer.Models
     public class Repository<T> : IRepository<T>
     {
         public string Name { get; init; } = string.Empty;
-        public InOutDatabase<Commit<T>> Commits => _commits;
+        public IOutOnlyDatabase<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
         public IAsyncObservable<List<Commit<T>>> AppendCommitsHappened => _subscribersManager;
 
@@ -40,7 +40,7 @@ namespace AiurEventSyncer.Models
 
         protected virtual void OnAppendCommits(List<Commit<T>> newCommits)
         {
-            var subscriberTasks =_subscribersManager.Boradcast(newCommits);
+            var subscriberTasks = _subscribersManager.Boradcast(newCommits);
             if (subscriberTasks.Any())
             {
                 _notifyingQueue.QueueNew(() => Task.WhenAll(subscriberTasks));

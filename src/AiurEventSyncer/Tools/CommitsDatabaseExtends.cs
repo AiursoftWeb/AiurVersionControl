@@ -6,7 +6,7 @@ namespace AiurEventSyncer.Tools
 {
     public static class CommitsDatabaseExtends
     {
-        public static IEnumerable<T> GetCommitsAfterId<T, D>(this InOutDatabase<T> database, string id) where T : Commit<D>
+        public static IEnumerable<T> GetCommitsAfterId<T, D>(this IOutOnlyDatabase<T> database, string id) where T : Commit<D>
         {
             if (string.IsNullOrWhiteSpace(id))
             {

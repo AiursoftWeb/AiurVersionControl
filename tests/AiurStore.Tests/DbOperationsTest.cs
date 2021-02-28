@@ -18,7 +18,6 @@ namespace AiurStore.Tests
 
         private static void TestDb(InOutDatabase<string> store)
         {
-            store.Clear();
             store.Add("House");
             store.Add("Home");
             store.Add("Room");

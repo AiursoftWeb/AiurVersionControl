@@ -2,6 +2,7 @@
 using AiurStore.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace AiurStore.Providers
 {
@@ -9,7 +10,7 @@ namespace AiurStore.Providers
     {
         private readonly LinkedList<T> _store = new LinkedList<T>();
 
-        private LinkedListNode<T> SearchFromLast(Func<T, bool> prefix)
+        private LinkedListNode<T> SearchFromLast(Predicate<T> prefix)
         {
             var last = _store.Last;
             while (last != null)
@@ -28,7 +29,7 @@ namespace AiurStore.Providers
             return _store;
         }
 
-        public override IEnumerable<T> GetAllAfter(Func<T, bool> prefix)
+        public override IEnumerable<T> GetAllAfter(Predicate<T> prefix)
         {
             var node = SearchFromLast(prefix);
             return ListExtends.YieldAfter(node);
@@ -50,11 +51,7 @@ namespace AiurStore.Providers
         public override void Add(T newItem)
         {
             _store.AddLast(newItem);
-        }
-
-        public override void Clear()
-        {
-            _store.Clear();
+            itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
         }
 
         public override void InsertAfter(T afterWhich, T newItem)
@@ -62,12 +59,14 @@ namespace AiurStore.Providers
             if (afterWhich == null)
             {
                 _store.AddFirst(newItem);
+                itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, 0));
             }
             else
             {
                 var which = _store.FindLast(afterWhich);
                 if (which == null) throw new KeyNotFoundException($"Insertion point {nameof(afterWhich)} not found.");
                 _store.AddAfter(which, newItem);
+                itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
             }
         }
     }

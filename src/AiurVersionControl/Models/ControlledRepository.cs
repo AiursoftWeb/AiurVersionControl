@@ -1,6 +1,5 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
-using AiurObserver;
 using AiurObserver.Models;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace AiurVersionControl.Models
 
         public IObservable<object> WorkSpaceChangedHappened => _subscribersManager;
 
-        internal void ForceBroadcastWorkSpaceChanged() => _subscribersManager.Boradcast(null);
+        public virtual void ForceBroadcastWorkSpaceChanged() => _subscribersManager.Boradcast(null);
 
         public ControlledRepository()
         {
