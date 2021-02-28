@@ -1,13 +1,23 @@
 ﻿using AiurVersionControl.CRUD.Modifications;
 using AiurVersionControl.Models;
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace AiurVersionControl.CRUD
 {
-    public class CollectionRepository<T> : ControlledRepository<CollectionWorkSpace<T>>, IEnumerable<T>
+    public class CollectionRepository<T> : ControlledRepository<CollectionWorkSpace<T>>, IEnumerable<T>, INotifyCollectionChanged
     {
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public override void ForceBroadcastWorkSpaceChanged()
+        {
+            base.ForceBroadcastWorkSpaceChanged();
+            CollectionChanged?.Invoke(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
         public void Add(T newItem)
         {
             ApplyChange(new Add<T>(newItem));
