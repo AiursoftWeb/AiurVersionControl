@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
-using AiurEventSyncer.Abstract;
-using AiurEventSyncer.Models;
+﻿using AiurEventSyncer.Abstract;
 using AiurStore.Models;
 using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.Services;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using System.ComponentModel;
+using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.ViewModels
 {

@@ -1,18 +1,11 @@
 ﻿using AiurStore.Tools;
 using AiurVersionControl.CRUD.Modifications;
+using AiurVersionControl.CRUD.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Linq;
 
 namespace AiurVersionControl.CRUD.Tests
 {
-    public class Book
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-    }
-
-
     [TestClass]
     public class ModelTest
     {

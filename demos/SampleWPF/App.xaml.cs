@@ -1,7 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using AiurVersionControl.SampleWPF.ViewModels;
+﻿using AiurVersionControl.SampleWPF.ViewModels;
 using AiurVersionControl.SampleWPF.Views;
+using System.Windows;
 
 namespace AiurVersionControl.SampleWPF
 {

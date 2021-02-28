@@ -1,10 +1,8 @@
-﻿using AiurEventSyncer.ConnectionProviders;
-using AiurVersionControl.Models;
+﻿using AiurVersionControl.Models;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace AiurVersionControl.Tests

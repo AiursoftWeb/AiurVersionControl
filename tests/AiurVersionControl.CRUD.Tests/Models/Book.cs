@@ -1,4 +1,4 @@
-﻿namespace AiurVersionControl.SampleWPF.Models
+﻿namespace AiurVersionControl.CRUD.Tests.Models
 {
     public class Book
     {
