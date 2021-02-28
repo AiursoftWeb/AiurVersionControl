@@ -16,7 +16,7 @@ using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 
 namespace AiurVersionControl.SampleWPF.ViewModels
 {
-    internal sealed class ConverterPresenter : Presenter, INotifyPropertyChanged
+    internal sealed class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
         private readonly RelayCommand<object> _commitAddNew;
         private string _newTitle = string.Empty;
@@ -38,7 +38,7 @@ namespace AiurVersionControl.SampleWPF.ViewModels
             }
         }
 
-        public ConverterPresenter()
+        public BooksCRUDPresenter()
         {
             _commitAddNew = new RelayCommand<object>(_ =>
             {

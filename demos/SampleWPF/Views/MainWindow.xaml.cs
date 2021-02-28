@@ -1,8 +1,8 @@
 namespace AiurVersionControl.SampleWPF.Views
 {
-    internal sealed partial class ConvertWindow
+    internal sealed partial class MainWindow
     {
-        public ConvertWindow()
+        public MainWindow()
         {
             InitializeComponent();
         }

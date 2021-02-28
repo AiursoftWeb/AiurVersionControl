@@ -1,8 +1,8 @@
 ﻿namespace AiurVersionControl.SampleWPF.Views
 {
-    internal sealed partial class ConverterControl
+    internal sealed partial class BooksCRUD
     {
-        public ConverterControl()
+        public BooksCRUD()
         {
             InitializeComponent();
         }

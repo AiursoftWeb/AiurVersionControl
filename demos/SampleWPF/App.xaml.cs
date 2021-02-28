@@ -11,8 +11,8 @@ namespace AiurVersionControl.SampleWPF
         {
             base.OnStartup(e);
 
-            var converterPresenter = new ConverterPresenter();
-            var mainWindow = new ConvertWindow {DataContext = converterPresenter};
+            var crudPresenter = new BooksCRUDPresenter();
+            var mainWindow = new MainWindow { DataContext = crudPresenter };
 
             mainWindow.Show();
         }
