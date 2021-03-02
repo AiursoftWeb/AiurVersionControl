@@ -7,31 +7,14 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:BooksCRUDPresenter}" x:ClassModifier="internal">
 
-    <FrameworkElement.Resources>
-        <Style TargetType="Label">
-            <Setter Property="Margin" Value="5,5,5,0" />
-        </Style>
-    </FrameworkElement.Resources>
-    <Grid Background="azure">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid FocusManager.FocusedElement="{Binding ElementName=NewTitle}" Margin="0,0,0,0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="300" Background="red" >
-
-            <Label Content="New book title" Target="{Binding ElementName=NewTitle}" Margin="5,5,5,0" VerticalAlignment="Top" />
-            <TextBox Name="NewTitle" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Height="20" Margin="5,30,5,0" VerticalAlignment="Top"  />
-
-            <Button Content="Add a new book"
-                Command="{Binding CommitAddNew}"
-                CommandParameter="{Binding ElementName=NewTitle, Path=Text}"
-                IsDefault="True"
-                Height="20" Margin="5,55,5,0" VerticalAlignment="Top" />
-
-            <Label Content="Books" Target="{Binding ElementName=Books}" Margin="5,80,5,0" VerticalAlignment="Top"/>
-            <ListBox Name="Books"
-                 ItemsSource="{Binding Repository}"
-                 Margin="5,110,5,30">
+    <DockPanel Background="azure">
+        <DockPanel Width="300" Background="red" >
+            <Label DockPanel.Dock="Top" Content="New book title" Margin="5,5,5,0" />
+            <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,0" />
+            <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" IsDefault="True" Margin="5,5,5,0" />
+            
+            <Label DockPanel.Dock="Top" Content="Books" Target="{Binding ElementName=Books}" Margin="5,5,5,0" />
+            <ListBox Name="Books" ItemsSource="{Binding Repository}" Margin="5,5,5,10">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
@@ -45,10 +28,9 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+        </DockPanel>
 
-        </Grid>
-
-        <Grid  Background="Green" Grid.RowSpan="2" Margin="310,0,0,0">
+        <Grid Background="Green">
             <Label Content="Commits History" Target="{Binding ElementName=History}" Margin="5,5,5,0" />
             <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,35,10,10" >
                 <ListBox.ItemTemplate>
@@ -68,6 +50,6 @@
             </ListBox>
         </Grid>
 
-    </Grid>
+    </DockPanel>
 
 </UserControl>
