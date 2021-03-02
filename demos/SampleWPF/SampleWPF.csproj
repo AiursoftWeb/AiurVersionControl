@@ -12,7 +12,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj" />
+		<PackageReference Include="FluentWPF" Version="0.8.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj" />
 	</ItemGroup>
 
 </Project>

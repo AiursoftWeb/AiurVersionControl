@@ -10,11 +10,11 @@
     <DockPanel>
         <DockPanel Width="330">
             <Label DockPanel.Dock="Top" Content="New book title" Margin="5,5,5,0" />
-            <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,0" />
-            <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" IsDefault="True" Margin="5,5,5,0" />
+            <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,0" Style="{StaticResource TextBoxRevealStyle}" />
+            <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="5,5,5,0" Style="{StaticResource ButtonRevealStyle}" />
             
             <Label DockPanel.Dock="Top" Content="Books" Target="{Binding ElementName=Books}" Margin="5,5,5,0" />
-            <ListBox Name="Books" ItemsSource="{Binding Repository}" Margin="5,5,5,10">
+            <ListBox Name="Books" ItemsSource="{Binding Repository}" Margin="5,5,5,10" Style="{StaticResource ListBoxRevealStyle}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
@@ -32,7 +32,7 @@
 
         <Grid>
             <Label Content="Commits History" Target="{Binding ElementName=History}" Margin="5,5,5,0" />
-            <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,35,10,10" >
+            <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,35,10,10" Style="{StaticResource ListBoxRevealStyle}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
