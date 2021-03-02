@@ -7,8 +7,8 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:BooksCRUDPresenter}" x:ClassModifier="internal">
 
-    <DockPanel Background="azure">
-        <DockPanel Width="300" Background="red" >
+    <DockPanel>
+        <DockPanel Width="300">
             <Label DockPanel.Dock="Top" Content="New book title" Margin="5,5,5,0" />
             <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,0" />
             <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" IsDefault="True" Margin="5,5,5,0" />
@@ -30,7 +30,7 @@
             </ListBox>
         </DockPanel>
 
-        <Grid Background="Green">
+        <Grid>
             <Label Content="Commits History" Target="{Binding ElementName=History}" Margin="5,5,5,0" />
             <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,35,10,10" >
                 <ListBox.ItemTemplate>
