@@ -12,23 +12,26 @@
             <Setter Property="Margin" Value="5,5,5,0" />
         </Style>
     </FrameworkElement.Resources>
-    <StackPanel Orientation="Horizontal">
-        <StackPanel FocusManager.FocusedElement="{Binding ElementName=NewTitle}" Margin="15">
+    <Grid Background="azure">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid FocusManager.FocusedElement="{Binding ElementName=NewTitle}" Margin="0,0,0,0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="300" Background="red" >
 
-            <Label Content="New book title" Target="{Binding ElementName=NewTitle}" />
-            <TextBox Name="NewTitle" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}"  Margin="5" />
+            <Label Content="New book title" Target="{Binding ElementName=NewTitle}" Margin="5,5,5,0" VerticalAlignment="Top" />
+            <TextBox Name="NewTitle" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Height="20" Margin="5,30,5,0" VerticalAlignment="Top"  />
 
             <Button Content="Add a new book"
                 Command="{Binding CommitAddNew}"
+                CommandParameter="{Binding ElementName=NewTitle, Path=Text}"
                 IsDefault="True"
-                Margin="5" />
+                Height="20" Margin="5,55,5,0" VerticalAlignment="Top" />
 
-            <Label Content="Books" Target="{Binding ElementName=Books}" />
+            <Label Content="Books" Target="{Binding ElementName=Books}" Margin="5,80,5,0" VerticalAlignment="Top"/>
             <ListBox Name="Books"
                  ItemsSource="{Binding Repository}"
-                 MinWidth="300"
-                 Height="300"
-                 Margin="5">
+                 Margin="5,110,5,30">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
@@ -43,21 +46,18 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-        </StackPanel>
+        </Grid>
 
-        <StackPanel Margin="15" MinWidth="300">
-            <Label Content="Commits History" Target="{Binding ElementName=History}" />
-            <ListBox Name="History"
-                 ItemsSource="{Binding History}"
-                 Height="300"
-                 Margin="5">
+        <Grid  Background="Green" Grid.RowSpan="2" Margin="310,0,0,0">
+            <Label Content="Commits History" Target="{Binding ElementName=History}" Margin="5,5,5,0" />
+            <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,35,10,10" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="240" />
                                 <ColumnDefinition Width="140" />
-                                <ColumnDefinition Width="140" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding Id}" />
                             <TextBlock Grid.Column="1" Text="{Binding CommitTime}" />
@@ -66,8 +66,8 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </StackPanel>
+        </Grid>
 
-    </StackPanel>
+    </Grid>
 
 </UserControl>

@@ -34,18 +34,18 @@ namespace AiurVersionControl.SampleWPF.ViewModels
 
         public BooksCRUDPresenter()
         {
-            _commitAddNew = new RelayCommand<object>(_ =>
+            _commitAddNew = new RelayCommand<object>(newTitle =>
             {
                 Repository.Add(new Book
                 {
-                    Title = NewTitle.ToUpper(),
+                    Title = (newTitle as string).ToUpper(),
                     Id = _counter.GetUniqueNo()
                 });
 
                 NewTitle = string.Empty;
-            }, _ =>
+            }, newTitle =>
             {
-                return !string.IsNullOrWhiteSpace(NewTitle);
+                return !string.IsNullOrWhiteSpace(newTitle as string);
             });
         }
     }
