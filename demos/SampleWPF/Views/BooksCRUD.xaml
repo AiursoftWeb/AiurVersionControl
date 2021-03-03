@@ -13,8 +13,10 @@
             <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,0" Style="{StaticResource TextBoxRevealStyle}" />
             <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="5,5,5,0" Style="{StaticResource ButtonRevealStyle}" />
             
-            <Label DockPanel.Dock="Top" Content="Books" Target="{Binding ElementName=Books}" Margin="5,5,5,0" />
-            <ListBox Name="Books" ItemsSource="{Binding Repository}" Margin="5,5,5,10" Style="{StaticResource ListBoxRevealStyle}">
+            <Label DockPanel.Dock="Top" Content="Books" Target="{Binding ElementName=Books}" Margin="5,5,5,5" />
+            <Button DockPanel.Dock="Bottom" Content="Delete selected book" Command="{Binding CommitDrop}" Height="30" Margin="5,5,5,10" Style="{StaticResource ButtonRevealStyle}" />
+
+            <ListBox Name="Books" ItemsSource="{Binding Repository}" SelectedItem="{Binding Path=SelectedBook, Mode=OneWayToSource}" Margin="5,5,5,10" Style="{StaticResource ListBoxRevealStyle}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
@@ -28,6 +30,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
         </DockPanel>
 
         <Grid>
