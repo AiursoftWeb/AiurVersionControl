@@ -2,6 +2,10 @@
 
 namespace AiurEventSyncer.Abstract
 {
+    /// <summary>
+    /// An object that can be synced between repositories and contains an inner object.
+    /// </summary>
+    /// <typeparam name="T">The type of the inner object.</typeparam>
     public class Commit<T>
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("D");

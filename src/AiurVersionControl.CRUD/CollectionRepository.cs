@@ -7,14 +7,18 @@ using System.ComponentModel;
 
 namespace AiurVersionControl.CRUD
 {
+    /// <summary>
+    /// A special controlled repository that contains a collection workspace which you can do CRUD to.
+    /// </summary>
+    /// <typeparam name="T">The item type of the collection.</typeparam>
     public class CollectionRepository<T> : ControlledRepository<CollectionWorkSpace<T>>, IEnumerable<T>, INotifyCollectionChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public override void ForceBroadcastWorkSpaceChanged()
+        public override void BroadcastWorkSpaceChanged()
         {
-            base.ForceBroadcastWorkSpaceChanged();
+            base.BroadcastWorkSpaceChanged();
             CollectionChanged?.Invoke(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 

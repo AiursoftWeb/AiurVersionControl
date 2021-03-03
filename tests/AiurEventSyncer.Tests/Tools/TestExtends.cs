@@ -24,7 +24,7 @@ namespace AiurEventSyncer.Tests.Tools
             int waitedTimes = 0;
             while (repo.Commits.Count() < count)
             {
-                await Task.Delay(10);
+                await Task.Delay(5);
                 waitedTimes++;
                 if (waitedTimes / 100 >= maxWaitSeconds)
                 {

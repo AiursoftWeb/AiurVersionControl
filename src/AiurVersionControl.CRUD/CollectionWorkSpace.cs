@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace AiurVersionControl.CRUD
 {
+    /// <summary>
+    /// A special workspace which contains a collection with item type is T.
+    /// </summary>
+    /// <typeparam name="T">The type of the item in the collection.</typeparam>
     public class CollectionWorkSpace<T> : WorkSpace, IEnumerable<T>
     {
         public List<T> List { get; private set; } = new ();

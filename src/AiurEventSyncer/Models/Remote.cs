@@ -38,7 +38,7 @@ namespace AiurEventSyncer.Models
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.AppendCommitsHappened.Subscribe((c) => PushAsync());
+                ContextRepository.AppendCommitsHappened.Subscribe(_ => PushAsync());
             }
             if (AutoPull)
             {
@@ -96,7 +96,7 @@ namespace AiurEventSyncer.Models
             PushLock.Release();
         }
 
-        public virtual void OnPullPointerMoved(Commit<T> pointer)
+        public virtual void OnPullPointerMovedForwardOnce(Commit<T> pointer)
         {
         }
 

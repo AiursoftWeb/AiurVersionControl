@@ -6,6 +6,10 @@ using System.Collections.Generic;
 
 namespace AiurVersionControl.Models
 {
+    /// <summary>
+    /// A special repository which contains a workspace and applies modifications to it automatically.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ControlledRepository<T> : Repository<IModification<T>> where T : WorkSpace, new()
     {
         private readonly Observable<object> _subscribersManager = new();
@@ -14,7 +18,10 @@ namespace AiurVersionControl.Models
 
         public IObservable<object> WorkSpaceChangedHappened => _subscribersManager;
 
-        public virtual void ForceBroadcastWorkSpaceChanged() => _subscribersManager.Boradcast(null);
+        /// <summary>
+        /// Call this method to manually broadcast a new event to all workspace changed subscribers.
+        /// </summary>
+        public virtual void BroadcastWorkSpaceChanged() => _subscribersManager.Boradcast(null);
 
         public ControlledRepository()
         {
@@ -26,7 +33,7 @@ namespace AiurVersionControl.Models
             foreach (var newCommit in newCommits)
             {
                 newCommit.Item.Apply(WorkSpace);
-                ForceBroadcastWorkSpaceChanged();
+                BroadcastWorkSpaceChanged();
             }
             base.OnAppendCommits(newCommits);
         }

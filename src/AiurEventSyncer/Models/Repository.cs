@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Models
 {
+    /// <summary>
+    /// The collection of the commits which helps you sync between other repositories.
+    /// </summary>
+    /// <typeparam name="T">The inner object type of the commit.</typeparam>
     public class Repository<T> : IRepository<T>
     {
         public string Name { get; init; } = string.Empty;
@@ -65,7 +69,7 @@ namespace AiurEventSyncer.Models
                     if (remoteRecord.PullPointer != pointer)
                     {
                         remoteRecord.PullPointer = pointer;
-                        remoteRecord.OnPullPointerMoved(pointer);
+                        remoteRecord.OnPullPointerMovedForwardOnce(pointer);
                     }
                     else
                     {
