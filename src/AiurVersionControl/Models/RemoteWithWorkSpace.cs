@@ -14,7 +14,7 @@ namespace AiurVersionControl.Models
         {
         }
 
-        public override void OnPullPointerMoved(Commit<IModification<T>> pointer)
+        public override void OnPullPointerMovedForwardOnce(Commit<IModification<T>> pointer)
         {
             pointer.Item.Apply(RemoteWorkSpace);
         }
@@ -30,7 +30,7 @@ namespace AiurVersionControl.Models
                     localNewCommit.Item.Apply(fork);
                 }
                 controlled.WorkSpace = fork;
-                controlled.ForceBroadcastWorkSpaceChanged();
+                controlled.BroadcastWorkSpaceChanged();
             }
         }
     }
