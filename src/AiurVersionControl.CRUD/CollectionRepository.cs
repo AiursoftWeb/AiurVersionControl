@@ -3,7 +3,6 @@ using AiurVersionControl.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 
 namespace AiurVersionControl.CRUD
 {
@@ -14,7 +13,6 @@ namespace AiurVersionControl.CRUD
     public class CollectionRepository<T> : ControlledRepository<CollectionWorkSpace<T>>, IEnumerable<T>, INotifyCollectionChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public override void BroadcastWorkSpaceChanged()
         {
