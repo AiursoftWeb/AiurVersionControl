@@ -8,6 +8,6 @@ namespace AiurVersionControl.SampleWPF.ViewModels
 {
     internal class MainWindowModel
     {
-        public BooksCRUDPresenter CrudPresenter { get; set; } = new BooksCRUDPresenter();
+        public BooksCRUDPresenter CrudPresenter { get; set; }
     }
 }

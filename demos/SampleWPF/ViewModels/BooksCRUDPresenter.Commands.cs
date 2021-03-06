@@ -1,4 +1,5 @@
-﻿using AiurVersionControl.SampleWPF.Models;
+﻿using AiurVersionControl.CRUD;
+using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 using System;
 using System.Threading.Tasks;
@@ -16,11 +17,12 @@ namespace AiurVersionControl.SampleWPF.ViewModels
         public ICommand CommitDrop => _commitDrop;
         public ICommand HostServerCommand => _hostServer;
 
-        public BooksCRUDPresenter()
+        public BooksCRUDPresenter(CollectionRepository<Book> repo)
         {
             _commitAddNew = new RelayCommand<object>(Add, _ => !string.IsNullOrWhiteSpace(NewTitle));
             _commitDrop = new RelayCommand<object>(Drop, _ => SelectedBook != null);
             _hostServer = new AsyncRelayCommand<object>(HostServer, _ => true);
+            Repository = repo;
         }
 
         public async Task HostServer(object _)

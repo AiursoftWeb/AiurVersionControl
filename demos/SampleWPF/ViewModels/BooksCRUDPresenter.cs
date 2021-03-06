@@ -19,7 +19,7 @@ namespace AiurVersionControl.SampleWPF.ViewModels
         private Counter _counter = new();
         private IHost _host;
 
-        public CollectionRepository<Book> Repository { get; set; } = new CollectionRepository<Book>();
+        public CollectionRepository<Book> Repository { get; set; }
 
         public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => Repository.Commits;
 
