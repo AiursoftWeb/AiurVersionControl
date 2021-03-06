@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AiurEventSyncer.Models;
+using AiurEventSyncer.WebExtends;
+using AiurVersionControl.CRUD;
+using AiurVersionControl.SampleWPF.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace AiurVersionControl.SampleWPF.Services
 {
@@ -44,17 +49,19 @@ namespace AiurVersionControl.SampleWPF.Services
             app.UseDeveloperExceptionPage();
             app.UseWebSockets();
             app.UseRouting();
-            app.UseWelcomePage();
             app.UseEndpoints(endpoint => endpoint.MapDefaultControllerRoute());
+            app.UseWelcomePage();
         }
     }
 
-    public class HomeController : Controller
+    public class AppController : Controller
     {
+        public static CollectionRepository<Book> Repo { get; set; }
+
         [Route("repo.ares")]
-        public IActionResult Index()
+        public Task<IActionResult> Index(string start)
         {
-            return Json(new { });
+            return this.RepositoryAsync(Repo, start);
         }
     }
 }
