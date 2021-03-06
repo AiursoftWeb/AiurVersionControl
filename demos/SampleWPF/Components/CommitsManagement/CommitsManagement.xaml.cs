@@ -1,8 +1,8 @@
 ﻿namespace AiurVersionControl.SampleWPF.Components
 {
-    internal sealed partial class BooksCRUDComponent
+    internal sealed partial class CommitsManagement
     {
-        public BooksCRUDComponent()
+        public CommitsManagement()
         {
             InitializeComponent();
         }

@@ -1,27 +1,31 @@
-﻿using AiurEventSyncer.Abstract;
-using AiurStore.Models;
-using AiurVersionControl.CRUD;
-using AiurVersionControl.Models;
+﻿using AiurVersionControl.CRUD;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.Services;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
-using Microsoft.Extensions.Hosting;
 using System.ComponentModel;
+using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
     internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
+        private readonly Counter _counter = new();
+        private readonly RelayCommand<object> _commitAddNew;
+        private readonly RelayCommand<object> _commitDrop;
         private string _newTitle = string.Empty;
-        private string _buttonText = "Host new server";
-        private bool _serverGridVisiable = false;
         private Book _selectedBook;
-        private Counter _counter = new();
-        private IHost _host;
+
+        public ICommand CommitAddNew => _commitAddNew;
+        public ICommand CommitDrop => _commitDrop;
 
         public CollectionRepository<Book> Repository { get; set; }
 
-        public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => Repository.Commits;
+        public BooksCRUDPresenter(CollectionRepository<Book> repo)
+        {
+            _commitAddNew = new RelayCommand<object>(Add, _ => !string.IsNullOrWhiteSpace(NewTitle));
+            _commitDrop = new RelayCommand<object>(Drop, _ => SelectedBook != null);
+            Repository = repo;
+        }
 
         public Book SelectedBook
         {
@@ -43,22 +47,20 @@ namespace AiurVersionControl.SampleWPF.Components
             }
         }
 
-        public string ServerButtonText
+        public void Add(object _)
         {
-            get => _buttonText;
-            set
+            Repository.Add(new Book
             {
-                Update(ref _buttonText, value, nameof(ServerButtonText));
-            }
+                Title = NewTitle,
+                Id = _counter.GetUniqueNo()
+            });
+
+            NewTitle = string.Empty;
         }
 
-        public bool ServerGridVisiable
+        public void Drop(object _)
         {
-            get => _serverGridVisiable;
-            set
-            {
-                Update(ref _serverGridVisiable, value, nameof(ServerGridVisiable));
-            }
+            Repository.Drop(nameof(Book.Id), SelectedBook.Id);
         }
     }
 }

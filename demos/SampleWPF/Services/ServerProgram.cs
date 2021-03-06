@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace AiurVersionControl.SampleWPF
+namespace AiurVersionControl.SampleWPF.Services
 {
     public class ServerProgram
     {
@@ -43,7 +44,17 @@ namespace AiurVersionControl.SampleWPF
             app.UseDeveloperExceptionPage();
             app.UseWebSockets();
             app.UseRouting();
+            app.UseWelcomePage();
             app.UseEndpoints(endpoint => endpoint.MapDefaultControllerRoute());
+        }
+    }
+
+    public class HomeController : Controller
+    {
+        [Route("repo.ares")]
+        public IActionResult Index()
+        {
+            return Json(new { });
         }
     }
 }

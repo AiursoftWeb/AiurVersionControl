@@ -1,5 +1,4 @@
 ﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.SampleWPF.Components.BooksCRUD;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.Windows;
 using System.Windows;
@@ -15,10 +14,7 @@ namespace AiurVersionControl.SampleWPF
             var repo = new CollectionRepository<Book>();
             var mainWindow = new MainWindow
             {
-                DataContext = new MainWindowModel
-                {
-                    CrudPresenter = new BooksCRUDPresenter(repo)
-                }
+                DataContext = new MainWindowModel(repo)
             };
 
             mainWindow.Show();

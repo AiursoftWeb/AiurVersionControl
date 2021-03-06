@@ -10,9 +10,13 @@
         Title="VersionControlled CRUD Demo App"
         x:ClassModifier="internal"
         d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
-    <Grid>
-        <cp:BooksCRUDComponent DataContext="{Binding CrudPresenter}"  />
-    </Grid>
+    <DockPanel>
+        <DockPanel Width="340">
+            <cp:BooksCRUD DataContext="{Binding CrudPresenter}" />
+        </DockPanel>
+
+        <cp:CommitsManagement DataContext="{Binding CommitsPresenter}" />
+    </DockPanel>
 
 </fw:AcrylicWindow>
     
