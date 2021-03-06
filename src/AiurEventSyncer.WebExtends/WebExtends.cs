@@ -27,19 +27,11 @@ namespace AiurEventSyncer.WebExtends
                 {
                     await ws.SendObject(newCommits);
                 });
-                while (ws.State == WebSocketState.Open)
+                await ws.Monitor<PushModel<T>>(onNewObject: pushedCommits => 
                 {
-                    try
-                    {
-                        // Waitting for pushed commits.
-                        var pushedCommits = await ws.GetObject<PushModel<T>>();
-                        repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
-                    }
-                    catch
-                    {
-                        break;
-                    }
-                }
+                    repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
+                    return Task.CompletedTask;
+                });
                 subscription.Dispose();
                 return new EmptyResult();
             }

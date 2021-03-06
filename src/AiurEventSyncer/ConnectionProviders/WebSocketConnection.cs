@@ -36,39 +36,28 @@ namespace AiurEventSyncer.ConnectionProviders
             throw new InvalidOperationException($"You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition)
+        public async Task Monitor(Func<List<Commit<T>>, Task> onData, string startPosition)
         {
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
             if (_ws.State == WebSocketState.Open)
             {
-                var commits = await _ws.GetObject<List<Commit<T>>>();
-                if (commits.Any())
+                await _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) => 
                 {
-                    await onData(commits);
-                }
-                await Task.Factory.StartNew(() => Monitor(onData));
+                    if (_ws.State != WebSocketState.Open)
+                    {
+                        return Task.CompletedTask;
+                    }
+                    if (commits.Any())
+                    {
+                        return onData(commits);
+                    }
+                    return Task.CompletedTask;
+                });
             }
             else
             {
                 throw new InvalidOperationException("Websocket remote not correctly created!");
             }
-        }
-
-        private async Task Monitor(Func<List<Commit<T>>, Task> onData)
-        {
-            while (_ws.State == WebSocketState.Open)
-            {
-                var commits = await _ws.GetObject<List<Commit<T>>>();
-                if (_ws.State != WebSocketState.Open)
-                {
-                    return;
-                }
-                if (commits.Any())
-                {
-                    await onData(commits);
-                }
-            }
-            throw new InvalidOperationException($"Websocket dropped!");
         }
 
         public async Task Disconnect()
