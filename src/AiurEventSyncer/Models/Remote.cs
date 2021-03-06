@@ -42,7 +42,7 @@ namespace AiurEventSyncer.Models
             }
             if (AutoPull)
             {
-                await ConnectionProvider.Monitor(onData: async data => 
+                await ConnectionProvider.PullAndMonitor(onData: async data => 
                 {
                     await PullLock.WaitAsync();
                     ContextRepository.OnPulled(data.ToList(), this);

@@ -52,7 +52,7 @@ namespace AiurEventSyncer.Tools
 
         public static Task Monitor<T>(this WebSocket ws, Func<T, Task> onNewObject)
         {
-            return ws.Subscribe(onNewMessage: (rawJson) => onNewObject(JsonTools.Deserialize<T>(rawJson)));
+            return ws.Subscribe(rawJson => onNewObject(JsonTools.Deserialize<T>(rawJson)));
         }
     }
 }
