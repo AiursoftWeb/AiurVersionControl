@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
@@ -56,7 +57,7 @@ namespace AiurVersionControl.SampleWPF.Components
             if (_host == null)
             {
 #warning Find a port for your own!
-                _host = ServerProgram.BuildHost(Array.Empty<string>(), 15678);
+                _host = ServerProgram.BuildHost(Array.Empty<string>(), _repository, Dispatcher.CurrentDispatcher, 15678);
                 await _host.StartAsync();
                 ServerButtonText = "Stop server";
                 ServerGridVisiable = true;

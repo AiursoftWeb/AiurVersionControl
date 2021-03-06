@@ -3,19 +3,19 @@ using AiurEventSyncer.ConnectionProviders.Models;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using AiurObserver;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.WebExtends
 {
     public static class ActionBuilder
     {
-        public static async Task<IActionResult> RepositoryAsync<T>(this ControllerBase controller, Repository<T> repository, string startPosition)
+        public static async Task<IActionResult> RepositoryAsync<T>(this HttpContext context, Repository<T> repository, string startPosition)
         {
-            var websocket = controller.HttpContext.WebSockets;
+            var websocket = context.WebSockets;
             if (websocket.IsWebSocketRequest)
             {
                 var ws = await websocket.AcceptWebSocketAsync();
