@@ -18,11 +18,10 @@ namespace AiurEventSyncer.Tools
 
         public static async Task Subscribe(this WebSocket ws, Func<string, Task> onNewMessage)
         {
-            MemoryStream ms;
+            var ms = new MemoryStream();
             while (ws.State == WebSocketState.Open)
             {
                 WebSocketReceiveResult result;
-                ms = new MemoryStream();
                 do
                 {
                     var messageBuffer = WebSocket.CreateClientBuffer(1024, 16);
@@ -35,7 +34,7 @@ namespace AiurEventSyncer.Tools
                 {
                     var msgString = Encoding.UTF8.GetString(ms.ToArray());
                     ms.Seek(0, SeekOrigin.Begin);
-                    ms.Position = 0;
+                    ms.SetLength(0);
                     await onNewMessage(msgString);
                 }
                 else

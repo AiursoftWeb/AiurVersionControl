@@ -55,6 +55,7 @@ namespace AiurVersionControl.SampleWPF.Components
         {
             if (_host == null)
             {
+#warning Find a port for your own!
                 _host = ServerProgram.BuildHost(Array.Empty<string>(), 15678);
                 await _host.StartAsync();
                 ServerButtonText = "Stop server";
