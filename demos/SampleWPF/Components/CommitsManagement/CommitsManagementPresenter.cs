@@ -60,12 +60,17 @@ namespace AiurVersionControl.SampleWPF.Components
             }
             else
             {
-                await _host.StopAsync();
-                _host.Dispose();
-                _host = null;
-                ServerButtonText = "Host new server";
-                ServerGridVisiable = false;
+                await StopServer();
             }
+        }
+
+        public async Task StopServer()
+        {
+            await _host.StopAsync();
+            _host.Dispose();
+            _host = null;
+            ServerButtonText = "Host new server";
+            ServerGridVisiable = false;
         }
     }
 }

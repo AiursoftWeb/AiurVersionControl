@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace AiurVersionControl.SampleWPF.Windows
 {
     internal sealed partial class MainWindow
@@ -5,6 +7,12 @@ namespace AiurVersionControl.SampleWPF.Windows
         public MainWindow()
         {
             InitializeComponent();
+            Closing += OnClosing;
+        }
+
+        async void OnClosing(object sender, CancelEventArgs e)
+        {
+            await (DataContext as MainWindowModel).CommitsPresenter.StopServer();
         }
     }
 }
