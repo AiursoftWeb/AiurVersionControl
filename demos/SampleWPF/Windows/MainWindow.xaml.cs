@@ -1,4 +1,4 @@
-namespace AiurVersionControl.SampleWPF.Views
+namespace AiurVersionControl.SampleWPF.Windows
 {
     internal sealed partial class MainWindow
     {

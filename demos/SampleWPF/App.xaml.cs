@@ -1,7 +1,7 @@
 ﻿using AiurVersionControl.CRUD;
+using AiurVersionControl.SampleWPF.Components.BooksCRUD;
 using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.ViewModels;
-using AiurVersionControl.SampleWPF.Views;
+using AiurVersionControl.SampleWPF.Windows;
 using System.Windows;
 
 namespace AiurVersionControl.SampleWPF

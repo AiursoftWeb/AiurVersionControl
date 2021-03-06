@@ -19,4 +19,8 @@
 		<ProjectReference Include="..\..\src\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Libraries\" />
+	</ItemGroup>
+
 </Project>

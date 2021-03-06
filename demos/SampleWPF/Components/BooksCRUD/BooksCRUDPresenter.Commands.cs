@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace AiurVersionControl.SampleWPF.ViewModels
+namespace AiurVersionControl.SampleWPF.Components
 {
     internal sealed partial class BooksCRUDPresenter
     {

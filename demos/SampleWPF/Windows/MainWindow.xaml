@@ -1,17 +1,17 @@
-<fw:AcrylicWindow x:Class="AiurVersionControl.SampleWPF.Views.MainWindow"
+<fw:AcrylicWindow x:Class="AiurVersionControl.SampleWPF.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
-        xmlns:views="clr-namespace:AiurVersionControl.SampleWPF.Views"
-        xmlns:viewModels="clr-namespace:AiurVersionControl.SampleWPF.ViewModels"
+        xmlns:windows="clr-namespace:AiurVersionControl.SampleWPF.Windows"
+        xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
         Title="VersionControlled CRUD Demo App"
         x:ClassModifier="internal"
-        d:DataContext="{d:DesignInstance viewModels:MainWindowModel}" Width="800" Height="400">
+        d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
     <Grid>
-        <views:BooksCRUD DataContext="{Binding CrudPresenter}"  />
+        <cp:BooksCRUDComponent DataContext="{Binding CrudPresenter}"  />
     </Grid>
 
 </fw:AcrylicWindow>

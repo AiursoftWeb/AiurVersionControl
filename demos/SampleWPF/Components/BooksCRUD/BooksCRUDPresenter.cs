@@ -8,7 +8,7 @@ using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 using Microsoft.Extensions.Hosting;
 using System.ComponentModel;
 
-namespace AiurVersionControl.SampleWPF.ViewModels
+namespace AiurVersionControl.SampleWPF.Components
 {
     internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
