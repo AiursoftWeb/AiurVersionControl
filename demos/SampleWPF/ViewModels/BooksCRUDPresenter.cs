@@ -12,7 +12,6 @@ namespace AiurVersionControl.SampleWPF.ViewModels
 {
     internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
-
         private string _newTitle = string.Empty;
         private string _buttonText = "Host new server";
         private bool _serverGridVisiable = false;
@@ -23,8 +22,6 @@ namespace AiurVersionControl.SampleWPF.ViewModels
         public CollectionRepository<Book> Repository { get; set; } = new CollectionRepository<Book>();
 
         public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => Repository.Commits;
-
-
 
         public Book SelectedBook
         {

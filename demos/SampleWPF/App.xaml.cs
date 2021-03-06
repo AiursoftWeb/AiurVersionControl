@@ -10,10 +10,16 @@ namespace AiurVersionControl.SampleWPF
         {
             base.OnStartup(e);
 
-            var crudPresenter = new BooksCRUDPresenter();
-            var mainWindow = new MainWindow { DataContext = crudPresenter };
+            var mainWindow = new MainWindow
+            {
+                DataContext = new MainWindowModel
+                {
+                    CrudPresenter = new BooksCRUDPresenter()
+                }
+            };
 
             mainWindow.Show();
         }
     }
+
 }

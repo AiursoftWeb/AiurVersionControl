@@ -7,11 +7,12 @@
         mc:Ignorable="d"
         xmlns:views="clr-namespace:AiurVersionControl.SampleWPF.Views"
         xmlns:viewModels="clr-namespace:AiurVersionControl.SampleWPF.ViewModels"
-        Title="VersionControllled CRUD Demo App"
+        Title="VersionControlled CRUD Demo App"
         x:ClassModifier="internal"
-        d:DataContext="{d:DesignInstance viewModels:BooksCRUDPresenter}" Width="800" Height="400">
-    
-    <views:BooksCRUD />
+        d:DataContext="{d:DesignInstance viewModels:MainWindowModel}" Width="800" Height="400">
+    <Grid>
+        <views:BooksCRUD DataContext="{Binding CrudPresenter}"  />
+    </Grid>
 
 </fw:AcrylicWindow>
     
