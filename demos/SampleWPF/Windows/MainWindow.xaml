@@ -11,11 +11,14 @@
         x:ClassModifier="internal"
         d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
     <DockPanel>
-        <DockPanel Width="340">
+        <DockPanel Width="340" DockPanel.Dock="Left">
             <cp:BooksCRUD DataContext="{Binding CrudPresenter}" />
         </DockPanel>
 
-        <cp:CommitsManagement DataContext="{Binding CommitsPresenter}" />
+        <DockPanel>
+            <cp:RemoteManagement DockPanel.Dock="Bottom" DataContext="{Binding RemotesPresenter}"></cp:RemoteManagement>
+            <cp:CommitsManagement DataContext="{Binding CommitsPresenter}" />
+        </DockPanel>
     </DockPanel>
 
 </fw:AcrylicWindow>

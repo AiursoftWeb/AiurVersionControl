@@ -1,5 +1,4 @@
-﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.WebExtends;
+﻿using AiurEventSyncer.WebExtends;
 using AiurVersionControl.CRUD;
 using AiurVersionControl.SampleWPF.Models;
 using Microsoft.AspNetCore.Builder;
