@@ -5,25 +5,26 @@ using AiurVersionControl.Models;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.Services;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using Microsoft.Extensions.Hosting;
 using System.ComponentModel;
-using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.ViewModels
 {
-    internal sealed class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
+    internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
-        private readonly RelayCommand<object> _commitAddNew;
-        private readonly RelayCommand<object> _commitDrop;
+
         private string _newTitle = string.Empty;
+        private string _buttonText = "Host new server";
+        private bool _serverGridVisiable = false;
         private Book _selectedBook;
-        private Counter _counter = new Counter();
+        private Counter _counter = new();
+        private IHost _host;
 
         public CollectionRepository<Book> Repository { get; set; } = new CollectionRepository<Book>();
 
         public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => Repository.Commits;
 
-        public ICommand CommitAddNew => _commitAddNew;
-        public ICommand CommitDrop => _commitDrop;
+
 
         public Book SelectedBook
         {
@@ -45,29 +46,22 @@ namespace AiurVersionControl.SampleWPF.ViewModels
             }
         }
 
-        public BooksCRUDPresenter()
+        public string ServerButtonText
         {
-            _commitAddNew = new RelayCommand<object>(_ =>
+            get => _buttonText;
+            set
             {
-                Repository.Add(new Book
-                {
-                    Title = NewTitle,
-                    Id = _counter.GetUniqueNo()
-                });
+                Update(ref _buttonText, value, nameof(ServerButtonText));
+            }
+        }
 
-                NewTitle = string.Empty;
-            }, _ =>
+        public bool ServerGridVisiable
+        {
+            get => _serverGridVisiable;
+            set
             {
-                return !string.IsNullOrWhiteSpace(NewTitle);
-            });
-
-            _commitDrop = new RelayCommand<object>(_ =>
-            {
-                Repository.Drop(nameof(Book.Id), SelectedBook.Id);
-            }, _ =>
-            {
-                return SelectedBook != null;
-            });
+                Update(ref _serverGridVisiable, value, nameof(ServerGridVisiable));
+            }
         }
     }
 }
