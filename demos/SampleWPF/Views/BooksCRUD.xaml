@@ -8,15 +8,15 @@
              d:DataContext="{d:DesignInstance viewModels:BooksCRUDPresenter}" x:ClassModifier="internal">
 
     <DockPanel>
-        <DockPanel Width="330">
-            <Label DockPanel.Dock="Top" Content="New book title" Margin="5,5,5,0" />
-            <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,0" Style="{StaticResource TextBoxRevealStyle}" />
-            <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="5,5,5,0" Style="{StaticResource ButtonRevealStyle}" />
-            
-            <Label DockPanel.Dock="Top" Content="Books" Target="{Binding ElementName=Books}" Margin="5,5,5,5" />
-            <Button DockPanel.Dock="Bottom" Content="Delete selected book" Command="{Binding CommitDrop}" Height="30" Margin="5,5,5,10" Style="{StaticResource ButtonRevealStyle}" />
+        <DockPanel Width="340">
+            <TextBlock DockPanel.Dock="Top" Text="New book title" Margin="10,5,10,0" />
+            <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,0" Style="{StaticResource TextBoxRevealStyle}" />
+            <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="10,5,10,0" Style="{StaticResource ButtonRevealStyle}" />
 
-            <ListBox Name="Books" ItemsSource="{Binding Repository}" SelectedItem="{Binding Path=SelectedBook, Mode=OneWayToSource}" Margin="5,5,5,10" Style="{StaticResource ListBoxRevealStyle}">
+            <TextBlock DockPanel.Dock="Top" Text="Books" Margin="10,5,10,5" />
+            <Button DockPanel.Dock="Bottom" Content="Delete selected book" Command="{Binding CommitDrop}" Height="30" Margin="10,5,10,10" Style="{StaticResource ButtonRevealStyle}" />
+
+            <ListBox Name="Books" ItemsSource="{Binding Repository}" SelectedItem="{Binding Path=SelectedBook, Mode=OneWayToSource}" Margin="10,5,10,10" Style="{StaticResource ListBoxRevealStyle}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
@@ -33,9 +33,9 @@
 
         </DockPanel>
 
-        <Grid>
-            <Label Content="Commits History" Target="{Binding ElementName=History}" Margin="5,5,5,0" />
-            <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,35,10,10" Style="{StaticResource ListBoxRevealStyle}" >
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="Commits History" Margin="10,5,10,0" />
+            <ListBox Name="History" ItemsSource="{Binding History}" Margin="10,10,10,10" Style="{StaticResource ListBoxRevealStyle}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Margin="0,2">
@@ -51,7 +51,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </Grid>
+        </DockPanel>
 
     </DockPanel>
 

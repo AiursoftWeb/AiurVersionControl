@@ -9,7 +9,7 @@
         xmlns:viewModels="clr-namespace:AiurVersionControl.SampleWPF.ViewModels"
         Title="VersionControllled CRUD Demo App"
         x:ClassModifier="internal"
-        d:DataContext="{d:DesignInstance viewModels:BooksCRUDPresenter}" Width="700" Height="400">
+        d:DataContext="{d:DesignInstance viewModels:BooksCRUDPresenter}" Width="800" Height="400">
     
     <views:BooksCRUD />
 
