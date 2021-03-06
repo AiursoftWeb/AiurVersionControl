@@ -21,6 +21,8 @@ namespace AiurVersionControl.SampleWPF.Components
         private bool _serverGridVisiable = false;
         private IHost _host;
 
+        public bool ServerHosting => _host != null;
+
         public ICommand HostServerCommand => _hostServer;
 
         public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => _repository.Commits;
@@ -70,8 +72,8 @@ namespace AiurVersionControl.SampleWPF.Components
             {
                 await _host.StopAsync();
                 _host.Dispose();
+                _host = null;
             }
-            _host = null;
             ServerButtonText = "Host new server";
             ServerGridVisiable = false;
         }

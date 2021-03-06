@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Windows;
 
 namespace AiurVersionControl.SampleWPF.Windows
 {
@@ -10,9 +11,17 @@ namespace AiurVersionControl.SampleWPF.Windows
             Closing += OnClosing;
         }
 
-        async void OnClosing(object sender, CancelEventArgs e)
+        void OnClosing(object sender, CancelEventArgs e)
         {
-            await (DataContext as MainWindowModel).CommitsPresenter.StopServer();
+            if ((DataContext as MainWindowModel).CommitsPresenter.ServerHosting)
+            {
+                MessageBox.Show(
+                    "There is still a server hosting!",
+                    "Quit",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                e.Cancel = true;
+            }
         }
     }
 }

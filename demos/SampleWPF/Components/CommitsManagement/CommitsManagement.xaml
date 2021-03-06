@@ -11,7 +11,7 @@
             <TextBlock DockPanel.Dock="Top" Text="Commits History" Margin="10,5,10,0" />
             <StackPanel DockPanel.Dock="Top" Visibility="{Binding ServerGridVisiable, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="10,5,10,5" Background="LightPink">
                 <TextBlock Margin="5,5,5,5" Text="Server started. Use a new instance to connect." HorizontalAlignment="Center" />
-                <TextBox  Margin="5,5,5,5" Text="http://localhost:15678/repo.ares" HorizontalAlignment="Center" Background="Transparent" BorderThickness="0" IsReadOnly="True"/>
+                <TextBox  Margin="5,5,5,5" Text="ws://localhost:15678/repo.ares" HorizontalAlignment="Center" Background="Transparent" BorderThickness="0" IsReadOnly="True"/>
             </StackPanel>
             <Button DockPanel.Dock="Top"  Content="{Binding ServerButtonText}" Height="30" Margin="10,5,10,10" Command="{Binding HostServerCommand}"  Style="{StaticResource ButtonRevealStyle}" />
 

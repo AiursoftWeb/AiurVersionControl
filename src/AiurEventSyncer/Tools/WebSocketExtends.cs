@@ -1,5 +1,6 @@
 ﻿using AiurStore.Tools;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AiurEventSyncer.Tools
 {
-    public static  class WebSocketExtends
+    public static class WebSocketExtends
     {
         public static async Task SendMessage(this WebSocket ws, string message)
         {
@@ -18,12 +19,22 @@ namespace AiurEventSyncer.Tools
 
         public static async Task<string> GetMessage(this WebSocket ws)
         {
-            var buffer = new ArraySegment<byte>(new byte[2048]);
-            var wsResult = await ws.ReceiveAsync(buffer, CancellationToken.None);
-            if (wsResult.MessageType == WebSocketMessageType.Text)
+            using var ms = new MemoryStream();
+            WebSocketReceiveResult result;
+            do
             {
-                var rawJson = Encoding.UTF8.GetString(buffer.Skip(buffer.Offset).Take(buffer.Count).ToArray()).Trim('\0').Trim();
-                return rawJson;
+                var messageBuffer = WebSocket.CreateClientBuffer(1024, 16);
+                result = await ws.ReceiveAsync(messageBuffer, CancellationToken.None);
+                ms.Write(messageBuffer.Array, messageBuffer.Offset, result.Count);
+            }
+            while (!result.EndOfMessage);
+
+            if (result.MessageType == WebSocketMessageType.Text)
+            {
+                var msgString = Encoding.UTF8.GetString(ms.ToArray());
+                ms.Seek(0, SeekOrigin.Begin);
+                ms.Position = 0;
+                return msgString;
             }
             throw new InvalidOperationException();
         }
