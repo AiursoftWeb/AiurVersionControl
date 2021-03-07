@@ -8,7 +8,7 @@
              d:DataContext="{d:DesignInstance cp:RemoteControlPresenter}" x:ClassModifier="public">
 
     <DockPanel Background="LightYellow">
-        <Button Content="Detach" DockPanel.Dock="Right" Width="60" Height="25" Margin="5,5,5,5" Style="{StaticResource ButtonRevealStyle}" Command="{Binding DetachIt}" CommandParameter="{Binding}" />
+        <Button Content="Detach" DockPanel.Dock="Right" Width="60" Height="25" Margin="5,5,5,5" Command="{Binding DetachIt}" CommandParameter="{Binding}" />
         <TextBlock Margin="10,5,5,5" Text="{Binding EndPoint}" />
     </DockPanel>
 
