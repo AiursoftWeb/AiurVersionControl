@@ -39,36 +39,22 @@ namespace AiurEventSyncer.ConnectionProviders
         public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition)
         {
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
-            if (_ws.State == WebSocketState.Open)
-            {
-                var commits = await _ws.GetObject<List<Commit<T>>>();
-                if (commits.Any())
-                {
-                    await onData(commits);
-                }
-                await Task.Factory.StartNew(() => Monitor(onData));
-            }
-            else
+            if (_ws.State != WebSocketState.Open)
             {
                 throw new InvalidOperationException("Websocket remote not correctly created!");
             }
-        }
-
-        private async Task Monitor(Func<List<Commit<T>>, Task> onData)
-        {
-            while (_ws.State == WebSocketState.Open)
+            await _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) =>
             {
-                var commits = await _ws.GetObject<List<Commit<T>>>();
                 if (_ws.State != WebSocketState.Open)
                 {
-                    return;
+                    return Task.CompletedTask;
                 }
                 if (commits.Any())
                 {
-                    await onData(commits);
+                    return onData(commits);
                 }
-            }
-            throw new InvalidOperationException($"Websocket dropped!");
+                return Task.CompletedTask;
+            });
         }
 
         public async Task Disconnect()

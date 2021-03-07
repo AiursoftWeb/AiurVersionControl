@@ -8,7 +8,7 @@ namespace AiurStore.Providers
 {
     public class MemoryAiurStoreDb<T> : InOutDatabase<T>
     {
-        private readonly LinkedList<T> _store = new LinkedList<T>();
+        private readonly LinkedList<T> _store = new();
 
         private LinkedListNode<T> SearchFromLast(Predicate<T> prefix)
         {
@@ -66,7 +66,7 @@ namespace AiurStore.Providers
                 var which = _store.FindLast(afterWhich);
                 if (which == null) throw new KeyNotFoundException($"Insertion point {nameof(afterWhich)} not found.");
                 _store.AddAfter(which, newItem);
-                itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
+                itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
     }

@@ -19,7 +19,6 @@ namespace AiurStore.Models
                 itemsProcessed -= value;
                 itemsProcessed += value;
             }
-
             remove
             {
                 itemsProcessed -= value;

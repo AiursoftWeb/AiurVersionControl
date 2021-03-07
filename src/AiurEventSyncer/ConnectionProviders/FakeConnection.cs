@@ -32,8 +32,11 @@ namespace AiurEventSyncer.ConnectionProviders
         public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition)
         {
             var pulledData = await Download(startPosition);
-            await onData(pulledData);
-            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onHappen: (commits) => onData(commits));
+            if(pulledData.Any())
+            {
+                await onData(pulledData);
+            }
+            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onData);
         }
 
         public Task Disconnect()

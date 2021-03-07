@@ -25,7 +25,7 @@ namespace SampleWebApp.Controllers
         public Task<IActionResult> ReturnRepoDemo(string start)
         {
             var repo = _repositoryContainer.GetLogItemRepository();
-            return this.RepositoryAsync(repo, start);
+            return HttpContext.RepositoryAsync(repo, start);
         }
     }
 }

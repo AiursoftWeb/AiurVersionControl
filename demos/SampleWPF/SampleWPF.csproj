@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\src\AiurEventSyncer.WebExtends\AiurEventSyncer.WebExtends.csproj" />
 		<ProjectReference Include="..\..\src\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj" />
 	</ItemGroup>
 
