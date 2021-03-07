@@ -3,12 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
              x:ClassModifier="internal">
-    
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/FluentWPF;component/Styles/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxRevealStyle}" />
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonRevealStyle}" />
+            <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource ListBoxRevealStyle}" />
         </ResourceDictionary>
         
     </Application.Resources>
