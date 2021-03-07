@@ -9,6 +9,7 @@ namespace AiurEventSyncer.Models
 {
     public abstract class Remote<T> : IRemote<T>
     {
+
         public string Name { get; init; } = "remote name";
         public bool AutoPush { get; init; }
         public bool AutoPull { get; init; }
@@ -17,6 +18,7 @@ namespace AiurEventSyncer.Models
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         protected IRepository<T> ContextRepository { get; set; }
+        protected IDisposable AutoPushsubscription { get; set; }
         private IConnectionProvider<T> ConnectionProvider { get; set; }
 
         public Remote(
@@ -38,7 +40,7 @@ namespace AiurEventSyncer.Models
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.AppendCommitsHappened.Subscribe(_ => PushAsync());
+                AutoPushsubscription = ContextRepository.AppendCommitsHappened.Subscribe(_ => PushAsync());
             }
             if (AutoPull)
             {
@@ -59,6 +61,7 @@ namespace AiurEventSyncer.Models
                 throw new InvalidOperationException("You can't drop the remote because it has no repository attached!");
             }
             await StopMonitoring();
+            AutoPushsubscription.Dispose();
             ContextRepository = null;
         }
 

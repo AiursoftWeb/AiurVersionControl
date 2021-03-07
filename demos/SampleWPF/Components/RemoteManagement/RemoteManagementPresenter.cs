@@ -42,7 +42,7 @@ namespace AiurVersionControl.SampleWPF.Components
             try
             {
                 var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress);
-                control = new RemoteControl(remote)
+                control = new RemoteControl()
                 {
                     DataContext = new RemoteControlPresenter(remote)
                 };

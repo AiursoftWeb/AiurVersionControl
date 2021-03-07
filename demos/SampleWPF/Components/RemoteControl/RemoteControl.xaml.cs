@@ -9,12 +9,9 @@ namespace AiurVersionControl.SampleWPF.Components
     /// </summary>
     public sealed partial class RemoteControl
     {
-        public RemoteControl(WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>> remote)
+        public RemoteControl()
         {
             InitializeComponent();
-            RemoteObject = remote;
         }
-
-        public WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>> RemoteObject { get; }
     }
 }
