@@ -11,13 +11,19 @@
         x:ClassModifier="internal"
         d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
     <DockPanel>
-        <DockPanel Width="340" DockPanel.Dock="Left">
-            <cp:BooksCRUD DataContext="{Binding CrudPresenter}" />
+        <DockPanel Width="330" DockPanel.Dock="Left">
+            <GroupBox Margin="5,5,5,5" Header="Book database" BorderThickness="1">
+                <cp:BooksCRUD DataContext="{Binding CrudPresenter}" />
+            </GroupBox>
         </DockPanel>
 
         <DockPanel>
-            <cp:RemoteManagement DockPanel.Dock="Bottom" DataContext="{Binding RemotesPresenter}"></cp:RemoteManagement>
-            <cp:CommitsManagement DataContext="{Binding CommitsPresenter}" />
+            <GroupBox DockPanel.Dock="Bottom" Header="Attach to a remote server" Margin="5,5,5,5">
+                <cp:RemoteManagement DataContext="{Binding RemotesPresenter}"></cp:RemoteManagement>
+            </GroupBox>
+            <GroupBox Header="Commits host" Margin="5,5,5,0">
+                <cp:CommitsManagement DataContext="{Binding CommitsPresenter}" />
+            </GroupBox>
         </DockPanel>
     </DockPanel>
 

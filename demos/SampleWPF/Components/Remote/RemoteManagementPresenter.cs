@@ -2,8 +2,11 @@
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using System;
 using System.ComponentModel;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
@@ -30,10 +33,37 @@ namespace AiurVersionControl.SampleWPF.Components
             _repo = repo;
         }
 
-        public Task AttachToAServer(object _)
+        public async Task AttachToAServer(object _)
         {
-            var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress);
-            return remote.AttachAsync(_repo);
+            try
+            {
+                var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress);
+                await remote.AttachAsync(_repo);
+            }
+            catch (UriFormatException e)
+            {
+                MessageBox.Show(
+                    $"Invalid WebSocket URI! {e.Message}",
+                    "Attach to a remote server",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch(WebSocketException e)
+            {
+                MessageBox.Show(
+                    $"Invalid server response! {e.Message} Please make sure the remote address is a valid server!",
+                    "Attach to a remote server",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(
+                    e.Message,
+                    "Attach to a remote server",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
     }
 }

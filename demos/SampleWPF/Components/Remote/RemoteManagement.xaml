@@ -6,9 +6,9 @@
              xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance cp:RemoteManagementPresenter}">
-    <StackPanel Margin="0,0,0,10">
+    <StackPanel>
         <TextBlock DockPanel.Dock="Top" Text="Server Address" Margin="10,5,10,0" />
         <TextBox DockPanel.Dock="Top" Text="{Binding ServerAddress, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,0" Style="{StaticResource TextBoxRevealStyle}" />
-        <Button DockPanel.Dock="Top" Content="Attach" Command="{Binding Attach}" Height="30" IsDefault="True" Margin="10,5,10,0" Style="{StaticResource ButtonRevealStyle}" />
+        <Button DockPanel.Dock="Top" Content="Attach" Command="{Binding Attach}" Height="30" IsDefault="True" Margin="10,5,10,10" Style="{StaticResource ButtonRevealStyle}" />
     </StackPanel>
 </UserControl>
