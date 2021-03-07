@@ -18,10 +18,10 @@ namespace AiurVersionControl.SampleWPF.Components
     {
         private readonly AsyncRelayCommand<object> _hostServer;
         private readonly CollectionRepository<Book> _repository;
+        private readonly int _port = Network.GetAvailablePort();
         private string _buttonText = "Host new server";
         private bool _serverGridVisiable = false;
         private IHost _host;
-        private int _port = Network.GetAvailablePort();
 
         public bool ServerHosting => _host != null;
 

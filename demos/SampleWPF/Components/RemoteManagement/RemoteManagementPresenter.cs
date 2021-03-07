@@ -1,8 +1,11 @@
-﻿using AiurVersionControl.CRUD;
+﻿using AiurEventSyncer.Models;
+using AiurVersionControl.CRUD;
+using AiurVersionControl.Models;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
@@ -11,12 +14,34 @@ using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
+    public class RemoteControl
+    {
+        private readonly AsyncRelayCommand<object> _detach;
+        private readonly WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>> _remote;
+        public ICommand DetachIt => _detach;
+        public RemoteControl(
+            WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>> remote)
+        {
+            _remote = remote;
+            _detach = new AsyncRelayCommand<object>(Detach, _ => true);
+        }
+
+        public string EndPoint => _remote.EndPoint;
+
+        public async Task Detach(object _)
+        {
+            await _remote.DetachAsync();
+        }
+    }
+
     internal sealed class RemoteManagementPresenter : Presenter, INotifyPropertyChanged
     {
         private string _serverAddress = string.Empty;
         private readonly AsyncRelayCommand<object> _attach;
         private readonly CollectionRepository<Book> _repo;
+        public ObservableCollection<RemoteControl> Remotes { get; set; } = new();
         public ICommand Attach => _attach;
+
         public string ServerAddress
         {
             get => _serverAddress;
@@ -35,9 +60,12 @@ namespace AiurVersionControl.SampleWPF.Components
 
         public async Task AttachToAServer(object _)
         {
+            RemoteControl control = null;
             try
             {
                 var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress);
+                control = new RemoteControl(remote);
+                Remotes.Add(control);
                 await remote.AttachAsync(_repo);
             }
             catch (UriFormatException e)
@@ -48,15 +76,15 @@ namespace AiurVersionControl.SampleWPF.Components
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
-            catch(WebSocketException e)
+            catch (WebSocketException)
             {
                 MessageBox.Show(
-                    $"Invalid server response! {e.Message} Please make sure the remote address is a valid server!",
-                    "Attach to a remote server",
+                    $"Server detached!",
+                    "Remote server",
                     MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                    MessageBoxImage.Information);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(
                     e.Message,
@@ -64,6 +92,12 @@ namespace AiurVersionControl.SampleWPF.Components
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
+            finally
+            {
+                Remotes.Remove(control);
+            }
         }
+
+
     }
 }
