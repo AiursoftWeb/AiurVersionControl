@@ -21,6 +21,7 @@ namespace AiurVersionControl.SampleWPF.Components
         private string _buttonText = "Host new server";
         private bool _serverGridVisiable = false;
         private IHost _host;
+        private int _port = Network.GetAvailablePort();
 
         public bool ServerHosting => _host != null;
 
@@ -33,6 +34,8 @@ namespace AiurVersionControl.SampleWPF.Components
             _repository = repo;
             _hostServer = new AsyncRelayCommand<object>(HostServer, _ => true);
         }
+
+        public string Address => $"ws://localhost:{_port}/repo.ares";
 
         public string ServerButtonText
         {
@@ -57,7 +60,7 @@ namespace AiurVersionControl.SampleWPF.Components
             if (_host == null)
             {
 #warning Find a port for your own!
-                _host = ServerProgram.BuildHost(Array.Empty<string>(), _repository, Dispatcher.CurrentDispatcher, 15678);
+                _host = ServerProgram.BuildHost(Array.Empty<string>(), _repository, Dispatcher.CurrentDispatcher, _port);
                 await _host.StartAsync();
                 ServerButtonText = "Stop server";
                 ServerGridVisiable = true;
