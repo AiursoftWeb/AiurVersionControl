@@ -1,6 +1,4 @@
-﻿using AiurEventSyncer.Models;
-using AiurVersionControl.CRUD;
-using AiurVersionControl.Models;
+﻿using AiurVersionControl.CRUD;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
@@ -14,26 +12,6 @@ using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
-    public class RemoteControl
-    {
-        private readonly AsyncRelayCommand<object> _detach;
-        private readonly WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>> _remote;
-        public ICommand DetachIt => _detach;
-        public RemoteControl(
-            WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>> remote)
-        {
-            _remote = remote;
-            _detach = new AsyncRelayCommand<object>(Detach, _ => true);
-        }
-
-        public string EndPoint => _remote.EndPoint;
-
-        public async Task Detach(object _)
-        {
-            await _remote.DetachAsync();
-        }
-    }
-
     internal sealed class RemoteManagementPresenter : Presenter, INotifyPropertyChanged
     {
         private string _serverAddress = string.Empty;
@@ -64,7 +42,10 @@ namespace AiurVersionControl.SampleWPF.Components
             try
             {
                 var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress);
-                control = new RemoteControl(remote);
+                control = new RemoteControl(remote)
+                {
+                    DataContext = new RemoteControlPresenter(remote)
+                };
                 Remotes.Add(control);
                 await remote.AttachAsync(_repo);
             }
@@ -97,7 +78,5 @@ namespace AiurVersionControl.SampleWPF.Components
                 Remotes.Remove(control);
             }
         }
-
-
     }
 }

@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="AiurVersionControl.SampleWPF.Components.RemoteControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance cp:RemoteControlPresenter}" x:ClassModifier="public">
+
+    <DockPanel Background="LightYellow">
+        <Button Content="Detach" DockPanel.Dock="Right" Width="60" Height="25" Margin="5,5,5,5" Style="{StaticResource ButtonRevealStyle}" Command="{Binding DetachIt}" CommandParameter="{Binding}" />
+        <TextBlock Margin="10,5,5,5" Text="{Binding EndPoint}" />
+    </DockPanel>
+
+</UserControl>

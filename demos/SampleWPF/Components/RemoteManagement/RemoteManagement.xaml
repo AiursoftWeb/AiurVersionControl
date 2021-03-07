@@ -5,18 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance cp:RemoteManagementPresenter}">
+             d:DataContext="{d:DesignInstance cp:RemoteManagementPresenter}" x:ClassModifier="internal">
     <StackPanel>
-        <ItemsControl Margin="10,5,10,0" ItemsSource="{Binding Remotes}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <DockPanel Background="LightYellow">
-                        <Button Content="Detach" DockPanel.Dock="Right" Width="60" Height="25" Margin="5,5,5,5" Style="{StaticResource ButtonRevealStyle}" Command="{Binding DetachIt}" CommandParameter="{Binding}" />
-                        <TextBlock Margin="10,5,5,5" Text="{Binding EndPoint}" />
-                    </DockPanel>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ItemsControl Margin="10,5,10,0" ItemsSource="{Binding Remotes}" />
         <TextBlock DockPanel.Dock="Top" Text="Server Address" Margin="10,5,10,0" />
         <TextBox DockPanel.Dock="Top" Text="{Binding ServerAddress, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,0" Style="{StaticResource TextBoxRevealStyle}" />
         <Button DockPanel.Dock="Top" Content="Attach" Command="{Binding Attach}" Height="30" IsDefault="True" Margin="10,5,10,10" Style="{StaticResource ButtonRevealStyle}" />
