@@ -9,7 +9,7 @@
         xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
         Title="VersionControlled CRUD Demo App"
         x:ClassModifier="internal"
-        d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
+        d:DataContext="{d:DesignInstance windows:MainWindowPresenter}" Width="800" Height="400">
     <DockPanel>
         <DockPanel Width="330" DockPanel.Dock="Left">
             <GroupBox Margin="5,5,5,5" Header="Book database" BorderThickness="1">

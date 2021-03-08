@@ -15,7 +15,7 @@ namespace AiurVersionControl.SampleWPF
 
             var mainWindow = new MainWindow
             {
-                DataContext = new MainWindowModel(repo)
+                DataContext = new MainWindowPresenter(repo)
             };
 
             mainWindow.Show();
