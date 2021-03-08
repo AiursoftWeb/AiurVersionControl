@@ -9,7 +9,6 @@ namespace AiurVersionControl.SampleWPF.Components
 {
     internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
-        private readonly Counter _counter = new();
         private readonly RelayCommand<object> _commitAddNew;
         private readonly RelayCommand<object> _commitDrop;
         private string _newTitle = string.Empty;
@@ -51,8 +50,7 @@ namespace AiurVersionControl.SampleWPF.Components
         {
             Repository.Add(new Book
             {
-                Title = NewTitle,
-                Id = _counter.GetUniqueNo()
+                Title = NewTitle
             });
 
             NewTitle = string.Empty;

@@ -20,8 +20,8 @@
                 <DataTemplate>
                     <Grid Margin="0,2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="240" />
-                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="160" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Title}" />
                         <TextBlock Grid.Column="1" Text="{Binding Id}" />

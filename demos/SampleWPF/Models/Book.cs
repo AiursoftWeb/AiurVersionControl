@@ -1,8 +1,10 @@
-﻿namespace AiurVersionControl.SampleWPF.Models
+﻿using System;
+
+namespace AiurVersionControl.SampleWPF.Models
 {
     public class Book
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Title { get; set; }
     }
 }
