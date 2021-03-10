@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:windows="clr-namespace:AiurVersionControl.SampleWPF.Windows"
         xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
-        Title="VersionControlled CRUD Demo App"
+        Title="{Binding CrudPresenter.NewTitle, StringFormat=VersionControlled CRUD Demo App - {0}}"
         x:ClassModifier="internal"
         d:DataContext="{d:DesignInstance windows:MainWindowPresenter}" Width="800" Height="400">
     <DockPanel>
