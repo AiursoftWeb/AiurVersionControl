@@ -12,6 +12,5 @@
             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonRevealStyle}" />
             <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource ListBoxRevealStyle}" />
         </ResourceDictionary>
-        
     </Application.Resources>
 </Application>

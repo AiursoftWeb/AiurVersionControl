@@ -1,9 +1,11 @@
-﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.Services;
-using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+﻿using System;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using AiurVersionControl.CRUD;
+using AiurVersionControl.SampleWPF.Models;
+using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
@@ -11,11 +13,15 @@ namespace AiurVersionControl.SampleWPF.Components
     {
         private readonly RelayCommand<object> _commitAddNew;
         private readonly RelayCommand<object> _commitDrop;
+        private readonly RelayCommand<object> _commitEdit;
+        private readonly RelayCommand<object> _commitModify;
         private string _newTitle = string.Empty;
         private Book _selectedBook;
 
         public ICommand CommitAddNew => _commitAddNew;
         public ICommand CommitDrop => _commitDrop;
+        public ICommand CommitEdit => _commitEdit;
+        public ICommand CommitModify => _commitModify;
 
         public CollectionRepository<Book> Repository { get; set; }
 
@@ -23,6 +29,8 @@ namespace AiurVersionControl.SampleWPF.Components
         {
             _commitAddNew = new RelayCommand<object>(Add, _ => !string.IsNullOrWhiteSpace(NewTitle));
             _commitDrop = new RelayCommand<object>(Drop, _ => SelectedBook != null);
+            _commitEdit = new RelayCommand<object>(Edit, _=>true);
+            _commitModify = new RelayCommand<object>(Modify, _=>!string.IsNullOrWhiteSpace(EditTitle));
             Repository = repo;
         }
 
@@ -59,6 +67,37 @@ namespace AiurVersionControl.SampleWPF.Components
         public void Drop(object _)
         {
             Repository.Drop(nameof(Book.Id), SelectedBook.Id);
+        }
+
+        private Guid _editingId = default;
+        
+        public Guid EditingId
+        {
+            get => _editingId;
+            set => Update(ref _editingId, value, nameof(EditingId));
+        }
+
+        private void Edit(object id)
+        {
+            EditingId = !EditingId.Equals((Guid) id) ? (Guid) id : default;
+        }
+
+        private string _editTitle = string.Empty;
+        public string EditTitle
+        {
+            get => _editTitle;
+            set
+            {
+                Update(ref _editTitle, value, nameof(NewTitle));
+                _commitModify.RaiseCanExecuteChanged();
+            }
+        }
+
+        private void Modify(object id)
+        {
+            Repository.Patch(nameof(Book.Id), (Guid)id, nameof(Book.Title), EditTitle);
+            EditingId = default;
+            EditTitle = string.Empty;
         }
     }
 }
