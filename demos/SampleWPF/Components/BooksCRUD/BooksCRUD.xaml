@@ -6,55 +6,13 @@
              xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance cp:BooksCRUDPresenter}" x:ClassModifier="internal">
-    <UserControl.Resources>
-        <cp:SameIdCheckerConverter x:Key="SameToVisibleConverter" />
-        <cp:SameIdCheckerConverter x:Key="DifferentToVisibleConverter" IsReversed="True" />
-    </UserControl.Resources>
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="New book title" Margin="10,5,10,0" />
         <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,0" />
         <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="10,5,10,0" />
 
         <TextBlock DockPanel.Dock="Top" Text="Books" Margin="10,5,10,5" />
-        <Button DockPanel.Dock="Bottom" Content="Delete selected book" Command="{Binding CommitDrop}" Height="30" Margin="10,5,10,10" />
-        <ListBox Name="Books" ItemsSource="{Binding Repository}" SelectedItem="{Binding Path=SelectedBook, Mode=OneWayToSource}" Margin="10,5,10,10">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,2" x:Name="BookGrid" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="140" />
-                            <ColumnDefinition Width="160" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Visibility="Hidden" x:Name="IdContainer" Text="{Binding Id}" />
-                        <Button x:Name="EditButton" Grid.Column="0" Content="🔧" Visibility="Hidden" BorderBrush="Transparent" Background="Transparent" 
-                                Command="{Binding DataContext.CommitEdit, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding Id}"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Title}" Visibility="{Binding DataContext.EditingId, RelativeSource={RelativeSource FindAncestor, 
-                                AncestorType={x:Type ListBox}}, Converter={StaticResource DifferentToVisibleConverter}, ConverterParameter={x:Reference Name=IdContainer}}"/>
-                        <Grid Grid.Column="1" Visibility="{Binding DataContext.EditingId, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}},
-                                Converter={StaticResource SameToVisibleConverter}, ConverterParameter={x:Reference Name=IdContainer}}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100" />
-                                <ColumnDefinition Width="20" />
-                                <ColumnDefinition Width="20" />
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" Text="{Binding DataContext.EditTitle, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" />
-                            <Button Grid.Column="1" Content="✔️" BorderBrush="Transparent" Background="Transparent" 
-                                    Command="{Binding DataContext.CommitModify, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}" CommandParameter="{Binding Id}"/>
-                            <Button Grid.Column="2" Content="❌" BorderBrush="Transparent" Background="Transparent"
-                                    Command="{Binding DataContext.CommitEdit, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBox}}}"  CommandParameter="{Binding Id}"/>
-                        </Grid>
-                        <TextBlock Grid.Column="2" Text="{Binding Id}" />
-                    </Grid>
-                    <DataTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="EditButton" Property="Visibility" Value="Visible"></Setter>
-                        </Trigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-         
-        </ListBox>
+        <ItemsControl Margin="10,5,10,10" ItemsSource="{Binding Books}" />
 
     </DockPanel>
 </UserControl>

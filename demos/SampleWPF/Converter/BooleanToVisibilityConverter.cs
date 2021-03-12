@@ -1,12 +1,14 @@
 using System;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace AiurVersionControl.SampleWPF.Components
+namespace AiurVersionControl.SampleWPF.Converter
 {
-    public class SameIdCheckerConverter : IValueConverter
+    /// <summary>
+    /// Converts a Boolean into a Visibility.
+    /// </summary>
+    public class BooleanToVisibilityConverter : IValueConverter
     {
         /// <summary>
         /// If set to True, conversion is reversed: True will become Collapsed.
@@ -15,15 +17,12 @@ namespace AiurVersionControl.SampleWPF.Components
         
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var textBlock = parameter as TextBlock;
-            string stringValue = System.Convert.ToString(value);
-            bool val = textBlock != null && stringValue != null
-                                         && stringValue.Equals(textBlock.Text);
-            if (IsReversed) 
+            var val = System.Convert.ToBoolean(value);
+            if (this.IsReversed) 
             {
                 val = !val;
             }
- 
+
             return val ? Visibility.Visible : Visibility.Collapsed;
         }
 

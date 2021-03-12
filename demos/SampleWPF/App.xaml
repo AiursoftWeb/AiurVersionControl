@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+             xmlns:converter="clr-namespace:AiurVersionControl.SampleWPF.Converter"
              x:ClassModifier="internal">
     <Application.Resources>
         <ResourceDictionary>
@@ -11,6 +12,8 @@
             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource TextBoxRevealStyle}" />
             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonRevealStyle}" />
             <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource ListBoxRevealStyle}" />
+            <converter:BooleanToVisibilityConverter x:Key="TrueToVisibleConverter" />
+            <converter:BooleanToVisibilityConverter x:Key="FalseToVisibleConverter" IsReversed="True" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

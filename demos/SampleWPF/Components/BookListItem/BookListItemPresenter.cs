@@ -1,0 +1,63 @@
+using System;
+using System.Windows.Input;
+using AiurVersionControl.CRUD;
+using AiurVersionControl.SampleWPF.Models;
+using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+
+namespace AiurVersionControl.SampleWPF.Components
+{
+    internal sealed partial class BookListItemPresenter : Presenter
+    {
+        public Book Book { get; init; }
+        private readonly RelayCommand<object> _beginEdit;
+        private readonly RelayCommand<object> _save;
+        private readonly RelayCommand<object> _commitDrop;
+        
+        public ICommand BeginEdit => _beginEdit;
+        public ICommand Save => _save;
+        public ICommand CommitDrop => _commitDrop;
+
+        private Action<string> _onPatch;
+        
+        public BookListItemPresenter(Book book, Action<string> onPatch, Action<object> onDrop)
+        {
+            Book = book;
+            _onPatch = onPatch;
+            _beginEdit = new RelayCommand<object>(SwitchEdit, _=>true);
+            _save = new RelayCommand<object>(SaveCommand, _=>!string.IsNullOrWhiteSpace(EditTitle));
+            _commitDrop = new RelayCommand<object>(onDrop, _ => true);
+        }
+
+        private string _editTitle = string.Empty;
+        public string EditTitle
+        {
+            get => _editTitle;
+            set
+            {
+                Update(ref _editTitle, value, nameof(EditTitle));
+                _save.RaiseCanExecuteChanged();
+            }
+        }
+        
+        private bool _isEditing;
+
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set => Update(ref _isEditing, value, nameof(IsEditing));
+        }
+
+        private void SwitchEdit(object _)
+        {
+            IsEditing = IsEditing == false;
+        }
+        
+        private void SaveCommand(object _)
+        {
+            _onPatch(EditTitle);
+            OnPropertyChanged(nameof(Book));
+            IsEditing = false;
+            EditTitle = string.Empty;
+        }
+    }
+}
