@@ -11,7 +11,7 @@
         x:ClassModifier="internal"
         fw:AcrylicWindow.AcrylicWindowStyle="NoIcon"
         fw:ExtendViewIntoTitleBar="True"
-        d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
+        d:DataContext="{d:DesignInstance windows:MainWindowPresenter}" Width="800" Height="400">
     <DockPanel>
         <DockPanel Width="330" DockPanel.Dock="Left">
             <TextBlock DockPanel.Dock="Top" Margin="10,5,0,0" TextWrapping="Wrap" Text="Version Control Demo App" />
