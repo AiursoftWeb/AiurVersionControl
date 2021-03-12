@@ -9,21 +9,24 @@
         xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
         Title="VersionControlled CRUD Demo App"
         x:ClassModifier="internal"
+        fw:AcrylicWindow.AcrylicWindowStyle="NoIcon"
+        fw:ExtendViewIntoTitleBar="True"
         d:DataContext="{d:DesignInstance windows:MainWindowModel}" Width="800" Height="400">
     <DockPanel>
         <DockPanel Width="330" DockPanel.Dock="Left">
-            <GroupBox Margin="5,5,5,5" Header="Book database" BorderThickness="1">
+            <TextBlock DockPanel.Dock="Top" Margin="10,5,0,0" TextWrapping="Wrap" Text="Version Control Demo App" />
+            <Grid Margin="5,5,5,5">
                 <cp:BooksCRUD DataContext="{Binding CrudPresenter}" />
-            </GroupBox>
+            </Grid>
         </DockPanel>
 
-        <DockPanel>
-            <GroupBox DockPanel.Dock="Bottom" Header="Attach to a remote server" Margin="5,5,5,5">
+        <DockPanel Background="{DynamicResource SystemAltHighColorBrush}">
+            <Grid DockPanel.Dock="Bottom" Margin="5,5,5,5">
                 <cp:RemoteManagement DataContext="{Binding RemotesPresenter}"></cp:RemoteManagement>
-            </GroupBox>
-            <GroupBox Header="Commits host" Margin="5,5,5,0">
+            </Grid>
+            <Grid Margin="5,15,5,0">
                 <cp:CommitsManagement DataContext="{Binding CommitsPresenter}" />
-            </GroupBox>
+            </Grid>
         </DockPanel>
     </DockPanel>
 
