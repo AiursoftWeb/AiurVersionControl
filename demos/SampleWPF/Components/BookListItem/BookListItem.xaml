@@ -6,37 +6,20 @@
               xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
               mc:Ignorable="d" 
               d:DataContext="{d:DesignInstance cp:BookListItemPresenter}" x:ClassModifier="internal">
-     
-    <DockPanel>
-        <Grid Margin="0,2" x:Name="BookGrid" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="160" />
-            </Grid.ColumnDefinitions>
-            <Button x:Name="DeleteButton" Grid.Column="0" Content="🗑️" BorderBrush="Transparent" 
-                    Background="Transparent" Command="{Binding CommitDrop}"/>
-            <Button x:Name="EditButton" Grid.Column="1" Content="✏️" BorderBrush="Transparent" 
-                    Background="Transparent" Command="{Binding BeginEdit}"/>
-            
-            <TextBlock Grid.Column="2" Text="{Binding Book.Title}" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            
-            <Grid Grid.Column="2" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100" />
-                    <ColumnDefinition Width="20" />
-                    <ColumnDefinition Width="20" />
-                </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" />
-                <Button Grid.Column="1" Content="✔️" BorderBrush="Transparent" Background="Transparent" 
-                        Command="{Binding Save}"/>
-                <Button Grid.Column="2" Content="❌" BorderBrush="Transparent" Background="Transparent"
-                        Command="{Binding BeginEdit}"/>
-            </Grid>
-            
-            <TextBlock Grid.Column="3" Text="{Binding Book.Id}" />
-        </Grid>
+    <Border Padding="15,0,15,0" Margin="0,5,0,0" Background="White" MinWidth="280" CornerRadius="5">
+    <DockPanel x:Name="BookGrid" Height="30">
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+            <Button x:Name="EditButton" Content="✏️" BorderBrush="Transparent" Background="Transparent" Command="{Binding BeginEdit}"/>
+            <Button x:Name="DeleteButton" Content="🗑️" BorderBrush="Transparent" Background="Transparent" Command="{Binding CommitDrop}"/>
+        </StackPanel>
+
+        <TextBlock Text="{Binding Book.Title}" VerticalAlignment="Center" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <StackPanel Orientation="Horizontal" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBox Padding="2" FontSize="15" Height="25" MinWidth="140" Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="✔️" BorderBrush="Transparent" Background="Transparent" Margin="5,0,0,0"  Command="{Binding Save}"/>
+            <Button Content="❌" BorderBrush="Transparent" Background="Transparent" Command="{Binding BeginEdit}"/>
+        </StackPanel>
     </DockPanel>
+    </Border>
 
 </UserControl>

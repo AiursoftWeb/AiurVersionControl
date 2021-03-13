@@ -12,7 +12,10 @@ namespace AiurVersionControl.SampleWPF.Components
         private readonly RelayCommand<object> _beginEdit;
         private readonly RelayCommand<object> _save;
         private readonly RelayCommand<object> _commitDrop;
-        
+        private string _editTitle;
+        private bool _isEditing;
+
+
         public ICommand BeginEdit => _beginEdit;
         public ICommand Save => _save;
         public ICommand CommitDrop => _commitDrop;
@@ -28,7 +31,6 @@ namespace AiurVersionControl.SampleWPF.Components
             _commitDrop = new RelayCommand<object>(onDrop, _ => true);
         }
 
-        private string _editTitle = string.Empty;
         public string EditTitle
         {
             get => _editTitle;
@@ -38,8 +40,6 @@ namespace AiurVersionControl.SampleWPF.Components
                 _save.RaiseCanExecuteChanged();
             }
         }
-        
-        private bool _isEditing;
 
         public bool IsEditing
         {
@@ -55,6 +55,7 @@ namespace AiurVersionControl.SampleWPF.Components
 
         private void SwitchEdit(object _)
         {
+            EditTitle = Book.Title;
             IsEditing = IsEditing == false;
         }
         
@@ -63,7 +64,6 @@ namespace AiurVersionControl.SampleWPF.Components
             _onPatch(EditTitle);
             OnPropertyChanged(nameof(Book));
             IsEditing = false;
-            EditTitle = string.Empty;
         }
     }
 }

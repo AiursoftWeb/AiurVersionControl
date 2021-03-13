@@ -11,7 +11,6 @@
         <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,0" />
         <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="10,5,10,0" />
 
-        <TextBlock DockPanel.Dock="Top" Text="Books" Margin="10,5,10,5" />
         <ItemsControl Margin="10,5,10,10" ItemsSource="{Binding Books}" />
 
     </DockPanel>
