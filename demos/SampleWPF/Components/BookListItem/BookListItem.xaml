@@ -15,9 +15,9 @@
                 <ColumnDefinition Width="140" />
                 <ColumnDefinition Width="160" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="DeleteButton" Grid.Column="0" Content="🗑️" Visibility="Visible" BorderBrush="Transparent" 
+            <Button x:Name="DeleteButton" Grid.Column="0" Content="🗑️" BorderBrush="Transparent" 
                     Background="Transparent" Command="{Binding CommitDrop}"/>
-            <Button x:Name="EditButton" Grid.Column="1" Content="✏️" Visibility="Visible" BorderBrush="Transparent" 
+            <Button x:Name="EditButton" Grid.Column="1" Content="✏️" BorderBrush="Transparent" 
                     Background="Transparent" Command="{Binding BeginEdit}"/>
             
             <TextBlock Grid.Column="2" Text="{Binding Book.Title}" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
