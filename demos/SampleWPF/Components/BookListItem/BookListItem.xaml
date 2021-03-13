@@ -1,0 +1,42 @@
+﻿<UserControl  x:Class="AiurVersionControl.SampleWPF.Components.BookListItem"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
+              mc:Ignorable="d" 
+              d:DataContext="{d:DesignInstance cp:BookListItemPresenter}" x:ClassModifier="internal">
+     
+    <DockPanel>
+        <Grid Margin="0,2" x:Name="BookGrid" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="140" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="DeleteButton" Grid.Column="0" Content="🗑️" BorderBrush="Transparent" 
+                    Background="Transparent" Command="{Binding CommitDrop}"/>
+            <Button x:Name="EditButton" Grid.Column="1" Content="✏️" BorderBrush="Transparent" 
+                    Background="Transparent" Command="{Binding BeginEdit}"/>
+            
+            <TextBlock Grid.Column="2" Text="{Binding Book.Title}" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            
+            <Grid Grid.Column="2" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Grid.Column="1" Content="✔️" BorderBrush="Transparent" Background="Transparent" 
+                        Command="{Binding Save}"/>
+                <Button Grid.Column="2" Content="❌" BorderBrush="Transparent" Background="Transparent"
+                        Command="{Binding BeginEdit}"/>
+            </Grid>
+            
+            <TextBlock Grid.Column="3" Text="{Binding Book.Id}" />
+        </Grid>
+    </DockPanel>
+
+</UserControl>

@@ -1,39 +1,42 @@
-﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.Services;
-using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using AiurVersionControl.CRUD;
+using AiurVersionControl.SampleWPF.Models;
+using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
     internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
     {
         private readonly RelayCommand<object> _commitAddNew;
-        private readonly RelayCommand<object> _commitDrop;
         private string _newTitle = string.Empty;
-        private Book _selectedBook;
 
         public ICommand CommitAddNew => _commitAddNew;
-        public ICommand CommitDrop => _commitDrop;
 
         public CollectionRepository<Book> Repository { get; set; }
+
+        public IEnumerable<BookListItem> Books => Repository.Select(b => new BookListItem
+        {
+            DataContext = new BookListItemPresenter(b, onPatch: (string newTitle) =>
+            {
+                Repository.Patch(nameof(Book.Id), b.Id, nameof(Book.Title), newTitle);
+            }, onDrop: _ =>
+            {
+                Repository.Drop(nameof(Book.Id), b.Id);
+                OnPropertyChanged(nameof(Books));
+            })
+        });
 
         public BooksCRUDPresenter(CollectionRepository<Book> repo)
         {
             _commitAddNew = new RelayCommand<object>(Add, _ => !string.IsNullOrWhiteSpace(NewTitle));
-            _commitDrop = new RelayCommand<object>(Drop, _ => SelectedBook != null);
             Repository = repo;
-        }
-
-        public Book SelectedBook
-        {
-            get => _selectedBook;
-            set
-            {
-                Update(ref _selectedBook, value, nameof(SelectedBook));
-                _commitDrop.RaiseCanExecuteChanged();
-            }
         }
 
         public string NewTitle
@@ -52,13 +55,8 @@ namespace AiurVersionControl.SampleWPF.Components
             {
                 Title = NewTitle
             });
-
+            OnPropertyChanged(nameof(Books));
             NewTitle = string.Empty;
-        }
-
-        public void Drop(object _)
-        {
-            Repository.Drop(nameof(Book.Id), SelectedBook.Id);
         }
     }
 }

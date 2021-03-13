@@ -6,30 +6,13 @@
              xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance cp:BooksCRUDPresenter}" x:ClassModifier="internal">
-
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="New book title" Margin="10,5,10,0" />
         <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,0" />
         <Button DockPanel.Dock="Top" Content="Add a new book" Command="{Binding CommitAddNew}" Height="30" IsDefault="True" Margin="10,5,10,0" />
 
         <TextBlock DockPanel.Dock="Top" Text="Books" Margin="10,5,10,5" />
-        <Button DockPanel.Dock="Bottom" Content="Delete selected book" Command="{Binding CommitDrop}" Height="30" Margin="10,5,10,10" />
-
-        <ListBox Name="Books" ItemsSource="{Binding Repository}" SelectedItem="{Binding Path=SelectedBook, Mode=OneWayToSource}" Margin="10,5,10,10" >
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140" />
-                            <ColumnDefinition Width="160" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Title}" />
-                        <TextBlock Grid.Column="1" Text="{Binding Id}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ItemsControl Margin="10,5,10,10" ItemsSource="{Binding Books}" />
 
     </DockPanel>
-
 </UserControl>
