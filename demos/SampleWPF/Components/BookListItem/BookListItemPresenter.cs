@@ -44,8 +44,14 @@ namespace AiurVersionControl.SampleWPF.Components
         public bool IsEditing
         {
             get => _isEditing;
-            set => Update(ref _isEditing, value, nameof(IsEditing));
+            set
+            {
+                Update(ref _isEditing, value, nameof(IsEditing));
+                OnPropertyChanged(nameof(IsNotEditing));
+            }
         }
+
+        public bool IsNotEditing => !_isEditing;
 
         private void SwitchEdit(object _)
         {

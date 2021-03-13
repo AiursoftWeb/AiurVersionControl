@@ -19,8 +19,10 @@
                     Background="Transparent" Command="{Binding CommitDrop}"/>
             <Button x:Name="EditButton" Grid.Column="1" Content="✏️" Visibility="Visible" BorderBrush="Transparent" 
                     Background="Transparent" Command="{Binding BeginEdit}"/>
-            <TextBlock Grid.Column="2" Text="{Binding Book.Title}" Visibility="{Binding IsEditing, Converter={StaticResource FalseToVisibleConverter}}"/>
-            <Grid Grid.Column="2" Visibility="{Binding IsEditing, Converter={StaticResource TrueToVisibleConverter}}">
+            
+            <TextBlock Grid.Column="2" Text="{Binding Book.Title}" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            
+            <Grid Grid.Column="2" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="20" />
@@ -32,6 +34,7 @@
                 <Button Grid.Column="2" Content="❌" BorderBrush="Transparent" Background="Transparent"
                         Command="{Binding BeginEdit}"/>
             </Grid>
+            
             <TextBlock Grid.Column="3" Text="{Binding Book.Id}" />
         </Grid>
     </DockPanel>
