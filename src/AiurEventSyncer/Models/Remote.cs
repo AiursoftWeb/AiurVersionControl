@@ -23,7 +23,7 @@ namespace AiurEventSyncer.Models
 
         public Remote(
             IConnectionProvider<T> provider,
-            bool autoPush = false, 
+            bool autoPush = false,
             bool autoPull = false)
         {
             ConnectionProvider = provider;
@@ -44,12 +44,12 @@ namespace AiurEventSyncer.Models
             }
             if (AutoPull)
             {
-                await ConnectionProvider.PullAndMonitor(onData: async data => 
+                await ConnectionProvider.PullAndMonitor(onData: async data =>
                 {
                     await PullLock.WaitAsync();
                     ContextRepository.OnPulled(data.ToList(), this);
                     PullLock.Release();
-                }, PullPointer?.Id);
+                }, PullPointer?.Id, onConnected: () => AutoPush ? PushAsync() : Task.CompletedTask);
             }
             return this;
         }

@@ -36,13 +36,10 @@ namespace AiurEventSyncer.ConnectionProviders
             throw new InvalidOperationException($"You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition)
+        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected)
         {
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
-            if (_ws.State != WebSocketState.Open)
-            {
-                throw new InvalidOperationException("Websocket remote not correctly created!");
-            }
+            await onConnected();
             await _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) =>
             {
                 if (_ws.State != WebSocketState.Open)
