@@ -47,7 +47,7 @@ namespace AiurVersionControl.SampleWPF.Components
                     DataContext = new RemoteControlPresenter(remote)
                 };
                 Remotes.Add(control);
-                await remote.AttachAsync(_repo);
+                await remote.AttachAsync(_repo, monitorInCurrentThread: true);
             }
             catch (UriFormatException e)
             {

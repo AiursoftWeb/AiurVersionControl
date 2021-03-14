@@ -8,7 +8,11 @@ namespace AiurEventSyncer.Abstract
     {
         Task Disconnect();
 
-        Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected);
+        Task PullAndMonitor(
+            Func<List<Commit<T>>, Task> onData, 
+            string startPosition, 
+            Func<Task> onConnected, 
+            bool monitorInCurrentThread);
 
         Task Upload(List<Commit<T>> commits, string pointerId);
 

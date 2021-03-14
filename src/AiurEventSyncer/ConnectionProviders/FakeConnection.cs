@@ -29,16 +29,19 @@ namespace AiurEventSyncer.ConnectionProviders
             return Task.FromResult(_fakeRemoteRepository.Commits.GetCommitsAfterId<Commit<T>, T>(pointer).ToList());
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected)
+        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
         {
             var pulledData = await Download(startPosition);
-            if(pulledData.Any())
+            if (pulledData.Any())
             {
                 await onData(pulledData);
             }
             await onConnected();
             _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onData);
-            await Task.Delay(int.MaxValue);
+            if (monitorInCurrentThread)
+            {
+                await Task.Delay(int.MaxValue);
+            }
         }
 
         public Task Disconnect()

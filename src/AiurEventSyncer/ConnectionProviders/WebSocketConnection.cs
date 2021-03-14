@@ -13,6 +13,7 @@ namespace AiurEventSyncer.ConnectionProviders
     public class WebSocketConnection<T> : IConnectionProvider<T>
     {
         private readonly string _endPoint;
+        private Task monitorTask;
         private ClientWebSocket _ws;
 
         public WebSocketConnection(string endPoint)
@@ -36,11 +37,11 @@ namespace AiurEventSyncer.ConnectionProviders
             throw new InvalidOperationException($"You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected)
+        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
         {
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
             await onConnected();
-            await _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) =>
+            monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) =>
             {
                 if (_ws.State != WebSocketState.Open)
                 {
@@ -52,6 +53,10 @@ namespace AiurEventSyncer.ConnectionProviders
                 }
                 return Task.CompletedTask;
             });
+            if (monitorInCurrentThread)
+            {
+                await monitorTask;
+            }
         }
 
         public async Task Disconnect()
