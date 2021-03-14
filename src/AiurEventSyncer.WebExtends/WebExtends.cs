@@ -3,19 +3,19 @@ using AiurEventSyncer.ConnectionProviders.Models;
 using AiurEventSyncer.Models;
 using AiurEventSyncer.Tools;
 using AiurObserver;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace AiurEventSyncer.WebExtends
 {
     public static class ActionBuilder
     {
-        public static async Task<IActionResult> RepositoryAsync<T>(this ControllerBase controller, Repository<T> repository, string startPosition)
+        public static async Task<IActionResult> RepositoryAsync<T>(this HttpContext context, Repository<T> repository, string startPosition)
         {
-            var websocket = controller.HttpContext.WebSockets;
+            var websocket = context.WebSockets;
             if (websocket.IsWebSocketRequest)
             {
                 var ws = await websocket.AcceptWebSocketAsync();
@@ -27,19 +27,11 @@ namespace AiurEventSyncer.WebExtends
                 {
                     await ws.SendObject(newCommits);
                 });
-                while (ws.State == WebSocketState.Open)
+                await ws.Monitor<PushModel<T>>(onNewObject: pushedCommits => 
                 {
-                    try
-                    {
-                        // Waitting for pushed commits.
-                        var pushedCommits = await ws.GetObject<PushModel<T>>();
-                        repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
-                    }
-                    catch
-                    {
-                        break;
-                    }
-                }
+                    repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
+                    return Task.CompletedTask;
+                });
                 subscription.Dispose();
                 return new EmptyResult();
             }

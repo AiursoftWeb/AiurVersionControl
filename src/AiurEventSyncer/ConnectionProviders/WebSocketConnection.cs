@@ -13,6 +13,7 @@ namespace AiurEventSyncer.ConnectionProviders
     public class WebSocketConnection<T> : IConnectionProvider<T>
     {
         private readonly string _endPoint;
+        private Task monitorTask;
         private ClientWebSocket _ws;
 
         public WebSocketConnection(string endPoint)
@@ -36,39 +37,26 @@ namespace AiurEventSyncer.ConnectionProviders
             throw new InvalidOperationException($"You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition)
+        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
         {
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
-            if (_ws.State == WebSocketState.Open)
+            await onConnected();
+            monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) =>
             {
-                var commits = await _ws.GetObject<List<Commit<T>>>();
-                if (commits.Any())
-                {
-                    await onData(commits);
-                }
-                await Task.Factory.StartNew(() => Monitor(onData));
-            }
-            else
-            {
-                throw new InvalidOperationException("Websocket remote not correctly created!");
-            }
-        }
-
-        private async Task Monitor(Func<List<Commit<T>>, Task> onData)
-        {
-            while (_ws.State == WebSocketState.Open)
-            {
-                var commits = await _ws.GetObject<List<Commit<T>>>();
                 if (_ws.State != WebSocketState.Open)
                 {
-                    return;
+                    return Task.CompletedTask;
                 }
                 if (commits.Any())
                 {
-                    await onData(commits);
+                    return onData(commits);
                 }
+                return Task.CompletedTask;
+            });
+            if (monitorInCurrentThread)
+            {
+                await monitorTask;
             }
-            throw new InvalidOperationException($"Websocket dropped!");
         }
 
         public async Task Disconnect()

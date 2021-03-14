@@ -9,6 +9,7 @@ namespace AiurEventSyncer.Models
 {
     public abstract class Remote<T> : IRemote<T>
     {
+
         public string Name { get; init; } = "remote name";
         public bool AutoPush { get; init; }
         public bool AutoPull { get; init; }
@@ -17,11 +18,12 @@ namespace AiurEventSyncer.Models
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         protected IRepository<T> ContextRepository { get; set; }
+        protected IDisposable AutoPushsubscription { get; set; }
         private IConnectionProvider<T> ConnectionProvider { get; set; }
 
         public Remote(
             IConnectionProvider<T> provider,
-            bool autoPush = false, 
+            bool autoPush = false,
             bool autoPull = false)
         {
             ConnectionProvider = provider;
@@ -29,7 +31,7 @@ namespace AiurEventSyncer.Models
             AutoPull = autoPull;
         }
 
-        public async Task<Remote<T>> AttachAsync(IRepository<T> target)
+        public async Task<Remote<T>> AttachAsync(IRepository<T> target, bool monitorInCurrentThread = false)
         {
             if (ContextRepository != null)
             {
@@ -38,16 +40,16 @@ namespace AiurEventSyncer.Models
             ContextRepository = target;
             if (AutoPush)
             {
-                ContextRepository.AppendCommitsHappened.Subscribe(_ => PushAsync());
+                AutoPushsubscription = ContextRepository.AppendCommitsHappened.Subscribe(_ => PushAsync());
             }
             if (AutoPull)
             {
-                await ConnectionProvider.PullAndMonitor(onData: async data => 
+                await ConnectionProvider.PullAndMonitor(onData: async data =>
                 {
                     await PullLock.WaitAsync();
                     ContextRepository.OnPulled(data.ToList(), this);
                     PullLock.Release();
-                }, PullPointer?.Id);
+                }, PullPointer?.Id, onConnected: () => AutoPush ? PushAsync() : Task.CompletedTask, monitorInCurrentThread);
             }
             return this;
         }
@@ -59,6 +61,10 @@ namespace AiurEventSyncer.Models
                 throw new InvalidOperationException("You can't drop the remote because it has no repository attached!");
             }
             await StopMonitoring();
+            if (AutoPush)
+            {
+                AutoPushsubscription.Dispose();
+            }
             ContextRepository = null;
         }
 

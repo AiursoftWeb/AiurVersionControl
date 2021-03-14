@@ -14,9 +14,10 @@ namespace AiurVersionControl.Remotes
 
     public class WebSocketRemoteWithWorkSpace<T> : RemoteWithWorkSpace<T> where T : WorkSpace, new()
     {
+        public string EndPoint { get; private set; }
         public WebSocketRemoteWithWorkSpace(string endPoint) : base(new WebSocketConnection<IModification<T>>(endPoint), true, true)
         {
-
+            EndPoint = endPoint;
         }
     }
 }

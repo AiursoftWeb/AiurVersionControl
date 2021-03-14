@@ -273,6 +273,30 @@ namespace SampleWebApp.Tests.IntegrationTests
 
             Assert.IsTrue((endTime - beginTime) < TimeSpan.FromSeconds(0.5));
         }
+
+        [TestMethod]
+        public async Task PreviousPushedTest()
+        {
+            var repo = new Repository<LogItem>() { Name = "Test local repo" };
+
+            repo.Commit(new LogItem { Message = "1" });
+            repo.Commit(new LogItem { Message = "2" });
+
+            var remote = await new WebSocketRemote<LogItem>(_endpointUrl) { Name = "Demo remote" }
+                .AttachAsync(repo);
+
+            await Task.Delay(50);
+            Assert.IsNotNull(remote.PullPointer);
+
+            var remoteRepo = RepositoryContainer.GetRepositoryForTest();
+            remoteRepo.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" });
+
+            repo.Assert(
+                new LogItem { Message = "1" },
+                new LogItem { Message = "2" });
+        }
     }
 
     public static class TestExtends

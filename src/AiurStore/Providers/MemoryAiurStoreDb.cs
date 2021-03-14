@@ -8,7 +8,7 @@ namespace AiurStore.Providers
 {
     public class MemoryAiurStoreDb<T> : InOutDatabase<T>
     {
-        private readonly LinkedList<T> _store = new LinkedList<T>();
+        private readonly LinkedList<T> _store = new();
 
         private LinkedListNode<T> SearchFromLast(Predicate<T> prefix)
         {
