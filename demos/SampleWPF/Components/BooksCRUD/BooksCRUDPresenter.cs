@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -37,6 +38,10 @@ namespace AiurVersionControl.SampleWPF.Components
         {
             _commitAddNew = new RelayCommand<object>(Add, _ => !string.IsNullOrWhiteSpace(NewTitle));
             Repository = repo;
+            Repository.CollectionChanged += new((object o, NotifyCollectionChangedEventArgs e) =>
+           {
+               OnPropertyChanged(nameof(Books));
+           });
         }
 
         public string NewTitle

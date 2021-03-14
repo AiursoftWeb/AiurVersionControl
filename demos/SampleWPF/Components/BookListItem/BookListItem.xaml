@@ -7,19 +7,19 @@
               mc:Ignorable="d" 
               d:DataContext="{d:DesignInstance cp:BookListItemPresenter}" x:ClassModifier="internal">
     <Border Padding="15,0,15,0" Margin="0,5,0,0" Background="White" MinWidth="280" CornerRadius="5">
-    <DockPanel x:Name="BookGrid" Height="30">
-        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-            <Button x:Name="EditButton" Content="✏️" BorderBrush="Transparent" Background="Transparent" Command="{Binding BeginEdit}"/>
-            <Button x:Name="DeleteButton" Content="🗑️" BorderBrush="Transparent" Background="Transparent" Command="{Binding CommitDrop}"/>
-        </StackPanel>
+        <DockPanel x:Name="BookGrid" Height="30">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button x:Name="EditButton" Content="✏️" BorderBrush="Transparent" Background="Transparent" Command="{Binding BeginEdit}"/>
+                <Button x:Name="DeleteButton" Content="🗑️" BorderBrush="Transparent" Background="Transparent" Command="{Binding CommitDrop}"/>
+            </StackPanel>
 
-        <TextBlock Text="{Binding Book.Title}" VerticalAlignment="Center" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-        <StackPanel Orientation="Horizontal" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBox Padding="2" FontSize="15" Height="25" MinWidth="140" Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" />
-            <Button Content="✔️" BorderBrush="Transparent" Background="Transparent" Margin="5,0,0,0"  Command="{Binding Save}"/>
-            <Button Content="❌" BorderBrush="Transparent" Background="Transparent" Command="{Binding BeginEdit}"/>
-        </StackPanel>
-    </DockPanel>
+            <TextBlock Text="{Binding Book.Title}" VerticalAlignment="Center" Visibility="{Binding IsNotEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <StackPanel Orientation="Horizontal" Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBox Padding="2" FontSize="15" Height="25" MinWidth="140" Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" />
+                <Button Content="✔️" BorderBrush="Transparent" Background="Transparent" Margin="5,0,0,0"  Command="{Binding Save}"/>
+                <Button Content="❌" BorderBrush="Transparent" Background="Transparent" Command="{Binding BeginEdit}"/>
+            </StackPanel>
+        </DockPanel>
     </Border>
 
 </UserControl>
