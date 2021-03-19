@@ -76,7 +76,7 @@ namespace AiurEventSyncer.Models
                         throw new InvalidOperationException("Update pointer failed. Seems it inserted to the same position.");
                     }
 
-                    if (pushingPushPointer == true)
+                    if (pushingPushPointer)
                     {
                         remoteRecord.PushPointer = remoteRecord.PullPointer;
                     }
@@ -110,16 +110,12 @@ namespace AiurEventSyncer.Models
                     _commits.InsertAfter(position, subtract);
                     return (InsertMode.MiddleInserted, subtract);
                 }
-                else
-                {
-                    return (InsertMode.Ignored, localAfter);
-                }
+
+                return (InsertMode.Ignored, localAfter);
             }
-            else
-            {
-                _commits.Add(subtract);
-                return (InsertMode.Appended, subtract);
-            }
+
+            _commits.Add(subtract);
+            return (InsertMode.Appended, subtract);
         }
 
         public void OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
@@ -152,17 +148,13 @@ namespace AiurEventSyncer.Models
                 {
                     return false;
                 }
-                else
-                {
-                    _commits.Add(subtract);
-                    return true;
-                }
-            }
-            else
-            {
+
                 _commits.Add(subtract);
                 return true;
             }
+
+            _commits.Add(subtract);
+            return true;
         }
     }
 }

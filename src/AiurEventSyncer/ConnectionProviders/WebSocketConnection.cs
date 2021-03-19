@@ -34,14 +34,14 @@ namespace AiurEventSyncer.ConnectionProviders
 
         public Task<List<Commit<T>>> Download(string pointer)
         {
-            throw new InvalidOperationException($"You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
+            throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
         public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
         {
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
             await onConnected();
-            monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: (commits) =>
+            monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
             {
                 if (_ws.State != WebSocketState.Open)
                 {

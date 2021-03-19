@@ -2,13 +2,12 @@
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
-    internal sealed class RemoteControlPresenter : Presenter, INotifyPropertyChanged
+    internal sealed class RemoteControlPresenter : Presenter
     {
         private readonly AsyncRelayCommand<object> _detach;
         public ICommand DetachIt => _detach;

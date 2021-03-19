@@ -39,7 +39,7 @@ namespace AiurVersionControl.Tests
             repo.ApplyChange(new AddModification(50));
 
             var repo2 = new ControlledRepository<NumberWorkSpace>();
-            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2, false, false);
+            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2);
             await remote.AttachAsync(repo);
 
             await remote.PushAsync();
@@ -85,7 +85,7 @@ namespace AiurVersionControl.Tests
         {
             var repo = new ControlledRepository<NumberWorkSpace>();
             var repo2 = new ControlledRepository<NumberWorkSpace>();
-            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2, false, false);
+            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2);
             await remote.AttachAsync(repo);
 
             Assert.AreEqual(0, remote.RemoteWorkSpace.NumberStore);
@@ -153,7 +153,7 @@ namespace AiurVersionControl.Tests
 
             var repo2 = new ControlledRepository<NumberWorkSpace>();
             repo.ApplyChange(new AddModification(5000));
-            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2, false, false);
+            var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2);
             await remote.AttachAsync(repo);
             await remote.PullAsync();
             Assert.AreEqual(2, ob.HappenedTimes);
@@ -161,7 +161,7 @@ namespace AiurVersionControl.Tests
 
         internal class MyObserver : IObserver<object>
         {
-            public int HappenedTimes = 0;
+            public int HappenedTimes;
             public void OnCompleted()
             {
                 throw new NotImplementedException();

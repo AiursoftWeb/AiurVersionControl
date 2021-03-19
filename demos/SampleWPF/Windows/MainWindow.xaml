@@ -9,7 +9,7 @@
         xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
         Title="VersionControlled CRUD Demo App"
         x:ClassModifier="internal"
-        fw:AcrylicWindow.AcrylicWindowStyle="NoIcon"
+        AcrylicWindowStyle="NoIcon"
         fw:ExtendViewIntoTitleBar="True"
         d:DataContext="{d:DesignInstance windows:MainWindowPresenter}" Width="800" Height="400">
     <DockPanel>

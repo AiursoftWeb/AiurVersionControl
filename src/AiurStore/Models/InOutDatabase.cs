@@ -9,7 +9,7 @@ namespace AiurStore.Models
     /// Describe a collection which can be queried after a statement and inserted after an item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class InOutDatabase<T> : IOutOnlyDatabase<T>, IEnumerable<T>, INotifyCollectionChanged
+    public abstract class InOutDatabase<T> : IOutOnlyDatabase<T>, INotifyCollectionChanged
     {
         protected NotifyCollectionChangedEventHandler itemsProcessed;
         public event NotifyCollectionChangedEventHandler CollectionChanged

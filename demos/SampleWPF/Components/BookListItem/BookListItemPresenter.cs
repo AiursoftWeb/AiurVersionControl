@@ -1,12 +1,11 @@
-using System;
-using System.Windows.Input;
-using AiurVersionControl.CRUD;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using System;
+using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
-    internal sealed partial class BookListItemPresenter : Presenter
+    internal sealed class BookListItemPresenter : Presenter
     {
         public Book Book { get; init; }
         private readonly RelayCommand<object> _beginEdit;

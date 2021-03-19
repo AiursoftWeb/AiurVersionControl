@@ -5,8 +5,8 @@ namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
 {
     public class RelayCommand<T> : ICommand
     {
-        readonly Action<T> _execute = null;
-        readonly Predicate<T> _canExecute = null;
+        readonly Action<T> _execute;
+        readonly Predicate<T> _canExecute;
 
         public RelayCommand(Action<T> execute, Predicate<T> canExecute)
         {

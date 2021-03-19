@@ -4,7 +4,6 @@ using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +11,7 @@ using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
-    internal sealed class RemoteManagementPresenter : Presenter, INotifyPropertyChanged
+    internal sealed class RemoteManagementPresenter : Presenter
     {
         private string _serverAddress = string.Empty;
         private readonly AsyncRelayCommand<object> _attach;
@@ -42,7 +41,7 @@ namespace AiurVersionControl.SampleWPF.Components
             try
             {
                 var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress);
-                control = new RemoteControl()
+                control = new RemoteControl
                 {
                     DataContext = new RemoteControlPresenter(remote)
                 };
@@ -60,7 +59,7 @@ namespace AiurVersionControl.SampleWPF.Components
             catch (WebSocketException)
             {
                 MessageBox.Show(
-                    $"Server detached!",
+                    "Server detached!",
                     "Remote server",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);

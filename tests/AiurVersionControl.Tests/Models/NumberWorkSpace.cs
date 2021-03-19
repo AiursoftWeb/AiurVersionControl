@@ -10,7 +10,7 @@ namespace AiurVersionControl.Tests.Models
         {
             return new NumberWorkSpace
             {
-                NumberStore = this.NumberStore
+                NumberStore = NumberStore
             };
         }
     }

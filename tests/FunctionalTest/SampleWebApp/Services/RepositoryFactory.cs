@@ -7,7 +7,7 @@ namespace SampleWebApp.Services
     {
         public Repository<LogItem> BuildRepo()
         {
-            return new Repository<LogItem>()
+            return new Repository<LogItem>
             {
                 Name = "SERVER"
             };

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using AiurVersionControl.CRUD;
+﻿using AiurVersionControl.CRUD;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
-    internal sealed partial class BooksCRUDPresenter : Presenter, INotifyPropertyChanged
+    internal sealed class BooksCRUDPresenter : Presenter
     {
         private readonly RelayCommand<object> _commitAddNew;
         private string _newTitle = string.Empty;
@@ -24,7 +18,7 @@ namespace AiurVersionControl.SampleWPF.Components
 
         public IEnumerable<BookListItem> Books => Repository.Select(b => new BookListItem
         {
-            DataContext = new BookListItemPresenter(b, onPatch: (string newTitle) =>
+            DataContext = new BookListItemPresenter(b, onPatch: newTitle =>
             {
                 Repository.Patch(nameof(Book.Id), b.Id, nameof(Book.Title), newTitle);
             }, onDrop: _ =>
@@ -38,10 +32,10 @@ namespace AiurVersionControl.SampleWPF.Components
         {
             _commitAddNew = new RelayCommand<object>(Add, _ => !string.IsNullOrWhiteSpace(NewTitle));
             Repository = repo;
-            Repository.CollectionChanged += new((object o, NotifyCollectionChangedEventArgs e) =>
-           {
-               OnPropertyChanged(nameof(Books));
-           });
+            Repository.CollectionChanged += (_, _) =>
+            {
+                OnPropertyChanged(nameof(Books));
+            };
         }
 
         public string NewTitle

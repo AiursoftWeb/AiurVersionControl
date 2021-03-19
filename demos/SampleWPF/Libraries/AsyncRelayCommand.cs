@@ -6,8 +6,8 @@ namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
 {
     public class AsyncRelayCommand<T> : ICommand
     {
-        readonly Func<T, Task> _execute = null;
-        readonly Predicate<T> _canExecute = null;
+        readonly Func<T, Task> _execute;
+        readonly Predicate<T> _canExecute;
 
         public AsyncRelayCommand(Func<T, Task> execute, Predicate<T> canExecute)
         {

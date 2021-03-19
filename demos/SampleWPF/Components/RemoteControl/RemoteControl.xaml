@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cp="clr-namespace:AiurVersionControl.SampleWPF.Components"
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance cp:RemoteControlPresenter}" x:ClassModifier="public">
+             d:DataContext="{d:DesignInstance cp:RemoteControlPresenter}">
 
     <DockPanel Background="LightYellow">
         <Button Content="Detach" DockPanel.Dock="Right" Width="60" Height="25" Margin="5,5,5,5" Command="{Binding DetachIt}" CommandParameter="{Binding}" />

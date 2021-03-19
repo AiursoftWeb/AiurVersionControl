@@ -41,11 +41,9 @@ namespace AiurStore.Providers
             {
                 return _store;
             }
-            else
-            {
-                var start = _store.FindLast(afterWhich);
-                return ListExtends.YieldAfter(start);
-            }
+
+            var start = _store.FindLast(afterWhich);
+            return ListExtends.YieldAfter(start);
         }
 
         public override void Add(T newItem)

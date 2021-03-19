@@ -58,8 +58,8 @@ namespace AiurEventSyncer.Tests
         [TestMethod]
         public async Task DoubleWaySync()
         {
-            var a = new Repository<int>() { Name = "Repo A" };
-            var b = new Repository<int>() { Name = "Repo B" };
+            var a = new Repository<int> { Name = "Repo A" };
+            var b = new Repository<int> { Name = "Repo B" };
             await new ObjectRemote<int>(b, autoPush: true, autoPull: true) { Name = "A auto sync B." }.AttachAsync(a);
 
             a.Commit(5);
@@ -111,9 +111,9 @@ namespace AiurEventSyncer.Tests
 
             var senderserver = new Repository<int>();
             var server = new Repository<int>();
-            var subscriber1 = new Repository<int>() { Name = "subscriber1" };
-            var subscriber2 = new Repository<int>() { Name = "subscriber2" };
-            var subscriber3 = new Repository<int>() { Name = "subscriber3" };
+            var subscriber1 = new Repository<int> { Name = "subscriber1" };
+            var subscriber2 = new Repository<int> { Name = "subscriber2" };
+            var subscriber3 = new Repository<int> { Name = "subscriber3" };
 
             await new ObjectRemote<int>(server, true) { Name = "Sender Remote" }.AttachAsync(senderserver);
             await new ObjectRemote<int>(server, false, true) { Name = "Subscriber Remote 1" }.AttachAsync(subscriber1);
@@ -134,10 +134,10 @@ namespace AiurEventSyncer.Tests
             //     server
             //    /       \
             //   sender    subscriber
-            var sender = new Repository<int>() { Name = "Sender" };
+            var sender = new Repository<int> { Name = "Sender" };
             var server = new Repository<int>();
-            var subscriber = new Repository<int>() { Name = "Subscriber" };
-            await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
+            var subscriber = new Repository<int> { Name = "Subscriber" };
+            await new ObjectRemote<int>(server, true) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
 
             var subscription = await new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" }
                 .AttachAsync(subscriber);
@@ -160,10 +160,10 @@ namespace AiurEventSyncer.Tests
             //     server
             //    /       \
             //   sender    subscriber
-            var sender = new Repository<int>() { Name = "Sender" };
+            var sender = new Repository<int> { Name = "Sender" };
             var server = new Repository<int>();
-            var subscriber = new Repository<int>() { Name = "Subscriber" };
-            await new ObjectRemote<int>(server, true, false) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
+            var subscriber = new Repository<int> { Name = "Subscriber" };
+            await new ObjectRemote<int>(server, true) { Name = "Sender to Server - Auto Push" }.AttachAsync(sender);
 
             var subscription = await new ObjectRemote<int>(server, false, true) { Name = "Subscriber to Server - Auto Pull" }
                 .AttachAsync(subscriber);

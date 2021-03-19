@@ -12,9 +12,9 @@ namespace SnakeGame.Services.Implements
 
         public Grid(int gridSize, int offset = 0, int seed = 0)
         {
-            this._gridSize = gridSize;
-            this._offset = offset;
-            this._random = seed != 0 ? new Random(seed) : new Random();
+            _gridSize = gridSize;
+            _offset = offset;
+            _random = seed != 0 ? new Random(seed) : new Random();
             Draw();
         }
 

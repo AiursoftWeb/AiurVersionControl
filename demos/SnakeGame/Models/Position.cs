@@ -11,17 +11,15 @@ namespace SnakeGame.Models
         {
             if (obj is Position p)
             {
-                return this.X == p.X && this.Y == p.Y;
+                return X == p.X && Y == p.Y;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         public override int GetHashCode()
         {
-            return this.X.GetHashCode() + this.Y.GetHashCode();
+            return X.GetHashCode() + Y.GetHashCode();
         }
         
         public override string ToString()
@@ -31,7 +29,7 @@ namespace SnakeGame.Models
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return MemberwiseClone();
         }
     }
 }

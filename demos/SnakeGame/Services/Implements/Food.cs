@@ -9,20 +9,20 @@ namespace SnakeGame.Services.Implements
 
         public Food(int gridSize, int offset = 0)
         {
-            this._foodPosition = new Position{ X = gridSize / 4 + offset, Y = gridSize / 4};
+            _foodPosition = new Position{ X = gridSize / 4 + offset, Y = gridSize / 4};
             Draw();
         }
 
         public Position GetFoodPosition()
         {
-            return this._foodPosition;
+            return _foodPosition;
         }
 
         public void RandomFoodPosition(Grid grid,Snake snake)
         {
-            while (this._foodPosition == null || snake.OnSnake(this._foodPosition))
+            while (_foodPosition == null || snake.OnSnake(_foodPosition))
             {
-                this._foodPosition = grid.RandomGridPosition();
+                _foodPosition = grid.RandomGridPosition();
             }
 
             Draw();
@@ -30,7 +30,7 @@ namespace SnakeGame.Services.Implements
 
         public void Draw()
         {
-            Console.SetCursorPosition(this._foodPosition.X, this._foodPosition.Y);
+            Console.SetCursorPosition(_foodPosition.X, _foodPosition.Y);
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.Write("█");
         }

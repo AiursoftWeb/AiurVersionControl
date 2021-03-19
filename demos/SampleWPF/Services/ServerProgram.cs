@@ -47,13 +47,10 @@ namespace AiurVersionControl.SampleWPF.Services
             Dispatcher dispatcher)
         {
             app.UseWebSockets();
-            app.Use(async (context, next) =>
+            app.Use(async (context, _) =>
             {
                 var start = context.Request.Query["start"];
-                var result = dispatcher.Invoke(() =>
-                {
-                    return context.RepositoryAsync(repo, start);
-                });
+                var result = dispatcher.Invoke(() => context.RepositoryAsync(repo, start));
                 await result;
             });
         }

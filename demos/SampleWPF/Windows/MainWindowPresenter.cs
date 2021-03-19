@@ -2,11 +2,10 @@
 using AiurVersionControl.SampleWPF.Components;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
-using System.ComponentModel;
 
 namespace AiurVersionControl.SampleWPF.Windows
 {
-    internal class MainWindowPresenter : Presenter, INotifyPropertyChanged
+    internal class MainWindowPresenter : Presenter
     {
         public MainWindowPresenter(CollectionRepository<Book> repo)
         {

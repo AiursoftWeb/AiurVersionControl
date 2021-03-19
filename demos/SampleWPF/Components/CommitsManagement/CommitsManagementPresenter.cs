@@ -7,20 +7,19 @@ using AiurVersionControl.SampleWPF.Services;
 using AiurVersionControl.SampleWPF.ViewModels.MVVM;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace AiurVersionControl.SampleWPF.Components
 {
-    internal sealed class CommitsManagementPresenter : Presenter, INotifyPropertyChanged
+    internal sealed class CommitsManagementPresenter : Presenter
     {
         private readonly AsyncRelayCommand<object> _hostServer;
         private readonly CollectionRepository<Book> _repository;
         private readonly int _port = Network.GetAvailablePort();
         private string _buttonText = "Host new server";
-        private bool _serverGridVisiable = false;
+        private bool _serverGridVisiable;
         private IHost _host;
 
         public bool ServerHosting => _host != null;

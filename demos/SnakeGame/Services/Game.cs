@@ -24,13 +24,13 @@ namespace SnakeGame.Services
 
         public Game(int gridSize, int offset)
         {
-            this._repo = new Repository<Action>();
-            this.IsGameEnd = false;
-            this._offset = offset;
-            this._grid = new Grid(gridSize, offset);
-            this._originalSnakePosition = new Position{ X = gridSize / 2 + offset, Y = gridSize / 2 };
-            this._snake = new Snake((Position)this._originalSnakePosition.Clone());
-            this._food = new Food(gridSize, offset);
+            _repo = new Repository<Action>();
+            IsGameEnd = false;
+            _offset = offset;
+            _grid = new Grid(gridSize, offset);
+            _originalSnakePosition = new Position{ X = gridSize / 2 + offset, Y = gridSize / 2 };
+            _snake = new Snake((Position)_originalSnakePosition.Clone());
+            _food = new Food(gridSize, offset);
         }
 
         public async Task AddRemote(string endpointUrl)
@@ -49,8 +49,8 @@ namespace SnakeGame.Services
         {
             Input.ChangeDirection(_command, _direction);
             
-            this._snake.Update(_direction);
-            this._repo.Commit(new Action{Type = ActionType.Move, Direction = _direction});
+            _snake.Update(_direction);
+            _repo.Commit(new Action{Type = ActionType.Move, Direction = _direction});
         }
         public void UpdateFrame()
         {
@@ -70,7 +70,7 @@ namespace SnakeGame.Services
         
         public void RecurrentFromRepo()
         {
-            _snake = _rec.Recurrent(new Snake((Position)this._originalSnakePosition.Clone()), this._repo, _offset);
+            _snake = _rec.Recurrent(new Snake((Position)_originalSnakePosition.Clone()), _repo, _offset);
         }
 
         public void ListenInput(bool listenNow = false)
@@ -84,9 +84,9 @@ namespace SnakeGame.Services
         private void CheckDeath()
         {
             // Detect if snake hits the boundary or itself
-            if (this._grid.OutsideGrid(_snake.Head) || this._snake.SnakeIntersection())
+            if (_grid.OutsideGrid(_snake.Head) || _snake.SnakeIntersection())
             {
-                this.IsGameEnd = true;
+                IsGameEnd = true;
                 Console.SetCursorPosition(21, 20);
                 Console.WriteLine("Oops, the snake died...");
             }
@@ -94,15 +94,15 @@ namespace SnakeGame.Services
 
         private bool CheckEat()
         {
-            if (this._snake.CanEat(this._food.GetFoodPosition()))
+            if (_snake.CanEat(_food.GetFoodPosition()))
             {
-                this._food.RandomFoodPosition(this._grid, this._snake);
-                this._snake.AddBody();
-                this._repo.Commit(new Action{Type = ActionType.Eat, Direction = this._food.GetFoodPosition()});
+                _food.RandomFoodPosition(_grid, _snake);
+                _snake.AddBody();
+                _repo.Commit(new Action{Type = ActionType.Eat, Direction = _food.GetFoodPosition()});
                 return true;
             }
-            else 
-                return false;
+
+            return false;
         }
     }
 }

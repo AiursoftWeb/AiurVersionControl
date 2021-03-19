@@ -5,7 +5,6 @@ using AiurEventSyncer.Tools;
 using AiurObserver;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,8 +21,7 @@ namespace AiurEventSyncer.WebExtends
                 // Send pull result.
                 var firstPullResult = repository.Commits.GetCommitsAfterId<Commit<T>, T>(startPosition).ToList();
                 await ws.SendObject(firstPullResult);
-                var connectionId = Guid.NewGuid();
-                var subscription = repository.AppendCommitsHappened.Subscribe(async (newCommits) =>
+                var subscription = repository.AppendCommitsHappened.Subscribe(async newCommits =>
                 {
                     await ws.SendObject(newCommits);
                 });
@@ -35,10 +33,8 @@ namespace AiurEventSyncer.WebExtends
                 subscription.Dispose();
                 return new EmptyResult();
             }
-            else
-            {
-                return new BadRequestResult();
-            }
+
+            return new BadRequestResult();
         }
     }
 }
