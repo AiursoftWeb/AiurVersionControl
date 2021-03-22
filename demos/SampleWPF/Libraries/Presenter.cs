@@ -8,7 +8,7 @@ namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void Update<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        protected void Update<T>(ref T field, T value, [CallerMemberName]string propertyName = null)
         {
             if (!EqualityComparer<T>.Default.Equals(field, value))
             {

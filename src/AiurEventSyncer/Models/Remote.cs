@@ -19,7 +19,7 @@ namespace AiurEventSyncer.Models
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         protected IRepository<T> ContextRepository { get; set; }
         protected IDisposable AutoPushsubscription { get; set; }
-        private IConnectionProvider<T> ConnectionProvider { get; set; }
+        public IConnectionProvider<T> ConnectionProvider { get; set; }
 
         public Remote(
             IConnectionProvider<T> provider,

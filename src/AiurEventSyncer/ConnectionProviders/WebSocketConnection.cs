@@ -19,12 +19,11 @@ namespace AiurEventSyncer.ConnectionProviders
         public WebSocketConnection(string endPoint)
         {
             _endPoint = endPoint;
-            _ws = new ClientWebSocket();
         }
 
         public async Task Upload(List<Commit<T>> commits, string pointerId)
         {
-            if (_ws.State != WebSocketState.Open)
+            if (_ws?.State != WebSocketState.Open)
             {
                 throw new InvalidOperationException($"Websocket not connected! State: {_ws.State}");
             }
@@ -37,10 +36,11 @@ namespace AiurEventSyncer.ConnectionProviders
             throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
+        public virtual async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
         {
+            _ws = new ClientWebSocket();
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
-            await onConnected();
+            await onConnected?.Invoke();
             monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
             {
                 if (_ws.State != WebSocketState.Open)
@@ -49,7 +49,7 @@ namespace AiurEventSyncer.ConnectionProviders
                 }
                 if (commits.Any())
                 {
-                    return onData(commits);
+                    return onData?.Invoke(commits);
                 }
                 return Task.CompletedTask;
             });
@@ -59,14 +59,13 @@ namespace AiurEventSyncer.ConnectionProviders
             }
         }
 
-        public async Task Disconnect()
+        public virtual async Task Disconnect()
         {
-            while (_ws.State == WebSocketState.Open)
+            while (_ws?.State == WebSocketState.Open)
             {
                 await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
-            _ws.Dispose();
-            _ws = new ClientWebSocket();
+            _ws?.Dispose();
         }
     }
 }
