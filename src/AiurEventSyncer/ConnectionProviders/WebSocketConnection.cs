@@ -12,16 +12,16 @@ namespace AiurEventSyncer.ConnectionProviders
 {
     public class WebSocketConnection<T> : IConnectionProvider<T>
     {
-        private readonly string _endPoint;
-        private Task monitorTask;
-        private ClientWebSocket _ws;
+        protected readonly string _endPoint;
+        protected Task monitorTask;
+        protected ClientWebSocket _ws;
 
         public WebSocketConnection(string endPoint)
         {
             _endPoint = endPoint;
         }
 
-        public async Task Upload(List<Commit<T>> commits, string pointerId)
+        public virtual async Task Upload(List<Commit<T>> commits, string pointerId)
         {
             if (_ws?.State != WebSocketState.Open)
             {

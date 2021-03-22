@@ -209,13 +209,55 @@ namespace SampleWebApp.Tests.IntegrationTests
                 new LogItem { Message = "H" });
         }
 
-
         [TestMethod]
         public async Task ReattachTest()
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
             await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
+
+            var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
+
+            sender.Commit(new LogItem { Message = "G" });
+            sender.Commit(new LogItem { Message = "H" });
+
+            sender.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+
+            await subscriberRemote.DetachAsync();
+
+            sender.Commit(new LogItem { Message = "X" });
+            sender.Commit(new LogItem { Message = "Z" });
+
+            await Task.Delay(30);
+
+            sender.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" });
+
+            await subscriberRemote.AttachAsync(subscriber);
+            subscriber.Assert(
+                new LogItem { Message = "G" },
+                new LogItem { Message = "H" },
+                new LogItem { Message = "X" },
+                new LogItem { Message = "Z" });
+        }
+
+        [TestMethod]
+        public async Task ReconnectTest()
+        {
+            var sender = new Repository<LogItem>();
+            var subscriber = new Repository<LogItem>();
+            await new WebSocketRemote<LogItem>(_endpointUrl, true).AttachAsync(sender);
 
             var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 

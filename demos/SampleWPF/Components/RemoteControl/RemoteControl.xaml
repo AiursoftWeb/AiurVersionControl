@@ -20,8 +20,9 @@
         <Ellipse Width="10" DockPanel.Dock="Left" Margin="10,0,10,0" Height="10" Stroke="Green" Visibility="{Binding Connection.IsConnectionHealthy, Converter={StaticResource BooleanToVisibilityConverter}}" StrokeThickness="10" Canvas.Left="135" Canvas.Top="100" />
         <Ellipse Width="10" DockPanel.Dock="Left" Margin="10,0,10,0" Height="10" Stroke="Red" Style="{StaticResource HideShow}" StrokeThickness="10" Canvas.Left="135" Canvas.Top="100" />
         <Button Content="Detach" DockPanel.Dock="Right" Width="60" Height="25" Margin="5,5,5,5" Command="{Binding DetachIt}" CommandParameter="{Binding}" />
-        <TextBlock Margin="10,5,5,5" DockPanel.Dock="Right" Text="{Binding Connection.AttemptCount}" />
-        <TextBlock Margin="10,5,5,5" Text="{Binding EndPoint}" />
+        <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" DockPanel.Dock="Right" Text="{Binding Connection.AttemptCount}" />
+        <TextBlock Margin="10,0,5,0" VerticalAlignment="Center" DockPanel.Dock="Right" Text="Connection attempts:" />
+        <TextBlock Margin="10,0,5,0" VerticalAlignment="Center" Text="{Binding EndPoint}" />
     </DockPanel>
 
 </UserControl>
