@@ -13,33 +13,24 @@ namespace AiurEventSyncer.ConnectionProviders
         public event PropertyChangedEventHandler PropertyChanged;
         public bool IsConnectionHealthy { get; set; }
         public int AttemptCount { get; set; }
-        private ManualResetEvent exitEvent = new ManualResetEvent(false);
+
+        private readonly ManualResetEvent exitEvent = new(false);
 
         public RetryableWebSocketConnection(string endpoint) : base(endpoint)
         {
-
+            
         }
 
-        public override async Task Upload(List<Commit<T>> commits, string pointerId)
+        public override async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
         {
-            if (_ws?.State != WebSocketState.Open)
-            {
-                // Surpress error when uploading. Because the remote might not be connected. Retry will help.
-                return;
-            }
-            await base.Upload(commits, pointerId);
-        }
-
-        public override async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
-        {
-            var monitorTask = PullAndMonitorInThisThread(onData, startPosition, onConnected);
+            var monitorTask = PullAndMonitorInThisThread(onData, startPositionFactory, onConnected);
             if (monitorInCurrentThread)
             {
                 await monitorTask;
             }
         }
 
-        private async Task PullAndMonitorInThisThread(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected)
+        private async Task PullAndMonitorInThisThread(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected)
         {
             var exitTask = Task.Run(() => exitEvent.WaitOne());
             var retryGapSeconds = 1;
@@ -51,12 +42,15 @@ namespace AiurEventSyncer.ConnectionProviders
                     connectedTime = DateTime.UtcNow;
 
                     AttemptCount++;
-                    IsConnectionHealthy = true;
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AttemptCount)));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnectionHealthy)));
 
-                    await base.PullAndMonitor(onData, startPosition, onConnected, true);
+                    await base.PullAndMonitor(onData, startPositionFactory, () => 
+                    {
+                        IsConnectionHealthy = true;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnectionHealthy)));
+                        return onConnected();
+                    }, true);
                 }
                 catch (WebSocketException)
                 {

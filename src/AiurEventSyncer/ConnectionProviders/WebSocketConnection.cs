@@ -21,14 +21,15 @@ namespace AiurEventSyncer.ConnectionProviders
             _endPoint = endPoint;
         }
 
-        public virtual async Task Upload(List<Commit<T>> commits, string pointerId)
+        public async Task<bool> Upload(List<Commit<T>> commits, string pointerId)
         {
             if (_ws?.State != WebSocketState.Open)
             {
-                throw new InvalidOperationException($"Websocket not connected! State: {_ws.State}");
+                return false;
             }
             var model = new PushModel<T> { Commits = commits, Start = pointerId };
             await _ws.SendObject(model);
+            return true;
         }
 
         public Task<List<Commit<T>>> Download(string pointer)
@@ -36,10 +37,10 @@ namespace AiurEventSyncer.ConnectionProviders
             throw new InvalidOperationException("You can't manually pull a websocket remote. Because all websocket remotes are updated automatically!");
         }
 
-        public virtual async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
+        public virtual async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
         {
             _ws = new ClientWebSocket();
-            await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPosition), CancellationToken.None);
+            await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPositionFactory()), CancellationToken.None);
             await onConnected?.Invoke();
             monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
             {

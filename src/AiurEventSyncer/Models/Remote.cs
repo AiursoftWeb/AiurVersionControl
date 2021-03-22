@@ -49,7 +49,7 @@ namespace AiurEventSyncer.Models
                     await PullLock.WaitAsync();
                     ContextRepository.OnPulled(data.ToList(), this);
                     PullLock.Release();
-                }, PullPointer?.Id, onConnected: () => AutoPush ? PushAsync() : Task.CompletedTask, monitorInCurrentThread);
+                }, () => PullPointer?.Id, onConnected: () => AutoPush ? PushAsync() : Task.CompletedTask, monitorInCurrentThread);
             }
             return this;
         }
@@ -74,8 +74,11 @@ namespace AiurEventSyncer.Models
             var commitsToPush = ContextRepository.Commits.GetAllAfter(PushPointer).ToList();
             if (commitsToPush.Any())
             {
-                await ConnectionProvider.Upload(commitsToPush, PushPointer?.Id);
-                PushPointer = commitsToPush.Last();
+                var uploaded = await ConnectionProvider.Upload(commitsToPush, PushPointer?.Id);
+                if(uploaded)
+                {
+                    PushPointer = commitsToPush.Last();
+                }
             }
             PushLock.Release();
         }

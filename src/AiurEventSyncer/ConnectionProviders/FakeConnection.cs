@@ -18,10 +18,10 @@ namespace AiurEventSyncer.ConnectionProviders
             _fakeRemoteRepository = localRepository;
         }
 
-        public Task Upload(List<Commit<T>> commits, string pointerId)
+        public Task<bool> Upload(List<Commit<T>> commits, string pointerId)
         {
             _fakeRemoteRepository.OnPushed(commits, pointerId);
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
         public Task<List<Commit<T>>> Download(string pointer)
@@ -29,9 +29,9 @@ namespace AiurEventSyncer.ConnectionProviders
             return Task.FromResult(_fakeRemoteRepository.Commits.GetCommitsAfterId<Commit<T>, T>(pointer).ToList());
         }
 
-        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, string startPosition, Func<Task> onConnected, bool monitorInCurrentThread)
+        public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
         {
-            var pulledData = await Download(startPosition);
+            var pulledData = await Download(startPositionFactory());
             if (pulledData.Any())
             {
                 await onData(pulledData);
