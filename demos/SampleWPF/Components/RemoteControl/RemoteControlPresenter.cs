@@ -1,5 +1,4 @@
-﻿using AiurEventSyncer.Abstract;
-using AiurEventSyncer.ConnectionProviders;
+﻿using AiurEventSyncer.ConnectionProviders;
 using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
 using AiurVersionControl.Remotes;
