@@ -20,7 +20,7 @@ namespace AiurEventSyncer.Tests
                 Console.WriteLine($"{(DateTime.UtcNow - startTime).TotalSeconds} seconds passed. Retried: {connection.AttemptCount} times.");
                 retryCounts = connection.AttemptCount;
             };
-            var pullTask = connection.PullAndMonitor(null, null, null, true);
+            var pullTask = connection.PullAndMonitor(null, () => string.Empty, null, true);
             var waitTask = Task.Delay(8 * 1000);
             await Task.WhenAny(pullTask, waitTask);
             Assert.AreEqual(4, retryCounts);
