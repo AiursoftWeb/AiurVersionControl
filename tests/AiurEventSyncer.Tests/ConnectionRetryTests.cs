@@ -21,7 +21,11 @@ namespace AiurEventSyncer.Tests
                 retryCounts = connection.AttemptCount;
             };
             var pullTask = connection.PullAndMonitor(null, () => string.Empty, null, true);
-            var waitTask = Task.Delay(8 * 1000);
+            // 0 + 1 + 2 + 4     = 7
+            // 0 + 1 + 2 + 4 + 8 = 15
+            // When at 14, must tried 4 times.
+
+            var waitTask = Task.Delay(14 * 1000);
             await Task.WhenAny(pullTask, waitTask);
             Assert.AreEqual(4, retryCounts);
         }
