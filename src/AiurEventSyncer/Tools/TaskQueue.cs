@@ -5,6 +5,8 @@ namespace AiurEventSyncer.Tools
 {
     public class TaskQueue
     {
+        public Action<Exception> OnError;
+
         private readonly SafeQueue<Func<Task>> _pendingTaskFactories = new();
         private Task _engine = Task.CompletedTask;
 
@@ -33,7 +35,14 @@ namespace AiurEventSyncer.Tools
                     var taskFactory = _pendingTaskFactories.Dequeue();
                     tasksInFlight = taskFactory();
                 }
-                await tasksInFlight;
+                try
+                {
+                    await tasksInFlight;
+                }
+                catch (Exception e)
+                {
+                    OnError?.Invoke(e);
+                }
             }
         }
     }

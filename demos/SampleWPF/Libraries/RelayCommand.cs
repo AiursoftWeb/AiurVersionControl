@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
@@ -28,7 +29,14 @@ namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
 
         public void Execute(object parameter)
         {
-            _execute((T)parameter);
+            try
+            {
+                _execute((T)parameter);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Critical action failure", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
