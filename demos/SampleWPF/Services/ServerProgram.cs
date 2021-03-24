@@ -28,7 +28,7 @@ namespace AiurVersionControl.SampleWPF.Services
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls($"http://localhost:{port}");
+                    webBuilder.UseUrls($"http://*:{port}");
                     webBuilder.UseStartup<ServerStartup>();
                     webBuilder.ConfigureServices(services =>
                     {
