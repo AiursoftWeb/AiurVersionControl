@@ -73,8 +73,8 @@ namespace AiurVersionControl.SampleWPF.Components
         {
             if (_host != null)
             {
-                await _host.StopAsync();
-                _host.Dispose();
+                await _host?.StopAsync();
+                _host?.Dispose();
                 _host = null;
             }
             ServerButtonText = "Host new server";
