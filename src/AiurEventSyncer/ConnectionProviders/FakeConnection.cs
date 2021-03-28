@@ -12,6 +12,7 @@ namespace AiurEventSyncer.ConnectionProviders
     {
         private readonly IRepository<T> _fakeRemoteRepository;
         private IDisposable _subscription;
+        public event Action OnReconnecting;
 
         public FakeConnection(IRepository<T> localRepository)
         {

@@ -11,8 +11,7 @@ namespace AiurEventSyncer.ConnectionProviders
     public class RetryableWebSocketConnection<T> : WebSocketConnection<T>, IConnectionProvider<T>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public Action OnReconnecting;
+        public override event Action OnReconnecting;
 
         public bool IsConnectionHealthy { get; set; }
         public int AttemptCount { get; set; }
@@ -22,11 +21,6 @@ namespace AiurEventSyncer.ConnectionProviders
         public RetryableWebSocketConnection(
             string endpoint) : base(endpoint)
         {
-        }
-
-        public void SetReconnectingBehavior(Action onReconnecting)
-        {
-            OnReconnecting = onReconnecting;
         }
 
         public override async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
@@ -53,7 +47,7 @@ namespace AiurEventSyncer.ConnectionProviders
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AttemptCount)));
 
-                    await base.PullAndMonitor(onData, startPositionFactory, () => 
+                    await base.PullAndMonitor(onData, startPositionFactory, onConnected: () => 
                     {
                         IsConnectionHealthy = true;
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnectionHealthy)));

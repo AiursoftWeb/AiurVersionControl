@@ -6,6 +6,8 @@ namespace AiurEventSyncer.Abstract
 {
     public interface IConnectionProvider<T>
     {
+        event Action OnReconnecting;
+
         Task Disconnect();
 
         Task PullAndMonitor(

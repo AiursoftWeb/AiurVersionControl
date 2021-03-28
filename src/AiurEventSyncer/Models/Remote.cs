@@ -27,6 +27,7 @@ namespace AiurEventSyncer.Models
             bool autoPull = false)
         {
             ConnectionProvider = provider;
+            ConnectionProvider.OnReconnecting += () => this.PushPointer = this.PullPointer;
             AutoPush = autoPush;
             AutoPull = autoPull;
         }

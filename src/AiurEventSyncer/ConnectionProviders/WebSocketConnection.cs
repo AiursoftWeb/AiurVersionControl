@@ -15,6 +15,7 @@ namespace AiurEventSyncer.ConnectionProviders
         protected readonly string _endPoint;
         protected Task monitorTask;
         protected ClientWebSocket _ws;
+        public virtual event Action OnReconnecting;
 
         public WebSocketConnection(string endPoint)
         {

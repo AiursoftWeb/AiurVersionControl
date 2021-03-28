@@ -13,13 +13,6 @@ namespace AiurVersionControl.Remotes
                 : new WebSocketConnection<IModification<T>>(endPoint), true, true)
         {
             EndPoint = endPoint;
-            if (this.ConnectionProvider is RetryableWebSocketConnection<IModification<T>> retry)
-            {
-                retry.SetReconnectingBehavior(() =>
-                {
-                    this.PullPointer = this.PushPointer;
-                });
-            }
         }
     }
 }
