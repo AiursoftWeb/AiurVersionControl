@@ -11,14 +11,22 @@ namespace AiurEventSyncer.ConnectionProviders
     public class RetryableWebSocketConnection<T> : WebSocketConnection<T>, IConnectionProvider<T>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public Action OnReconnecting;
+
         public bool IsConnectionHealthy { get; set; }
         public int AttemptCount { get; set; }
 
         private readonly ManualResetEvent exitEvent = new(false);
 
-        public RetryableWebSocketConnection(string endpoint) : base(endpoint)
+        public RetryableWebSocketConnection(
+            string endpoint) : base(endpoint)
         {
-            
+        }
+
+        public void SetReconnectingBehavior(Action onReconnecting)
+        {
+            OnReconnecting = onReconnecting;
         }
 
         public override async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
@@ -56,7 +64,7 @@ namespace AiurEventSyncer.ConnectionProviders
                 {
                     IsConnectionHealthy = false;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnectionHealthy)));
-
+                    OnReconnecting?.Invoke();
                     if (DateTime.UtcNow - connectedTime > TimeSpan.FromMinutes(1))
                     {
                         // Connection held for one minute. Seems to be a healthy server. Retry soon.

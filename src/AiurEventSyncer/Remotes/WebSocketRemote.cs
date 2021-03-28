@@ -5,8 +5,8 @@ namespace AiurEventSyncer.Remotes
 {
     public class WebSocketRemote<T> : Remote<T>
     {
-        public WebSocketRemote(string endPoint, bool autoRetry = false) 
-            : base(autoRetry ? 
+        public WebSocketRemote(string endPoint, bool autoRetry = false)
+            : base(autoRetry ?
                   new RetryableWebSocketConnection<T>(endPoint) :
                   new WebSocketConnection<T>(endPoint), 
                   autoPush: true, 
