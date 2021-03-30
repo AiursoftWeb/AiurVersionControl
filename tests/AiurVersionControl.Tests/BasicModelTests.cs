@@ -2,7 +2,6 @@
 using AiurVersionControl.Remotes;
 using AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Threading.Tasks;
 
 namespace AiurVersionControl.Tests
@@ -144,38 +143,25 @@ namespace AiurVersionControl.Tests
         public async Task ObserveTheChange()
         {
             var repo = new ControlledRepository<NumberWorkSpace>();
-            var ob = new MyObserver();
-            repo.WorkSpaceChangedHappened.Subscribe(ob);
+            var happendTimes = 0;
+            repo.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(repo.WorkSpace))
+                {
+                    happendTimes++;
+                }
+            };
 
-            Assert.AreEqual(0, ob.HappenedTimes);
+            Assert.AreEqual(0, happendTimes);
             repo.ApplyChange(new AddModification(5));
-            Assert.AreEqual(1, ob.HappenedTimes);
+            Assert.AreEqual(1, happendTimes);
 
             var repo2 = new ControlledRepository<NumberWorkSpace>();
             repo.ApplyChange(new AddModification(5000));
             var remote = new ObjectRemoteWithWorkSpace<NumberWorkSpace>(repo2);
             await remote.AttachAsync(repo);
             await remote.PullAsync();
-            Assert.AreEqual(2, ob.HappenedTimes);
-        }
-
-        internal class MyObserver : IObserver<object>
-        {
-            public int HappenedTimes;
-            public void OnCompleted()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnError(Exception error)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnNext(object _)
-            {
-                HappenedTimes++;
-            }
+            Assert.AreEqual(2, happendTimes);
         }
     }
 }

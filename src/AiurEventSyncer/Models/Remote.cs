@@ -9,7 +9,6 @@ namespace AiurEventSyncer.Models
 {
     public abstract class Remote<T> : IRemote<T>
     {
-
         public string Name { get; init; } = "remote name";
         public bool AutoPush { get; init; }
         public bool AutoPull { get; init; }

@@ -1,8 +1,7 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurEventSyncer.Models;
-using AiurObserver.Models;
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace AiurVersionControl.Models
 {
@@ -10,18 +9,16 @@ namespace AiurVersionControl.Models
     /// A special repository which contains a workspace and applies modifications to it automatically.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ControlledRepository<T> : Repository<IModification<T>> where T : WorkSpace, new()
+    public class ControlledRepository<T> : Repository<IModification<T>>, INotifyPropertyChanged where T : WorkSpace, new()
     {
-        private readonly Observable<object> _subscribersManager = new();
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public T WorkSpace { get; set; }
-
-        public IObservable<object> WorkSpaceChangedHappened => _subscribersManager;
 
         /// <summary>
         /// Call this method to manually broadcast a new event to all workspace changed subscribers.
         /// </summary>
-        public virtual void BroadcastWorkSpaceChanged() => _subscribersManager.Boradcast(null);
+        public virtual void BroadcastWorkSpaceChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WorkSpace)));
 
         public ControlledRepository()
         {
