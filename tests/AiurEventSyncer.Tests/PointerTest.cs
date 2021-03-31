@@ -11,7 +11,7 @@ namespace AiurEventSyncer.Tests
     public class PointerTest
     {
         private Repository<int> _demoRepo;
-        private const string _commitId3 = "5e641147de8c4306b56d19c053122854";
+        private const string CommitId3 = "5e641147de8c4306b56d19c053122854";
 
         [TestInitialize]
         public void GetBasicRepo()
@@ -21,7 +21,7 @@ namespace AiurEventSyncer.Tests
             _demoRepo.Commit(2);
             _demoRepo.CommitObject(new Commit<int>
             {
-                Id = _commitId3,
+                Id = CommitId3,
                 Item = 3
             });
             _demoRepo.Assert(1, 2, 3);
@@ -88,7 +88,7 @@ namespace AiurEventSyncer.Tests
             await origin.PushAsync();
 
             Assert.AreEqual(origin.PushPointer.Id, square1.Id);
-            Assert.AreEqual(origin.PullPointer.Id, _commitId3);
+            Assert.AreEqual(origin.PullPointer.Id, CommitId3);
 
             var tri1 = new Commit<int> { Item = 11111 };
             var tri2 = new Commit<int> { Item = 22222 };
@@ -124,7 +124,7 @@ namespace AiurEventSyncer.Tests
             await origin.PushAsync();
 
             Assert.AreEqual(origin.PushPointer.Id, square1.Id);
-            Assert.AreEqual(origin.PullPointer.Id, _commitId3);
+            Assert.AreEqual(origin.PullPointer.Id, CommitId3);
             localRepo.Assert(1, 2, 3, 111);
             remoteRepo.Assert(1, 2, 3, 111);
 
@@ -132,7 +132,7 @@ namespace AiurEventSyncer.Tests
             localRepo.CommitObject(square2);
 
             Assert.AreEqual(origin.PushPointer.Id, square1.Id);
-            Assert.AreEqual(origin.PullPointer.Id, _commitId3);
+            Assert.AreEqual(origin.PullPointer.Id, CommitId3);
             localRepo.Assert(1, 2, 3, 111, 222);
             remoteRepo.Assert(1, 2, 3, 111);
 
