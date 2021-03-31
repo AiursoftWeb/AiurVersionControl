@@ -16,7 +16,7 @@ namespace AiurEventSyncer.ConnectionProviders
         public bool IsConnectionHealthy { get; set; }
         public int AttemptCount { get; set; }
 
-        private readonly ManualResetEvent exitEvent = new(false);
+        private readonly ManualResetEvent _exitEvent = new(false);
 
         public RetryableWebSocketConnection(
             string endpoint) : base(endpoint)
@@ -25,16 +25,16 @@ namespace AiurEventSyncer.ConnectionProviders
 
         public override async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
         {
-            var monitorTask = PullAndMonitorInThisThread(onData, startPositionFactory, onConnected);
+            var pullAndMonitorTask = PullAndMonitorInThisThread(onData, startPositionFactory, onConnected);
             if (monitorInCurrentThread)
             {
-                await monitorTask;
+                await pullAndMonitorTask;
             }
         }
 
         private async Task PullAndMonitorInThisThread(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected)
         {
-            var exitTask = Task.Run(() => exitEvent.WaitOne());
+            var exitTask = Task.Run(() => _exitEvent.WaitOne());
             var retryGapSeconds = 1;
             var connectedTime = DateTime.MinValue;
             while (!exitTask.IsCompleted)
@@ -77,7 +77,7 @@ namespace AiurEventSyncer.ConnectionProviders
 
         public override Task Disconnect()
         {
-            exitEvent.Set();
+            _exitEvent.Set();
             return base.Disconnect();
         }
     }

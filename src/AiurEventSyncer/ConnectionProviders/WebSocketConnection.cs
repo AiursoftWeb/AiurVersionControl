@@ -12,9 +12,8 @@ namespace AiurEventSyncer.ConnectionProviders
 {
     public class WebSocketConnection<T> : IConnectionProvider<T>
     {
-        protected readonly string _endPoint;
-        protected Task monitorTask;
-        protected ClientWebSocket _ws;
+        private readonly string _endPoint;
+        private ClientWebSocket _ws;
         public virtual event Action OnReconnecting;
 
         public WebSocketConnection(string endPoint)
@@ -43,7 +42,7 @@ namespace AiurEventSyncer.ConnectionProviders
             _ws = new ClientWebSocket();
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPositionFactory()), CancellationToken.None);
             await onConnected?.Invoke();
-            monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
+            var monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
             {
                 if (_ws.State != WebSocketState.Open)
                 {
@@ -67,6 +66,7 @@ namespace AiurEventSyncer.ConnectionProviders
             {
                 await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
+            OnReconnecting?.Invoke();
             _ws?.Dispose();
         }
     }

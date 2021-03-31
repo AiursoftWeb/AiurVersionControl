@@ -5,32 +5,32 @@ namespace AiurEventSyncer.Tools
 {
     public class SafeQueue<T>
     {
-        private readonly Queue<T> queue = new Queue<T>();
+        private readonly Queue<T> _queue = new Queue<T>();
 
         public void Enqueue(T item)
         {
             lock (this)
             {
-                queue.Enqueue(item);
+                _queue.Enqueue(item);
             }
         }
 
         public T Dequeue()
         {
-            T item = default;
+            T item;
             lock (this)
             {
-                item = queue.Dequeue();
+                item = _queue.Dequeue();
             }
             return item;
         }
 
         public bool Any()
         {
-            bool any = false;
+            bool any;
             lock (this)
             {
-                any = queue.Any();
+                any = _queue.Any();
             }
             return any;
         }

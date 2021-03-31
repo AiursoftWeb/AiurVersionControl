@@ -2,16 +2,10 @@
 
 namespace SnakeGame.Services
 {
-    public interface IRecurrent<T, R>
+    public interface IRecurrent<T, TR>
     {
-        /// <summary>
-        /// Recurrent the commits in local repository on t.
-        /// </summary>
-        /// <param name="t">Model</param>
-        /// <param name="r">Local repository</param>
-        /// <returns>Model after recurrent</returns>
-        T Recurrent(T t, Repository<R> r, int offset = 0);
+        T Recurrent(T t, Repository<TR> r, int offset = 0);
 
-        T RecurrentFromId(T t, Repository<R> r, string id = null);
+        T RecurrentFromId(T t, Repository<TR> r, string id = null);
     }
 }

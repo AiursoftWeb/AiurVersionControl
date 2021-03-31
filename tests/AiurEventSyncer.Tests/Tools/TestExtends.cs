@@ -14,7 +14,7 @@ namespace AiurEventSyncer.Tests.Tools
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
-                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo '{repo.Name}' don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }
             }
         }

@@ -9,6 +9,7 @@ namespace AiurStore.Providers
     public class MemoryAiurStoreDb<T> : InOutDatabase<T>
     {
         private readonly LinkedList<T> _store = new();
+        public override event NotifyCollectionChangedEventHandler CollectionChanged;
 
         private LinkedListNode<T> SearchFromLast(Predicate<T> prefix)
         {
@@ -49,7 +50,7 @@ namespace AiurStore.Providers
         public override void Add(T newItem)
         {
             _store.AddLast(newItem);
-            itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
         }
 
         public override void InsertAfter(T afterWhich, T newItem)
@@ -57,14 +58,14 @@ namespace AiurStore.Providers
             if (afterWhich == null)
             {
                 _store.AddFirst(newItem);
-                itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, 0));
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, 0));
             }
             else
             {
                 var which = _store.FindLast(afterWhich);
                 if (which == null) throw new KeyNotFoundException($"Insertion point {nameof(afterWhich)} not found.");
                 _store.AddAfter(which, newItem);
-                itemsProcessed?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
     }

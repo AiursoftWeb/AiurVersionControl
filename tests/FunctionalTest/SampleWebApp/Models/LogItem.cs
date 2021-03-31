@@ -1,10 +1,19 @@
-﻿namespace SampleWebApp.Models
+﻿using System;
+
+namespace SampleWebApp.Models
 {
     public class LogItem
     {
+        private readonly Guid _hash;
+
         public int Id { get; set; }
 
         public string Message { get; set; }
+
+        public LogItem()
+        {
+            this._hash = Guid.NewGuid();
+        }
 
         public override string ToString()
         {
@@ -18,7 +27,7 @@
 
         public override int GetHashCode()
         {
-            return Message.GetHashCode();
+            return _hash.GetHashCode();
         }
     }
 }

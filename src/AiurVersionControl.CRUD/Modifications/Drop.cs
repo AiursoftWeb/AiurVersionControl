@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
-    public class Drop<T, D> : IModification<CollectionWorkSpace<T>>
+    public class Drop<T, TSearch> : IModification<CollectionWorkSpace<T>>
     {
         public string PropertyName { get; set; }
-        public D ExpectValue { get; set; }
+        public TSearch ExpectValue { get; set; }
 
         [Obsolete(error: true, message: "This message is only for Newtonsoft.Json")]
         public Drop() { }
 
-        public Drop(string propertyName, D expectValue)
+        public Drop(string propertyName, TSearch expectValue)
         {
             PropertyName = propertyName;
             ExpectValue = expectValue;

@@ -4,21 +4,21 @@ using System.Linq;
 
 namespace AiurVersionControl.CRUD.Modifications
 {
-    public class Patch<T, D1, D2> : IModification<CollectionWorkSpace<T>>
+    public class Patch<T, TSearch, TPatch> : IModification<CollectionWorkSpace<T>>
     {
         public string SearchPropertyName { get; set; }
-        public D1 ExpectValue { get; set; }
+        public TSearch ExpectValue { get; set; }
         public string PatchPropertyName { get; set; }
-        public D2 NewValue { get; set; }
+        public TPatch NewValue { get; set; }
 
         [Obsolete(error: true, message: "This message is only for Newtonsoft.Json")]
         public Patch() { }
 
         public Patch(
             string searchPropertyName,
-            D1 expectValue,
+            TSearch expectValue,
             string patchPropertyName,
-            D2 newValue)
+            TPatch newValue)
         {
             SearchPropertyName = searchPropertyName;
             ExpectValue = expectValue;

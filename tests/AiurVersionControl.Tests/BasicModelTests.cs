@@ -144,7 +144,7 @@ namespace AiurVersionControl.Tests
         {
             var repo = new ControlledRepository<NumberWorkSpace>();
             var happendTimes = 0;
-            repo.PropertyChanged += (s, e) =>
+            repo.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName == nameof(repo.WorkSpace))
                 {

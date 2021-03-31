@@ -1,0 +1,10 @@
+root = true
+[*]
+
+resharper_unknown_css_class_highlighting=none
+resharper_undeclared_global_variable_using_highlighting=none
+resharper_html_path_error_highlighting=none
+
+resharper_possible_null_reference_exception_highlighting=suggestion
+resharper_check_namespace_highlighting=suggestion
+resharper_inconsistent_naming_highlighting=suggestion

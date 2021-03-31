@@ -4,6 +4,13 @@ namespace SnakeGame.Models
 {
     public class Position : ICloneable
     {
+        private readonly Guid _hash;
+
+        public Position()
+        {
+            this._hash = Guid.NewGuid();
+        }
+
         public int X { get; set; }
         public int Y { get; set; }
 
@@ -19,7 +26,7 @@ namespace SnakeGame.Models
 
         public override int GetHashCode()
         {
-            return X.GetHashCode() + Y.GetHashCode();
+            return _hash.GetHashCode();
         }
         
         public override string ToString()
