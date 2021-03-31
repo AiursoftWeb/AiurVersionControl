@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace AiurEventSyncer.Models
 {
@@ -16,7 +17,6 @@ namespace AiurEventSyncer.Models
     /// <typeparam name="T">The inner object type of the commit.</typeparam>
     public class Repository<T> : IRepository<T>
     {
-        public string Name { get; init; } = string.Empty;
         public IOutOnlyDatabase<Commit<T>> Commits => _commits;
         public Commit<T> Head => Commits.LastOrDefault();
         public IAsyncObservable<List<Commit<T>>> AppendCommitsHappened => _subscribersManager;
@@ -38,17 +38,17 @@ namespace AiurEventSyncer.Models
 
         public void CommitObject(Commit<T> commitObject)
         {
-            _commits.Add(commitObject);
+            lock (this)
+            {
+                _commits.Add(commitObject); 
+            }
             OnAppendCommits(new List<Commit<T>> { commitObject });
         }
 
         protected virtual void OnAppendCommits(List<Commit<T>> newCommits)
         {
             var subscriberTasks = _subscribersManager.Boradcast(newCommits);
-            if (subscriberTasks.Any())
-            {
-                _notifyingQueue.QueueNew(() => Task.WhenAll(subscriberTasks));
-            }
+            _notifyingQueue.QueueNew(() => Task.WhenAll(subscriberTasks));
         }
 
         public void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)
@@ -105,13 +105,13 @@ namespace AiurEventSyncer.Models
             var localAfter = _commits.GetAllAfter(position).FirstOrDefault();
             if (localAfter is not null)
             {
-                if (localAfter.Id != subtract.Id)
+                if (localAfter.Id == subtract.Id)
                 {
-                    _commits.InsertAfter(position, subtract);
-                    return (InsertMode.MiddleInserted, subtract);
+                    return (InsertMode.Ignored, localAfter);
                 }
+                _commits.InsertAfter(position, subtract);
+                return (InsertMode.MiddleInserted, subtract);
 
-                return (InsertMode.Ignored, localAfter);
             }
 
             _commits.Add(subtract);

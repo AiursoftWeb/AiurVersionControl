@@ -15,7 +15,7 @@ namespace AiurEventSyncer.Tests
             var connection = new RetryableWebSocketConnection<Book>("wss://aaaa.bbbb.ccccccc/aaaaaa/dddddd/eeeee/fff.ares");
             var retryCounts = 0;
             var startTime = DateTime.UtcNow;
-            connection.PropertyChanged += (o, e) =>
+            connection.PropertyChanged += (_, _) =>
             {
                 Console.WriteLine($"{(DateTime.UtcNow - startTime).TotalSeconds} seconds passed. Retried: {connection.AttemptCount} times.");
                 retryCounts = connection.AttemptCount;

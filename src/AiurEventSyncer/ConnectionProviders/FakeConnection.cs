@@ -47,10 +47,8 @@ namespace AiurEventSyncer.ConnectionProviders
 
         public Task Disconnect()
         {
-            if (_subscription != null)
-            {
-                _subscription.Dispose();
-            }
+            OnReconnecting?.Invoke();
+            _subscription?.Dispose();
             return Task.CompletedTask;
         }
     }

@@ -25,17 +25,17 @@ namespace AiurVersionControl.CRUD
             ApplyChange(new Add<T>(newItem));
         }
 
-        public void Drop<D>(string searchProperty, D value)
+        public void Drop<TProperty>(string searchProperty, TProperty value)
         {
-            ApplyChange(new Drop<T, D>(searchProperty, value));
+            ApplyChange(new Drop<T, TProperty>(searchProperty, value));
         }
 
-        public void Patch<D1, D2>(string searchPropertyName,
-            D1 expectValue,
+        public void Patch<TPropertySearch, TPropertyPatch>(string searchPropertyName,
+            TPropertySearch expectValue,
             string patchPropertyName,
-            D2 newValue)
+            TPropertyPatch newValue)
         {
-            ApplyChange(new Patch<T, D1, D2>(searchPropertyName, expectValue, patchPropertyName, newValue));
+            ApplyChange(new Patch<T, TPropertySearch, TPropertyPatch>(searchPropertyName, expectValue, patchPropertyName, newValue));
         }
 
         public IEnumerator<T> GetEnumerator()

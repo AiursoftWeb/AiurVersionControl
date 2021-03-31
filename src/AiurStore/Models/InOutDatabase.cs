@@ -11,20 +11,7 @@ namespace AiurStore.Models
     /// <typeparam name="T"></typeparam>
     public abstract class InOutDatabase<T> : IOutOnlyDatabase<T>, INotifyCollectionChanged
     {
-        protected NotifyCollectionChangedEventHandler itemsProcessed;
-        public event NotifyCollectionChangedEventHandler CollectionChanged
-        {
-            add
-            {
-                itemsProcessed -= value;
-                itemsProcessed += value;
-            }
-            remove
-            {
-                itemsProcessed -= value;
-            }
-        }
-
+        public abstract event NotifyCollectionChangedEventHandler CollectionChanged;
         public abstract IEnumerable<T> GetAll();
         public abstract IEnumerable<T> GetAllAfter(T afterWhich);
         public abstract IEnumerable<T> GetAllAfter(Predicate<T> prefix);
