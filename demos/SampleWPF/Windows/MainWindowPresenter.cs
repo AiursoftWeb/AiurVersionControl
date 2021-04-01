@@ -1,7 +1,7 @@
 ﻿using AiurVersionControl.CRUD;
 using AiurVersionControl.SampleWPF.Components;
 using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using AiurVersionControl.SampleWPF.Libraries;
 
 namespace AiurVersionControl.SampleWPF.Windows
 {

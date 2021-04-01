@@ -3,7 +3,7 @@ using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using AiurVersionControl.SampleWPF.Libraries;
 using System.Threading.Tasks;
 using System.Windows.Input;
 

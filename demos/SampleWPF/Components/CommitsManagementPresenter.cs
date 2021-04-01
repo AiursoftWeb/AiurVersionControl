@@ -4,7 +4,7 @@ using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
 using AiurVersionControl.SampleWPF.Models;
 using AiurVersionControl.SampleWPF.Services;
-using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using AiurVersionControl.SampleWPF.Libraries;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;

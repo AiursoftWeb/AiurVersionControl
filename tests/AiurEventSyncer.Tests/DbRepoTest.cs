@@ -26,9 +26,9 @@ namespace AiurEventSyncer.Tests
                 await Task.Delay(10);
             }
 
-            Assert.IsTrue(localRepo.Commits.FirstOrDefault().Item.Name == "Love");
-            Assert.IsTrue(dbRepo.Commits.FirstOrDefault().Item.Name == "Love");
-            Assert.IsTrue(localRepo2.Commits.FirstOrDefault().Item.Name == "Love");
+            Assert.IsTrue(localRepo.Commits.First().Item.Name == "Love");
+            Assert.IsTrue(dbRepo.Commits.First().Item.Name == "Love");
+            Assert.IsTrue(localRepo2.Commits.First().Item.Name == "Love");
         }
     }
 }

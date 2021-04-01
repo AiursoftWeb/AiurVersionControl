@@ -42,7 +42,7 @@ namespace AiurEventSyncer.Tests
 
             Assert.IsNotNull(origin.PullPointer);
             Assert.IsNotNull(origin.PushPointer);
-            Assert.AreEqual(localRepo.Head.Item, 3);
+            Assert.AreEqual(localRepo.Head?.Item, 3);
             Assert.AreEqual(_demoRepo.Head.Item, 3);
         }
 
@@ -63,13 +63,13 @@ namespace AiurEventSyncer.Tests
             Assert.AreEqual(origin.PullPointer, null);
             Assert.IsNotNull(origin.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(remoteRepo.Head.Item, 3);
+            Assert.AreEqual(remoteRepo.Head?.Item, 3);
 
             await origin.PullAsync();
             Assert.IsNotNull(origin.PullPointer);
             Assert.IsNotNull(origin.PushPointer);
             Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(remoteRepo.Head.Item, 3);
+            Assert.AreEqual(remoteRepo.Head?.Item, 3);
         }
 
         [TestMethod]

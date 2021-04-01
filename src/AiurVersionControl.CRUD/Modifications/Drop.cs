@@ -21,7 +21,7 @@ namespace AiurVersionControl.CRUD.Modifications
         public void Apply(CollectionWorkSpace<T> workspace)
         {
             var property = typeof(T).GetProperty(PropertyName);
-            var toRemove = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(ExpectValue) ?? false);
+            var toRemove = workspace.List.FirstOrDefault(t => property?.GetValue(t, null)?.Equals(ExpectValue) ?? false);
             if (toRemove is not null)
             {
                 workspace.List.Remove(toRemove);
