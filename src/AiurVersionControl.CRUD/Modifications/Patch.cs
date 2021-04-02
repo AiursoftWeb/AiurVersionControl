@@ -30,10 +30,10 @@ namespace AiurVersionControl.CRUD.Modifications
         {
             var property = typeof(T).GetProperty(SearchPropertyName);
             var patchProperty = typeof(T).GetProperty(PatchPropertyName);
-            var toPatch = workspace.List.FirstOrDefault(t => property.GetValue(t, null)?.Equals(ExpectValue) ?? false);
+            var toPatch = workspace.List.FirstOrDefault(t => property?.GetValue(t, null)?.Equals(ExpectValue) ?? false);
             if (toPatch is not null)
             {
-                patchProperty.SetValue(toPatch, NewValue);
+                patchProperty?.SetValue(toPatch, NewValue);
             }
         }
 

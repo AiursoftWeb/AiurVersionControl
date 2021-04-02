@@ -1,14 +1,14 @@
-﻿using AiurEventSyncer.Models;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using AiurEventSyncer.Models;
 using AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleWebApp.Models;
 using SampleWebApp.Services;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace SampleWebApp.Tests.IntegrationTests
+namespace SampleWebApp.Test.IntegrationTests
 {
     [TestClass]
     public class BasicTests

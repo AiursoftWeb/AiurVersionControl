@@ -1,7 +1,7 @@
 ﻿using AiurVersionControl.CRUD;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.ViewModels.MVVM;
+using AiurVersionControl.SampleWPF.Libraries;
 using System;
 using System.Collections.ObjectModel;
 using System.Net.WebSockets;

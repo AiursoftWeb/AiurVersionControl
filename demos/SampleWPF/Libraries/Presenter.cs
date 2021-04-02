@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
+namespace AiurVersionControl.SampleWPF.Libraries
 {
     internal abstract class Presenter : INotifyPropertyChanged
     {

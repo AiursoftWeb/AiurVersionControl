@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace AiurVersionControl.SampleWPF.ViewModels.MVVM
+namespace AiurVersionControl.SampleWPF.Libraries
 {
     public class AsyncRelayCommand<T> : ICommand
     {

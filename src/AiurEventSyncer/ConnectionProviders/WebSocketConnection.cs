@@ -41,7 +41,7 @@ namespace AiurEventSyncer.ConnectionProviders
         {
             _ws = new ClientWebSocket();
             await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPositionFactory()), CancellationToken.None);
-            await onConnected?.Invoke();
+            await (onConnected?.Invoke() ?? Task.CompletedTask);
             var monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
             {
                 if (_ws.State != WebSocketState.Open)

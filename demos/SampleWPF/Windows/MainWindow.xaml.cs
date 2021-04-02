@@ -13,7 +13,7 @@ namespace AiurVersionControl.SampleWPF.Windows
 
         void OnClosing(object sender, CancelEventArgs e)
         {
-            if ((DataContext as MainWindowPresenter).CommitsPresenter.ServerHosting)
+            if ((DataContext as MainWindowPresenter)?.CommitsPresenter.ServerHosting ?? false)
             {
                 MessageBox.Show(
                     "There is still a server hosting!",
