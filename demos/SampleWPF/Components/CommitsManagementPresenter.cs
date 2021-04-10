@@ -54,7 +54,7 @@ namespace AiurVersionControl.SampleWPF.Components
             }
         }
 
-        public async Task HostServer(object _)
+        private async Task HostServer(object _)
         {
             if (_host == null)
             {
@@ -69,12 +69,12 @@ namespace AiurVersionControl.SampleWPF.Components
             }
         }
 
-        public async Task StopServer()
+        private async Task StopServer()
         {
             if (_host != null)
             {
-                await _host?.StopAsync();
-                _host?.Dispose();
+                await _host.StopAsync();
+                _host.Dispose();
                 _host = null;
             }
             ServerButtonText = "Host new server";
