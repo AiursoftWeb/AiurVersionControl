@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace AiurVersionControl.Text.Tests
 {
@@ -10,11 +9,11 @@ namespace AiurVersionControl.Text.Tests
         public void TextDiff()
         {
             var repo = new TextRepository();
-            repo.Update("string");
-            Assert.AreEqual("string", repo.WorkSpace.Content);
+            repo.Update(new[] { "s", "t", "r", "i", "n", "g" });
+            Assert.AreEqual("s t r i n g", string.Join(' ', repo.WorkSpace.Content));
 
-            repo.Update("strength");
-            Assert.AreEqual("strength", repo.WorkSpace.Content);
+            repo.Update(new[] { "s", "t", "r", "e", "n", "g", "t", "h2" });
+            Assert.AreEqual("s t r e n g t h2", string.Join(' ', repo.WorkSpace.Content));
         }
     }
 }

@@ -1,16 +1,12 @@
-﻿using AiurVersionControl.Models;
+﻿using System.Linq;
+using AiurVersionControl.Models;
 using NetDiff;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AiurVersionControl.Text.Modifications
 {
     public class TextDiff : IModification<TextWorkSpace>
     {
-        public DiffResult<char>[] Diff { get; internal set; }
+        public DiffResult<string>[] Diff { get; internal set; }
 
         public void Apply(TextWorkSpace workspace)
         {
@@ -23,11 +19,15 @@ namespace AiurVersionControl.Text.Modifications
                         i++;
                         break;
                     case DiffStatus.Inserted:
-                        workspace.Content = workspace.Content.Insert(i, diffItem.Obj2.ToString());
+                        var tempList = workspace.Content.ToList();
+                        tempList.Insert(i, diffItem.Obj2);
+                        workspace.Content = tempList.ToArray();
                         i++;
                         break;
                     case DiffStatus.Deleted:
-                        workspace.Content = workspace.Content.Remove(i, 1);
+                        var tempList2 = workspace.Content.ToList();
+                        tempList2.RemoveAt(i);
+                        workspace.Content = tempList2.ToArray();
                         break;
                 }
             }

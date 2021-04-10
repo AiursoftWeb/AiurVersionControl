@@ -7,14 +7,14 @@ namespace AiurVersionControl.Text
     /// </summary>
     public class TextWorkSpace : WorkSpace
     {
-        public string Content { get; internal set; } = string.Empty;
+        public string[] Content { get; internal set; } = new string[0];
 
         public TextWorkSpace()
         {
 
         }
 
-        public TextWorkSpace(string content) : this()
+        public TextWorkSpace(string[] content) : this()
         {
             Content = content;
         }
