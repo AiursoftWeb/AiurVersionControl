@@ -1,4 +1,5 @@
 ﻿using AiurVersionControl.Models;
+using System.Collections.Generic;
 
 namespace AiurVersionControl.Text
 {
@@ -7,14 +8,14 @@ namespace AiurVersionControl.Text
     /// </summary>
     public class TextWorkSpace : WorkSpace
     {
-        public string[] Content { get; internal set; } = new string[0];
+        public List<string> Content { get; internal set; } = new();
 
         public TextWorkSpace()
         {
 
         }
 
-        public TextWorkSpace(string[] content) : this()
+        public TextWorkSpace(List<string> content) : this()
         {
             Content = content;
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace AiurVersionControl.Text.Tests
 {
@@ -14,6 +15,10 @@ namespace AiurVersionControl.Text.Tests
 
             repo.Update(new[] { "s", "t", "r", "e", "n", "g", "t", "h2" });
             Assert.AreEqual("s t r e n g t h2", string.Join(' ', repo.WorkSpace.Content));
+
+            var last = repo.Commits.ToList()[1];
+            var lastJson = Newtonsoft.Json.JsonConvert.SerializeObject(last);
+            Assert.IsTrue(lastJson.Length < 300);
         }
     }
 }

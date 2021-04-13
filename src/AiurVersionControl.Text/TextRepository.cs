@@ -13,10 +13,7 @@ namespace AiurVersionControl.Text
         public void Update(string[] newContent)
         {
             var diff = DiffUtil.Diff(WorkSpace.Content, newContent).ToArray();
-            ApplyChange(new TextDiff
-            {
-                Diff = diff
-            });
+            ApplyChange(new LineDiffsCommit(diff));
         }
     }
 }
