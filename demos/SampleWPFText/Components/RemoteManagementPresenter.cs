@@ -70,6 +70,7 @@ namespace AiurVersionControl.SampleWPF.Components
                     "Attach to a remote server",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
+                throw;
             }
             finally
             {

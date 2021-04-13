@@ -37,6 +37,7 @@ namespace AiurVersionControl.SampleWPF.Libraries
             catch (Exception e)
             {
                 MessageBox.Show(e.Message, "Critical action failure", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
             }
         }
     }
