@@ -6,7 +6,7 @@ namespace AiurVersionControl.Text.Modifications
 {
     public class TextDiff : IModification<TextWorkSpace>
     {
-        public DiffResult<string>[] Diff { get; internal set; }
+        public DiffResult<string>[] Diff { get; set; }
 
         public void Apply(TextWorkSpace workspace)
         {

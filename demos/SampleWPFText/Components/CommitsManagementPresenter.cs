@@ -1,10 +1,9 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurStore.Models;
-using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
-using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.Services;
 using AiurVersionControl.SampleWPF.Libraries;
+using AiurVersionControl.SampleWPF.Services;
+using AiurVersionControl.Text;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace AiurVersionControl.SampleWPF.Components
     internal sealed class CommitsManagementPresenter : Presenter
     {
         private readonly AsyncRelayCommand<object> _hostServer;
-        private readonly CollectionRepository<Book> _repository;
+        private readonly TextRepository _repository;
         private readonly int _port = Network.GetAvailablePort();
         private string _buttonText = "Host new server";
         private bool _serverGridVisible;
@@ -26,9 +25,9 @@ namespace AiurVersionControl.SampleWPF.Components
 
         public ICommand HostServerCommand => _hostServer;
 
-        public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<Book>>>> History => _repository.Commits;
+        public IOutOnlyDatabase<Commit<IModification<TextWorkSpace>>> History => _repository.Commits;
 
-        public CommitsManagementPresenter(CollectionRepository<Book> repo)
+        public CommitsManagementPresenter(TextRepository repo)
         {
             _repository = repo;
             _hostServer = new AsyncRelayCommand<object>(HostServer, _ => true);
