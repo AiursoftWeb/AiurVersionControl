@@ -1,5 +1,6 @@
 ﻿using AiurVersionControl.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AiurVersionControl.Text
 {
@@ -17,7 +18,7 @@ namespace AiurVersionControl.Text
 
         public TextWorkSpace(List<string> content) : this()
         {
-            Content = content;
+            Content = content.ToList();
         }
 
         public override object Clone()
