@@ -1,8 +1,10 @@
 ﻿using AiurStore.Tools;
 using AiurVersionControl.CRUD.Modifications;
 using AiurVersionControl.CRUD.Tests.Models;
+using AiurVersionControl.Remotes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AiurVersionControl.CRUD.Tests
 {
@@ -63,6 +65,34 @@ namespace AiurVersionControl.CRUD.Tests
             repo.ApplyChange(convertedBack);
             var only = repo.Single();
             Assert.AreEqual("Patched", only.Title);
+        }
+
+        [TestMethod]
+        public async Task TestMerge()
+        {
+            var repo = new CollectionRepository<Book>();
+            repo.Add(new Book { Id = 0, Title = "Book first." });
+            repo.Add(new Book { Id = 0, Title = "Book first." });
+            repo.Add(new Book { Id = 0, Title = "Book first." });
+
+            var repoB = new CollectionRepository<Book>();
+            repoB.Add(new Book { Id = 0, Title = "Book second." });
+            repoB.Add(new Book { Id = 0, Title = "Book second." });
+            repoB.Add(new Book { Id = 0, Title = "Book second." });
+
+            var remote = new ObjectRemoteWithWorkSpace<CollectionWorkSpace<Book>>(repo, true, true);
+            await remote.AttachAsync(repoB);
+
+            Assert.AreEqual(6, repo.WorkSpace.Count());
+            Assert.AreEqual(6, repoB.WorkSpace.Count());
+            Assert.AreEqual("Book first.", string.Join(' ', repo.WorkSpace.List[0].Title));
+            Assert.AreEqual("Book second.", string.Join(' ', repoB.WorkSpace.List[3].Title));
+
+            await Task.Delay(50);
+            Assert.AreEqual(6, repo.WorkSpace.Count());
+            Assert.AreEqual(6, repoB.WorkSpace.Count());
+            Assert.AreEqual("Book first.", string.Join(' ', repo.WorkSpace.List[0].Title));
+            Assert.AreEqual("Book second.", string.Join(' ', repoB.WorkSpace.List[3].Title));
         }
     }
 }
