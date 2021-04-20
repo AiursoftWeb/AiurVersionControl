@@ -11,7 +11,8 @@ namespace AiurVersionControl.CRUD
     /// <typeparam name="T">The type of the item in the collection.</typeparam>
     public class CollectionWorkSpace<T> : WorkSpace, IEnumerable<T>
     {
-        public List<T> List { get; private set; } = new ();
+        public List<T> List { get; init; } = new ();
+        public T this[int index] => List[index];
 
         public CollectionWorkSpace()
         {

@@ -12,13 +12,13 @@ namespace AiurVersionControl.SampleWPF.Components
             Repository = repo;
             Repository.PropertyChanged += (_, _) =>
             {
-                OnPropertyChanged(nameof(NewTitle));
+                OnPropertyChanged(nameof(ControledTextArea));
             };
         }
 
-        public string NewTitle
+        public string ControledTextArea
         {
-            get => string.Join('\n', Repository.WorkSpace.Content);
+            get => string.Join('\n', Repository.WorkSpace.List);
             set => Repository.UpdateText(value.Split('\n'));
         }
     }

@@ -1,11 +1,12 @@
-﻿using AiurVersionControl.Models;
+﻿using AiurVersionControl.CRUD;
+using AiurVersionControl.Models;
 using NetDiff;
 using System;
 using System.Collections.Generic;
 
 namespace AiurVersionControl.Text.Modifications
 {
-    public class LineDiffsCommit : IModification<TextWorkSpace>
+    public class LineDiffsCommit : IModification<CollectionWorkSpace<string>>
     {
         public LineDiff[] Diff { get; set; }
 
@@ -44,17 +45,17 @@ namespace AiurVersionControl.Text.Modifications
             Diff = lineDiffs.ToArray();
         }
 
-        public void Apply(TextWorkSpace workspace)
+        public void Apply(CollectionWorkSpace<string> workspace)
         {
             foreach (var diffItem in Diff)
             {
                 switch (diffItem.Status)
                 {
                     case DiffStatus.Inserted:
-                        workspace.Content.Insert(diffItem.LineNumber, diffItem.NewLine);
+                        workspace.List.Insert(diffItem.LineNumber, diffItem.NewLine);
                         break;
                     case DiffStatus.Deleted:
-                        workspace.Content.RemoveAt(diffItem.LineNumber);
+                        workspace.List.RemoveAt(diffItem.LineNumber);
                         break;
                 }
             }

@@ -1,4 +1,5 @@
-﻿using AiurVersionControl.Remotes;
+﻿using AiurVersionControl.CRUD;
+using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Libraries;
 using AiurVersionControl.Text;
 using System;
@@ -39,7 +40,7 @@ namespace AiurVersionControl.SampleWPF.Components
             RemoteControl control = null;
             try
             {
-                var remote = new WebSocketRemoteWithWorkSpace<TextWorkSpace>(ServerAddress, autoRetry: true);
+                var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<string>>(ServerAddress, autoRetry: true);
                 control = new RemoteControl
                 {
                     DataContext = new RemoteControlPresenter(remote)

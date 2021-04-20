@@ -85,14 +85,14 @@ namespace AiurVersionControl.CRUD.Tests
 
             Assert.AreEqual(6, repo.WorkSpace.Count());
             Assert.AreEqual(6, repoB.WorkSpace.Count());
-            Assert.AreEqual("Book first.", string.Join(' ', repo.WorkSpace.List[0].Title));
-            Assert.AreEqual("Book second.", string.Join(' ', repoB.WorkSpace.List[3].Title));
+            Assert.AreEqual("Book first.", string.Join(' ', repo.WorkSpace[0].Title));
+            Assert.AreEqual("Book second.", string.Join(' ', repoB.WorkSpace[3].Title));
 
             await Task.Delay(50);
             Assert.AreEqual(6, repo.WorkSpace.Count());
             Assert.AreEqual(6, repoB.WorkSpace.Count());
-            Assert.AreEqual("Book first.", string.Join(' ', repo.WorkSpace.List[0].Title));
-            Assert.AreEqual("Book second.", string.Join(' ', repoB.WorkSpace.List[3].Title));
+            Assert.AreEqual("Book first.", string.Join(' ', repo.WorkSpace[0].Title));
+            Assert.AreEqual("Book second.", string.Join(' ', repoB.WorkSpace[3].Title));
         }
     }
 }

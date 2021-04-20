@@ -1,4 +1,5 @@
-﻿using AiurVersionControl.Remotes;
+﻿using AiurVersionControl.CRUD;
+using AiurVersionControl.Remotes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
@@ -15,10 +16,10 @@ namespace AiurVersionControl.Text.Tests
         {
             var repo = new TextRepository();
             repo.UpdateText(new[] { "s", "t", "r", "i", "n", "g" });
-            Assert.AreEqual("s t r i n g", string.Join(' ', repo.WorkSpace.Content));
+            Assert.AreEqual("s t r i n g", string.Join(' ', repo.WorkSpace.List));
 
             repo.UpdateText(new[] { "s", "t", "r", "e", "n", "g", "t", "h2" });
-            Assert.AreEqual("s t r e n g t h2", string.Join(' ', repo.WorkSpace.Content));
+            Assert.AreEqual("s t r e n g t h2", string.Join(' ', repo.WorkSpace.List));
 
             var last = repo.Commits.ToList()[1];
             var lastJson = JsonConvert.SerializeObject(last);
@@ -42,21 +43,21 @@ namespace AiurVersionControl.Text.Tests
         {
             var repo = new TextRepository();
             repo.UpdateText(new[] { "a", "a", "a" });
-            Assert.AreEqual("a a a", string.Join(' ', repo.WorkSpace.Content));
+            Assert.AreEqual("a a a", string.Join(' ', repo.WorkSpace.List));
 
             var repoB = new TextRepository();
             repoB.UpdateText(new[] { "b", "b", "b" });
-            Assert.AreEqual("b b b", string.Join(' ', repoB.WorkSpace.Content));
+            Assert.AreEqual("b b b", string.Join(' ', repoB.WorkSpace.List));
 
-            var remote = new ObjectRemoteWithWorkSpace<TextWorkSpace>(repo, true, true);
+            var remote = new ObjectRemoteWithWorkSpace<CollectionWorkSpace<string>>(repo, true, true);
             await remote.AttachAsync(repoB);
 
-            Assert.AreEqual("b b b a a a", string.Join(' ', repo.WorkSpace.Content));
-            Assert.AreEqual("b b b a a a", string.Join(' ', repoB.WorkSpace.Content));
+            Assert.AreEqual("b b b a a a", string.Join(' ', repo.WorkSpace.List));
+            Assert.AreEqual("b b b a a a", string.Join(' ', repoB.WorkSpace.List));
 
             await Task.Delay(50);
-            Assert.AreEqual("b b b a a a", string.Join(' ', repo.WorkSpace.Content));
-            Assert.AreEqual("b b b a a a", string.Join(' ', repoB.WorkSpace.Content));
+            Assert.AreEqual("b b b a a a", string.Join(' ', repo.WorkSpace.List));
+            Assert.AreEqual("b b b a a a", string.Join(' ', repoB.WorkSpace.List));
         }
     }
 }

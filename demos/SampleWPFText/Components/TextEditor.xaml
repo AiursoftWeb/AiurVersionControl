@@ -8,7 +8,7 @@
              d:DataContext="{d:DesignInstance cp:TextEditorPresenter}" x:ClassModifier="internal">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="Edit the text" Margin="10,5,10,0"  />
-        <TextBox DockPanel.Dock="Top" Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,5" 
+        <TextBox DockPanel.Dock="Top" Text="{Binding ControledTextArea, UpdateSourceTrigger=PropertyChanged}" Margin="10,5,10,5" 
                  TextWrapping="Wrap" 
                  AcceptsReturn="True"
                  VerticalScrollBarVisibility="Visible" />

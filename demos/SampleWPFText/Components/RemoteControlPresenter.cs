@@ -1,8 +1,8 @@
 ﻿using AiurEventSyncer.ConnectionProviders;
+using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -12,11 +12,11 @@ namespace AiurVersionControl.SampleWPF.Components
     {
         private readonly AsyncRelayCommand<object> _detach;
         public ICommand DetachIt => _detach;
-        public WebSocketRemoteWithWorkSpace<TextWorkSpace> Remote { get; set; }
+        public WebSocketRemoteWithWorkSpace<CollectionWorkSpace<string>> Remote { get; set; }
 
-        public RetryableWebSocketConnection<IModification<TextWorkSpace>> Connection => Remote.ConnectionProvider as RetryableWebSocketConnection<IModification<TextWorkSpace>>;
+        public RetryableWebSocketConnection<IModification<CollectionWorkSpace<string>>> Connection => Remote.ConnectionProvider as RetryableWebSocketConnection<IModification<CollectionWorkSpace<string>>>;
 
-        public RemoteControlPresenter(WebSocketRemoteWithWorkSpace<TextWorkSpace> remote)
+        public RemoteControlPresenter(WebSocketRemoteWithWorkSpace<CollectionWorkSpace<string>> remote)
         {
             _detach = new AsyncRelayCommand<object>(Detach, _ => true);
             Remote = remote;

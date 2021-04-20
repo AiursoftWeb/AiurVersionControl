@@ -1,5 +1,6 @@
 ﻿using AiurEventSyncer.Abstract;
 using AiurStore.Models;
+using AiurVersionControl.CRUD;
 using AiurVersionControl.Models;
 using AiurVersionControl.SampleWPF.Libraries;
 using AiurVersionControl.SampleWPF.Services;
@@ -25,7 +26,7 @@ namespace AiurVersionControl.SampleWPF.Components
 
         public ICommand HostServerCommand => _hostServer;
 
-        public IOutOnlyDatabase<Commit<IModification<TextWorkSpace>>> History => _repository.Commits;
+        public IOutOnlyDatabase<Commit<IModification<CollectionWorkSpace<string>>>> History => _repository.Commits;
 
         public CommitsManagementPresenter(TextRepository repo)
         {

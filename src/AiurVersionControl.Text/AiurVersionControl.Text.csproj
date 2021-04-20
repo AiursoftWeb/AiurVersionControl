@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AiurVersionControl\AiurVersionControl.csproj" />
+    <ProjectReference Include="..\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj" />
   </ItemGroup>
 
 </Project>
