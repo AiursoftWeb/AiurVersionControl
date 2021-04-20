@@ -10,7 +10,7 @@ namespace AiurVersionControl.Text
     /// </summary>
     public class TextRepository : ControlledRepository<TextWorkSpace>
     {
-        public void Update(string[] newContent)
+        public void UpdateText(string[] newContent)
         {
             var diff = DiffUtil.Diff(WorkSpace.Content, newContent).ToArray();
             ApplyChange(new LineDiffsCommit(diff));

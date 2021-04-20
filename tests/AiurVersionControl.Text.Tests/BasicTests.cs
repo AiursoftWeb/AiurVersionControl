@@ -1,6 +1,7 @@
 ﻿using AiurVersionControl.Remotes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,15 +14,17 @@ namespace AiurVersionControl.Text.Tests
         public void TextDiff()
         {
             var repo = new TextRepository();
-            repo.Update(new[] { "s", "t", "r", "i", "n", "g" });
+            repo.UpdateText(new[] { "s", "t", "r", "i", "n", "g" });
             Assert.AreEqual("s t r i n g", string.Join(' ', repo.WorkSpace.Content));
 
-            repo.Update(new[] { "s", "t", "r", "e", "n", "g", "t", "h2" });
+            repo.UpdateText(new[] { "s", "t", "r", "e", "n", "g", "t", "h2" });
             Assert.AreEqual("s t r e n g t h2", string.Join(' ', repo.WorkSpace.Content));
 
             var last = repo.Commits.ToList()[1];
             var lastJson = JsonConvert.SerializeObject(last);
             Assert.IsTrue(lastJson.Length < 300);
+            Console.WriteLine(lastJson.Length);
+            Console.WriteLine(lastJson);
         }
 
         /// <summary>
@@ -38,11 +41,11 @@ namespace AiurVersionControl.Text.Tests
         public async Task TestMerge(int _)
         {
             var repo = new TextRepository();
-            repo.Update(new[] { "a", "a", "a" });
+            repo.UpdateText(new[] { "a", "a", "a" });
             Assert.AreEqual("a a a", string.Join(' ', repo.WorkSpace.Content));
 
             var repoB = new TextRepository();
-            repoB.Update(new[] { "b", "b", "b" });
+            repoB.UpdateText(new[] { "b", "b", "b" });
             Assert.AreEqual("b b b", string.Join(' ', repoB.WorkSpace.Content));
 
             var remote = new ObjectRemoteWithWorkSpace<TextWorkSpace>(repo, true, true);

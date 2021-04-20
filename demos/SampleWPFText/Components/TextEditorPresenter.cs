@@ -19,7 +19,7 @@ namespace AiurVersionControl.SampleWPF.Components
         public string NewTitle
         {
             get => string.Join('\n', Repository.WorkSpace.Content);
-            set => Repository.Update(value.Split('\n'));
+            set => Repository.UpdateText(value.Split('\n'));
         }
     }
 }
