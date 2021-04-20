@@ -1,7 +1,6 @@
-﻿using AiurEventSyncer.Remotes;
-using AiurVersionControl.Models;
-using AiurVersionControl.Remotes;
+﻿using AiurVersionControl.Remotes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +20,7 @@ namespace AiurVersionControl.Text.Tests
             Assert.AreEqual("s t r e n g t h2", string.Join(' ', repo.WorkSpace.Content));
 
             var last = repo.Commits.ToList()[1];
-            var lastJson = Newtonsoft.Json.JsonConvert.SerializeObject(last);
+            var lastJson = JsonConvert.SerializeObject(last);
             Assert.IsTrue(lastJson.Length < 300);
         }
 
