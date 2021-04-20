@@ -13,7 +13,7 @@ namespace AiurVersionControl.Models
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public T WorkSpace { get; set; }
+        public T WorkSpace { get; internal set; }
 
         /// <summary>
         /// Call this method to manually broadcast a new event to all workspace changed subscribers.

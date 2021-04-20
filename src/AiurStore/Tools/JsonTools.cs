@@ -7,7 +7,7 @@ namespace AiurStore.Tools
     {
         private static JsonSerializerSettings _settings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.Auto,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };

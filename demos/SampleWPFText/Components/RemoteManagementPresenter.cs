@@ -1,7 +1,7 @@
 ﻿using AiurVersionControl.CRUD;
 using AiurVersionControl.Remotes;
 using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
+using AiurVersionControl.Text;
 using System;
 using System.Collections.ObjectModel;
 using System.Net.WebSockets;
@@ -15,7 +15,7 @@ namespace AiurVersionControl.SampleWPF.Components
     {
         private string _serverAddress = string.Empty;
         private readonly AsyncRelayCommand<object> _attach;
-        private readonly CollectionRepository<Book> _repo;
+        private readonly TextRepository _repo;
         public ObservableCollection<RemoteControl> Remotes { get; set; } = new();
         public ICommand Attach => _attach;
 
@@ -29,7 +29,7 @@ namespace AiurVersionControl.SampleWPF.Components
             }
         }
 
-        public RemoteManagementPresenter(CollectionRepository<Book> repo)
+        public RemoteManagementPresenter(TextRepository repo)
         {
             _attach = new AsyncRelayCommand<object>(AttachToAServer, _ => !string.IsNullOrWhiteSpace(ServerAddress));
             _repo = repo;
@@ -40,7 +40,7 @@ namespace AiurVersionControl.SampleWPF.Components
             RemoteControl control = null;
             try
             {
-                var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<Book>>(ServerAddress, autoRetry: true);
+                var remote = new WebSocketRemoteWithWorkSpace<CollectionWorkSpace<string>>(ServerAddress, autoRetry: true);
                 control = new RemoteControl
                 {
                     DataContext = new RemoteControlPresenter(remote)
@@ -71,6 +71,7 @@ namespace AiurVersionControl.SampleWPF.Components
                     "Attach to a remote server",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
+                throw;
             }
             finally
             {
