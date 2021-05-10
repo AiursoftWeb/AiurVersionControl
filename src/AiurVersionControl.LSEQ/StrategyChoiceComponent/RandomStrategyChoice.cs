@@ -50,7 +50,28 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
             if (index >= _strategies.Count)
             {
                 int sizeBefore = _strategies.Count;
-                _strategies.Set(_strategies.Count);
+                _strategies.Set(_strategies.Count, true);
+                for (int j = sizeBefore; j< _strategies.Count; ++j)
+                {
+                    if (_r.NextDouble() > 0.5) // Random boolean
+                    {
+                        _strategies.Set(j, true);
+                    }
+                    else
+                    {
+                        _strategies.Set(j, false);
+                    }
+                }
+            }
+
+            // #3 chose the strategy
+            if (_strategies.Get(index))
+            {
+                return _strategy1.GenerateIdentifiers(p, q, n, rep, interval, index);
+            }
+            else
+            {
+                return _strategy2.GenerateIdentifiers(p, q, n, rep, interval, index);
             }
         }
 
