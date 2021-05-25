@@ -4,9 +4,9 @@ namespace AiurVersionControl.LSEQ.LogootEngine
 {
     public class Delta
     {
-        private Operation Type { get; set; }
-        private Positions Id { get; set; }
-        private string Content { get; set; }
+        public Operation Type { get; set; }
+        public Positions Id { get; set; }
+        public string Content { get; set; }
 
         public Delta(Operation type, Positions id, string content) {
             Type = type;
