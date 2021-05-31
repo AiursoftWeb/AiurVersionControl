@@ -2,7 +2,7 @@
 
 namespace AiurVersionControl.LSEQ.LogootEngine
 {
-    public class Patch : List<Delta>
+    public class MyPatch : List<MyDelta>
     {
         /**
          * 

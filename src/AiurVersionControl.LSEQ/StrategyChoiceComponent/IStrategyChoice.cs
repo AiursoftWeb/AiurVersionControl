@@ -15,7 +15,7 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
         /// <param name="n">number of line inserted</param>
         /// <param name="rep">replica information to store</param>
         /// <returns></returns>
-        public IEnumerable<Positions> GenerateIdentifiers(Positions p,
+        public IEnumerator<Positions> GenerateIdentifiers(Positions p,
             Positions q, int n, Replica rep);
         
         /// <summary>

@@ -32,7 +32,7 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
             _strategies = new BitArray(0);
         }
         
-        public IEnumerable<Positions> GenerateIdentifiers(Positions p, Positions q, int n, Replica rep)
+        public IEnumerator<Positions> GenerateIdentifiers(Positions p, Positions q, int n, Replica rep)
         {
             // #1 count interval between p and q, until itz enough
             BigInteger interval = BigInteger.Zero;

@@ -4,6 +4,7 @@ using System.Numerics;
 using AiurVersionControl.LSEQ.BaseComponents;
 using AiurVersionControl.LSEQ.Data;
 using AiurVersionControl.LSEQ.StrategyChoiceComponent;
+using NetDiff;
 
 namespace AiurVersionControl.LSEQ.LogootEngine
 {
@@ -51,11 +52,11 @@ namespace AiurVersionControl.LSEQ.LogootEngine
             Doc = new List<string>();
         }
 
-        public void Deliver(Patch patch)
+        public void Deliver(MyPatch patch)
         {
             bool one_insert = false;
 
-            foreach (Delta delta in patch)
+            foreach (MyDelta delta in patch)
             {
                 int position;
 
@@ -95,25 +96,56 @@ namespace AiurVersionControl.LSEQ.LogootEngine
             }
         }
 
-        public Patch GeneratePatch(DiffResult<string>[] deltas)
+        public MyPatch GeneratePatch(DiffResult<Chunk<string>>[] deltas)
         {
-            Patch patch = new();
+            MyPatch patch = new();
 
-            for (int j = 0; j < deltas.Count; ++j)
+            for (int j = 0; j < deltas.Length; ++j)
             {
                 // foreach delta
-
-                IEnumerable<Positions> ids;
-                switch (deltas[j].Type)
+                IEnumerator<Positions> ids;
+                switch (deltas[j].Status)
                 {
-                    case Operation.Insert:
-                        // Need to convert DiffResult to deltas tomorrow!
-
+                    case DiffStatus.Inserted:
+                        ids = insert(deltas[j]);
+                        ids.MoveNext();
+                        for (int k = 0; k < deltas[j].Obj2.Size; ++k)
+                        {
+                            // foreach line inserted
+                            MyDelta md = new MyDelta(Operation.Insert, ids.Current,
+                                    deltas[j].Obj2.Lines[k]
+                                            .ToString());
+                            patch.Add(md);
+                        }
                         break;
-                    //case Operation.Change:
-                        //break;
-                    case Operation.Delete:
-                        // TODO
+                    case DiffStatus.Modified:
+                        // foreach line changed (<=> delete & insert )
+                        for (int k = 0; k < deltas[j].Obj1.Size; ++k)
+                        { // deleted lines
+                            MyDelta md = new MyDelta(Operation.Delete,
+                                    IdTable[deltas[j].Obj1.Position
+                                            + k + 1], "");
+                            patch.Add(md);
+                        }
+
+                        ids = insert(deltas[j]);
+                        ids.MoveNext();
+                        for (int k = 0; k < deltas[j].Obj2.Size; ++k)
+                        { // inserted line
+                            MyDelta md = new MyDelta(Operation.Insert, ids.Current,
+                                    deltas[j].Obj2.Lines[k]
+                                            .ToString());
+                            patch.Add(md);
+                        }
+                        break;
+                    case DiffStatus.Deleted:
+                        for (int k = 0; k < deltas[j].Obj1.Size; ++k)
+                        {
+                            MyDelta md = new MyDelta(Operation.Delete,
+                                    IdTable[deltas[j].Obj1.Position
+                                            + k + 1], "");
+                            patch.Add(md);
+                        }
                         break;
                     default: // NOTHING
                         break;
@@ -123,9 +155,14 @@ namespace AiurVersionControl.LSEQ.LogootEngine
             return patch;
         }
 
-        private IEnumerable<Positions> insert(Delta delta)
+        private IEnumerator<Positions> insert(DiffResult<Chunk<string>> delta)
         {
-            throw new NotImplementedException();
+            Positions previous = IdTable[delta.Obj1.Position];
+            Positions next = IdTable[delta.Obj1.Position
+                    + delta.Obj1.Size + 1];
+
+            return StrategyChoice.GenerateIdentifiers(previous, next, delta
+                    .Obj2.Size, Replica);
         }
     }
 }

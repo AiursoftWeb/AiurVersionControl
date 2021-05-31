@@ -23,7 +23,7 @@ namespace AiurVersionControl.LSEQ.StrategiesComponents
             _boundary = boundary;
         }
         
-        public IEnumerable<Positions> GenerateIdentifiers(Positions p, Positions q, int n, Replica rep, BigInteger interval, int index)
+        public IEnumerator<Positions> GenerateIdentifiers(Positions p, Positions q, int n, Replica rep, BigInteger interval, int index)
         {
             var positions = new List<Positions>();
             
@@ -66,7 +66,7 @@ namespace AiurVersionControl.LSEQ.StrategiesComponents
             }
 
             positions.Reverse();
-            return positions;
+            return positions.GetEnumerator();
         }
     }
 }

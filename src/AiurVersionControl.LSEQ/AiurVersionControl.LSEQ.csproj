@@ -5,6 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Diff4Net.Core" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\AiurVersionControl.CRUD\AiurVersionControl.CRUD.csproj" />
     </ItemGroup>
 
