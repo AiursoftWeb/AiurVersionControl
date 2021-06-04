@@ -10,14 +10,15 @@ namespace AiurVersionControl.LSEQ.LogootEngine
 {
     public class LogootEngine : ILogootEngine
     {
-        private List<Positions> IdTable { get; set; }
-        private List<string> Doc { get; set; }
+        public List<Positions> IdTable { get; set; }
 
-        private IBase Base { get; set; }
+        public List<string> Doc { get; set; }
 
-        private Replica Replica { get; set; }
+        public IBase Base { get; set; }
 
-        private IStrategyChoice StrategyChoice { get; set; }
+        public Replica Replica { get; set; }
+
+        public IStrategyChoice StrategyChoice { get; set; }
 
         /**
 	     * Initialize Logoot data & document

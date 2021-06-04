@@ -12,13 +12,13 @@ namespace AiurVersionControl.LSEQ.LogootEngine
         public List<E> Lines;
         public int Size => Lines.Count;
 
-        Chunk(int position, List<E> lines)
+        public Chunk(int position, List<E> lines)
         {
             Position = position;
             Lines = lines;
         }
 
-        Chunk(int position, E[] lines)
+        public Chunk(int position, E[] lines)
         {
             Position = position;
             Lines = lines.ToList();
