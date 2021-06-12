@@ -50,7 +50,8 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
             if (index >= _strategies.Count)
             {
                 int sizeBefore = _strategies.Count;
-                _strategies.Set(_strategies.Count, true);
+                _strategies.Length += 1;
+                _strategies.Set(sizeBefore, true);
                 for (int j = sizeBefore; j< _strategies.Count; ++j)
                 {
                     if (_r.NextDouble() > 0.5) // Random boolean
@@ -65,7 +66,7 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
             }
 
             // #3 chose the strategy
-            if (_strategies.Get(index))
+            if (index < _strategies.Count && _strategies.Get(index))
             {
                 return _strategy1.GenerateIdentifiers(p, q, n, rep, interval, index);
             }
@@ -79,7 +80,7 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
         {
             if (!_spectrum.ContainsKey(prev))
             {
-                var prevfln = new FakeListNode(null,_date,id);
+                var prevfln = new FakeListNode(null, _date, id);
                 _spectrum.Add(prev, prevfln);
             }
             else
@@ -87,10 +88,10 @@ namespace AiurVersionControl.LSEQ.StrategyChoiceComponent
                 _spectrum[prev].Next = id;
             }
 
-            if (!_spectrum.ContainsKey(prev))
+            if (!_spectrum.ContainsKey(next))
             {
-                var prevfln = new FakeListNode(id, _date, null);
-                _spectrum.Add(next, prevfln);
+                var nextfln = new FakeListNode(id, _date, null);
+                _spectrum.Add(next, nextfln);
             }
             else
             {

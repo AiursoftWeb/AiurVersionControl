@@ -20,7 +20,8 @@ namespace AiurVersionControl.LSEQ
             var boundary = new ConstantBoundary(new BigInteger(10));
             var choise = new RandomStrategyChoice(b, new BeginningBoundaryIdProvider(b, boundary), new EndingBoundaryIdProvider(b, boundary));
             var logootEngine = new LogootEngine.LogootEngine(b, choise);
-            
+            logootEngine.Replica = new Replica();
+
             for (int i = 0; i < 10000; ++i)
             {
                 MyPatch patch = logootEngine.GeneratePatch(getDeltas(1, i));
