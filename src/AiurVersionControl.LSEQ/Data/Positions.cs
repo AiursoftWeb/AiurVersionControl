@@ -75,5 +75,10 @@ namespace AiurVersionControl.LSEQ.Data
             
             return 0;
         }
+
+        public override string ToString()
+        {
+            return "d" + D.ToString() + "; s " + S + "; c " + C.ToString() + ">";
+        }
     }
 }

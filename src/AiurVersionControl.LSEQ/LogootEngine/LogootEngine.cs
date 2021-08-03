@@ -66,7 +66,14 @@ namespace AiurVersionControl.LSEQ.LogootEngine
                     case Operation.Insert:
                         one_insert = true;
                         position = - IdTable.BinarySearch(delta.Id) - 1;
-                        Doc.Insert(position - 1, delta.Content);
+                        if (position - 1 > Doc.Count)
+                        {
+                            Doc.Add(delta.Content);
+                        }
+                        else
+                        {
+                            Doc.Insert(position - 1, delta.Content);
+                        }
                         IdTable.Insert(position, delta.Id);
                         StrategyChoice.Add(IdTable[position - 1],
                                 IdTable[position], IdTable[position + 1]);
