@@ -2,6 +2,7 @@
 using AiurVersionControl.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows.Threading;
@@ -46,7 +47,7 @@ namespace AiurVersionControl.SampleWPF.Services
             Dispatcher dispatcher)
         {
             app.UseWebSockets();
-            app.Use(async (context, _) =>
+            app.Use(async (HttpContext context, RequestDelegate _) =>
             {
                 var start = context.Request.Query["start"];
                 var result = dispatcher.Invoke(() => context.RepositoryAsync(repo, start));

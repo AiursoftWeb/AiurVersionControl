@@ -52,6 +52,9 @@ namespace AiurVersionControl.Text.Tests
             var remote = new ObjectRemoteWithWorkSpace<CollectionWorkSpace<string>>(repo, true, true);
             await remote.AttachAsync(repoB);
 
+            // Bug here:
+            // B pulled a,a,a, and then it pushed a,a,a back.
+            // Not expected.
             Assert.AreEqual("b b b a a a", string.Join(' ', repo.WorkSpace.List));
             Assert.AreEqual("b b b a a a", string.Join(' ', repoB.WorkSpace.List));
 
