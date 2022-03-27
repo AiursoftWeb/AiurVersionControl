@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AiurEventSyncer.ConnectionProviders
 {
-    public class RetryableWebSocketConnection<T> : WebSocketConnection<T>, IConnectionProvider<T>, INotifyPropertyChanged
+    public class RetryableWebSocketConnection<T> : WebSocketConnection<T>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public override event Action OnReconnecting;
