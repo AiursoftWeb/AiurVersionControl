@@ -24,7 +24,7 @@ namespace AiurVersionControl.SampleWPF.Components
             get => _serverAddress;
             set
             {
-                Update(ref _serverAddress, value, nameof(ServerAddress));
+                Update(ref _serverAddress, value);
                 _attach.RaiseCanExecuteChanged();
             }
         }

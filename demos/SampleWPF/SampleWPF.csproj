@@ -4,10 +4,6 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
-		<PublishSingleFile>true</PublishSingleFile>
-		<SelfContained>true</SelfContained>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<PublishReadyToRun>true</PublishReadyToRun>
 		<RootNamespace>AiurVersionControl.SampleWPF</RootNamespace>
 	</PropertyGroup>
 

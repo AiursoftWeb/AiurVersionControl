@@ -35,7 +35,7 @@ namespace AiurVersionControl.SampleWPF.Components
             get => _editTitle;
             set
             {
-                Update(ref _editTitle, value, nameof(EditTitle));
+                Update(ref _editTitle, value);
                 _save.RaiseCanExecuteChanged();
             }
         }
@@ -45,7 +45,7 @@ namespace AiurVersionControl.SampleWPF.Components
             get => _isEditing;
             set
             {
-                Update(ref _isEditing, value, nameof(IsEditing));
+                Update(ref _isEditing, value);
                 OnPropertyChanged(nameof(IsNotEditing));
             }
         }

@@ -43,7 +43,7 @@ namespace AiurVersionControl.SampleWPF.Components
             get => _newTitle;
             set
             {
-                Update(ref _newTitle, value, nameof(NewTitle));
+                Update(ref _newTitle, value);
                 _commitAddNew.RaiseCanExecuteChanged();
             }
         }

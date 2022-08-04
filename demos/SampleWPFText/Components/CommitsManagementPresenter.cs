@@ -41,7 +41,7 @@ namespace AiurVersionControl.SampleWPF.Components
             get => _buttonText;
             set
             {
-                Update(ref _buttonText, value, nameof(ServerButtonText));
+                Update(ref _buttonText, value);
             }
         }
 
@@ -50,7 +50,7 @@ namespace AiurVersionControl.SampleWPF.Components
             get => _serverGridVisible;
             set
             {
-                Update(ref _serverGridVisible, value, nameof(ServerGridVisiable));
+                Update(ref _serverGridVisible, value);
             }
         }
 
