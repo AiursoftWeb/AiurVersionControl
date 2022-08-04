@@ -54,7 +54,7 @@ namespace AiurVersionControl.SampleWPF.Components
             {
                 Title = NewTitle
             });
-            OnPropertyChanged(nameof(Books));
+            OnPropertyChanged();
             NewTitle = string.Empty;
         }
     }
