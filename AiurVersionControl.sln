@@ -1,15 +1,15 @@
 ﻿
-Microsoft Visual Studio Sol"ution File, Format Version 12.00
-# Visual Studio Version 16fff
-Visual"StudioVersion = 16.0.30709.132
-Minimum"VisualStudioVersion = 15.0.26124.0
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.132
+MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24C2CE11-A0CD-44B8-9946-94A70F897534}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{62B32D96-CE0C-4DB1-9675-00846867EE62}"
-EndProject22
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurEventSyncer", "src\AiurEventSyncer\AiurEventSyncer.csproj", "{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = AiurStore", "src\AiurStore\AiurStore.csproj", "{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurStore", "src\AiurStore\AiurStore.csproj", "{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurVersionControl", "src\AiurVersionControl\AiurVersionControl.csproj", "{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}"
 EndProject
@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurEventSyncer.WebExtends"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalTest", "FunctionalTest", "{2297A61E-1215-47C9-9A99-E3AE90542DE4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}z") = "SampleWebApp", "tests\FunctionalTest\SampleWebApp\SampleWebApp.csproj", "{92125A17-A641-4F2D-B65B-EAD5C34664EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleWebApp", "tests\FunctionalTest\SampleWebApp\SampleWebApp.csproj", "{92125A17-A641-4F2D-B65B-EAD5C34664EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleWebApp.Test", "tests\FunctionalTest\SampleWebApp.Test\SampleWebApp.Test.csproj", "{F2CCCEBD-5E18-4C1D-8B76-98F176154B0A}"
 EndProject
@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeGame", "demos\SnakeGam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeGameServer", "demos\SnakeGameServer\SnakeGameServer.csproj", "{50AEBBB4-B482-4F63-A2AE-EC291F7DDB82}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7Af4F7556}") = "AiurEventSyncer.Abstract", "src\AiurEventSyncer.Abstract\AiurEventSyncer.Abstract.csproj", "{5BFF7222-42E7-4AEF-8536-4D434BFAF2EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurEventSyncer.Abstract", "src\AiurEventSyncer.Abstract\AiurEventSyncer.Abstract.csproj", "{5BFF7222-42E7-4AEF-8536-4D434BFAF2EB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurObserver", "src\AiurObserver\AiurObserver.csproj", "{84A04EEA-9F05-4390-993F-3511C90ED4FE}"
 EndProject
@@ -49,19 +49,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiurVersionControl.Text.Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleWPFText", "demos\SampleWPFText\SampleWPFText.csproj", "{214FE340-2A37-44DF-BFA0-99BC47FF3D3E}"
 EndProject
-Globalff
+Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x64 = Releasef|x64
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{772B96B8-CD2B-428F-BvE2E-FF02CA5A5CC3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}.Debug|x64.Build.0 = Debug|Any CPU
 		{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{772B96B8-CD2B-428F-BE2E-FF02CA5A5CC3}.Debug|x86.Build.0 = Debug|Any CPU
@@ -74,7 +74,7 @@ Globalff
 		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E8A8C76C-C2AF-4A03-Bz5E9-1DED1D1C77E9}.Debug|x64.Build.0 = Debug|Any CPU
+		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Debug|x64.Build.0 = Debug|Any CPU
 		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Debug|x86.Build.0 = Debug|Any CPU
 		{E8A8C76C-C2AF-4A03-B5E9-1DED1D1C77E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -88,7 +88,7 @@ Globalff
 		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Debug|x64.Build.0 = Debug|Any CPU
 		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1ECA7A41-87BE-406E-Aa915-EB3C4967F0E6}.Debug|x86.Build.0 = Debug|Any CPU
+		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Debug|x86.Build.0 = Debug|Any CPU
 		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1ECA7A41-87BE-406E-A915-EB3C4967F0E6}.Release|x64.ActiveCfg = Release|Any CPU
