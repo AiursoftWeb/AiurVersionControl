@@ -15,7 +15,7 @@ namespace AiurVersionControl.Text.Modifications
 
         public LineDiffsCommit(DiffResult<string>[] sourceDiff)
         {
-            int i = 0;
+            var i = 0;
             var lineDiffs = new List<LineDiff>();
             foreach (var diffItem in sourceDiff)
             {

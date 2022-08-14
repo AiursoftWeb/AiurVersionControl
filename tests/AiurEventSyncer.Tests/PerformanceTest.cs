@@ -13,7 +13,7 @@ namespace AiurEventSyncer.Tests
             var repo = new Repository<int>();
 
             var beginTime = DateTime.Now;
-            for (int i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
             {
                 repo.Commit(1);
             }

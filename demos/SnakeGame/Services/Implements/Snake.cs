@@ -14,7 +14,7 @@ namespace SnakeGame.Services.Implements
 
         public Snake(Position p, int count = 1)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 _body.Add(p);
             }
@@ -29,7 +29,7 @@ namespace SnakeGame.Services.Implements
         {
             _lastPosition = (Position)_body[^1].Clone();
             
-            for (int i = _body.Count - 2; i >= 0; i--)
+            for (var i = _body.Count - 2; i >= 0; i--)
             {
                 _body[i + 1] = (Position)_body[i].Clone();
             }
@@ -58,7 +58,7 @@ namespace SnakeGame.Services.Implements
             if (ignoreHead)
             {
                 if (_body.Count <= 4) return false;
-                for (int i = 4; i < _body.Count; i++)
+                for (var i = 4; i < _body.Count; i++)
                 {
                     if (p.Equals(_body[i]))
                     {

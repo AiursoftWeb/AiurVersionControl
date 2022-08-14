@@ -10,7 +10,7 @@ namespace AiurEventSyncer.Tests.Tools
         {
             repo.WaitTill(array.Length, 9).Wait();
             var commits = repo.Commits.ToArray();
-            for (int i = 0; i < commits.Length; i++)
+            for (var i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
@@ -21,7 +21,7 @@ namespace AiurEventSyncer.Tests.Tools
 
         private static async Task WaitTill<T>(this Repository<T> repo, int count, int maxWaitSeconds = 5)
         {
-            int waitedTimes = 0;
+            var waitedTimes = 0;
             while (repo.Commits.Count() < count)
             {
                 await Task.Delay(5);

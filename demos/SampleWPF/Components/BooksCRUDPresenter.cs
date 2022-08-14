@@ -24,7 +24,7 @@ namespace AiurVersionControl.SampleWPF.Components
             }, onDrop: _ =>
             {
                 Repository.Drop(nameof(Book.Id), b.Id);
-                OnPropertyChanged(nameof(Books));
+                OnPropertyChanged();
             })
         });
 

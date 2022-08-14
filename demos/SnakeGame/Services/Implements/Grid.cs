@@ -30,7 +30,7 @@ namespace SnakeGame.Services.Implements
 
         public void Draw()
         {
-            for (int i = 1; i <= _gridSize; i++)
+            for (var i = 1; i <= _gridSize; i++)
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.SetCursorPosition(_offset + 1, i);
@@ -39,7 +39,7 @@ namespace SnakeGame.Services.Implements
                 Console.Write("█");
             }
 
-            for (int i = 1; i <= _gridSize; i++)
+            for (var i = 1; i <= _gridSize; i++)
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.SetCursorPosition(_offset + i, 1);

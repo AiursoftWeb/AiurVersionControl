@@ -8,7 +8,7 @@ namespace AiurStore.Tests.Tools
     {
         public static void AssertDb<T>(InOutDatabase<T> db, params T[] array) where T : class
         {
-            for (int i = 0; i < db.Count(); i++)
+            for (var i = 0; i < db.Count(); i++)
             {
                 Assert.AreEqual(db.ToArray()[i], array[i]);
             }

@@ -37,6 +37,8 @@ namespace SnakeGame.Services.Implements
                         foodPosition.X = commit.Item.Direction.X + offset;
                         foodPosition.Y = commit.Item.Direction.Y;
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 

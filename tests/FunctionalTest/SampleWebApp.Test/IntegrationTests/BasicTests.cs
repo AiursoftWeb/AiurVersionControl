@@ -305,7 +305,7 @@ namespace SampleWebApp.Test.IntegrationTests
             await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(repo2);
 
             var beginTime = DateTime.Now;
-            for (int i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
             {
                 repo.Commit(new LogItem { Message = "1" });
                 repo2.Commit(new LogItem { Message = "2" });
@@ -353,7 +353,7 @@ namespace SampleWebApp.Test.IntegrationTests
             {
                 Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo  don't match! Expected: {string.Join(',', commits2.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
             }
-            for (int i = 0; i < commits.Length; i++)
+            for (var i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Id.Equals(commits2[i].Id))
                 {
@@ -365,7 +365,7 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             repo.WaitTill(array.Length, 9).Wait();
             var commits = repo.Commits.ToArray();
-            for (int i = 0; i < commits.Length; i++)
+            for (var i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
@@ -376,7 +376,7 @@ namespace SampleWebApp.Test.IntegrationTests
 
         private static async Task WaitTill<T>(this Repository<T> repo, int count, int maxWaitSeconds = 5)
         {
-            int waitedTimes = 0;
+            var waitedTimes = 0;
             while (repo.Commits.Count() < count)
             {
                 await Task.Delay(10);
