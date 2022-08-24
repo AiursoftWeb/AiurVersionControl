@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
@@ -9,7 +9,8 @@
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishReadyToRun>true</PublishReadyToRun>
 		<RootNamespace>AiurVersionControl.SampleWPF</RootNamespace>
-	</PropertyGroup>
+	<ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />

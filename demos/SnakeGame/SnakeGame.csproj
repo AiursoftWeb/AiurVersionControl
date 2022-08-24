@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+  <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AiurEventSyncer\AiurEventSyncer.csproj" />
