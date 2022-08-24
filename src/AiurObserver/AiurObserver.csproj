@@ -3,6 +3,7 @@
   <PropertyGroup>
 	  <Version>0.0.1</Version>
 	  <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+  <OutputType>Library</OutputType>
+    </PropertyGroup>
 
 </Project>

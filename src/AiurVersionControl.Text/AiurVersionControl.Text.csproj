@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+  <OutputType>Library</OutputType>
+    </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Diff4Net.Core" Version="5.0.0" />
