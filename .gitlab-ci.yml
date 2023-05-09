@@ -8,6 +8,7 @@ before_script:
   - 'export DOTNET_CLI_TELEMETRY_OPTOUT=1'
   - 'export PATH=$PATH:$HOME/.dotnet/tools'
   - 'dotnet tool install JetBrains.ReSharper.GlobalTools --global || echo "JB already installed."'
+  - 'dotnet tool install dotnet-reportgenerator-globaltool --global || echo "DRG already installed."'
   - 'cat /etc/lsb-release && uname -a && pwd && ls -ashl'
   - 'echo "Hostname: $(hostname)"'
   - 'echo "Uptime: $(uptime -p)"'
@@ -49,8 +50,8 @@ test:
   coverage: '/TOTAL_COVERAGE=(\d+.\d+)/'
   script:
     - dotnet test *.sln --collect:"XPlat Code Coverage" --logger "junit;MethodFormat=Class;FailureBodyFormat=Verbose"
-    - COVERAGE_FILE=$(find . -type f -name "coverage.cobertura.xml")
-    - COVERAGE_VALUE=$(grep -oPm 1 'line-rate="\K([0-9.]+)' "$COVERAGE_FILE")
+    - reportgenerator -reports:"**/coverage.cobertura.xml" -targetdir:"." -reporttypes:"cobertura"
+    - COVERAGE_VALUE=$(grep -oPm 1 'line-rate="\K([0-9.]+)' "./Cobertura.xml")
     - COVERAGE_PERCENTAGE=$(echo "scale=2; $COVERAGE_VALUE * 100" | bc)
     - 'echo "TOTAL_COVERAGE=$COVERAGE_PERCENTAGE%"'
   artifacts:
@@ -58,13 +59,13 @@ test:
     expire_in: 1 day
     paths:
       - ./**/TestResults.xml
-      - ./**/coverage.cobertura.xml
+      - ./Cobertura.xml
     reports:
       junit:
         - ./**/TestResults.xml
       coverage_report:
         coverage_format: cobertura
-        path: ./**/coverage.cobertura.xml
+        path: ./Cobertura.xml
 
 publish:
   stage: Publishing
