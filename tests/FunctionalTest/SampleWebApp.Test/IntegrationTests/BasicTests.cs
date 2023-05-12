@@ -43,7 +43,7 @@ namespace SampleWebApp.Test.IntegrationTests
             repo.Commit(new LogItem { Message = "1" });
             repo.Commit(new LogItem { Message = "2" });
 
-            await Task.Delay(50); // Wait for the pull to update pointer.
+            await Task.Delay(250); // Wait for the pull to update pointer.
             Assert.IsNotNull(remote.PullPointer);
 
             var remoteRepo = RepositoryContainer.GetRepositoryForTest();
