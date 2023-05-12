@@ -19,7 +19,7 @@ A powerful collection sync framework that powers Kahla.
 
 Requirements about how to run
 
-1. [.NET Core runtime 6.0 or later]Execute `dotnet restore`` to restore all dotnet requirements.
+1. [.NET 6 SDK](http://dot.net/)
 2. Execute `dotnet run` to run the app
 
 ## Run in Microsoft Visual Studio
