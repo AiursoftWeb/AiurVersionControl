@@ -68,5 +68,7 @@ namespace AiurStore.Providers
                 CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
+
+        public override int Count => _store.Count;
     }
 }

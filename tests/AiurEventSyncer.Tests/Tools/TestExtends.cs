@@ -1,4 +1,5 @@
-﻿using AiurEventSyncer.Models;
+﻿using System;
+using AiurEventSyncer.Models;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,12 +22,13 @@ namespace AiurEventSyncer.Tests.Tools
 
         private static async Task WaitTill<T>(this Repository<T> repo, int count, int maxWaitSeconds = 5)
         {
-            var waitedTimes = 0;
-            while (repo.Commits.Count() < count)
+            var waitedTime = TimeSpan.Zero;
+            while (repo.Commits.Count < count)
             {
-                await Task.Delay(5);
-                waitedTimes++;
-                if (waitedTimes / 100 >= maxWaitSeconds)
+                var thisWait = TimeSpan.FromSeconds(1);
+                await Task.Delay(thisWait);
+                waitedTime += thisWait;
+                if (waitedTime.TotalSeconds >= maxWaitSeconds)
                 {
                     Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {count} commits; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }

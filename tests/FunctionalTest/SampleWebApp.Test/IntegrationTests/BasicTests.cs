@@ -73,7 +73,7 @@ namespace SampleWebApp.Test.IntegrationTests
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
                 new LogItem { Message = "3" });
-            await Task.Delay(250); // Wait for the pull to update pointer.
+            await Task.Delay(500); // Wait for the pull to update pointer.
             RepositoryContainer.GetRepositoryForTest().Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },

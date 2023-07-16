@@ -17,6 +17,7 @@ namespace AiurStore.Models
         public abstract IEnumerable<T> GetAllAfter(Predicate<T> prefix);
         public abstract void Add(T newItem);
         public abstract void InsertAfter(T afterWhich, T newItem);
+        public abstract int Count { get; }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -27,5 +28,6 @@ namespace AiurStore.Models
         {
             return GetEnumerator();
         }
+
     }
 }
