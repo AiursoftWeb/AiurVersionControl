@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
