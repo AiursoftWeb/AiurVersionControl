@@ -2,7 +2,7 @@
 
 [![Pipeline stat](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/badges/master/pipeline.svg)](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/-/pipelines)
 [![Test Coverage](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/badges/master/coverage.svg)](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/-/pipelines)
-[![NuGet version](https://img.shields.io/nuget/v/AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/AiurVersionControl/)
+[![NuGet version](https://img.shields.io/nuget/v/Aiursoft.AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)
 
 A powerful collection sync framework that powers Kahla.
 
@@ -10,10 +10,10 @@ A powerful collection sync framework that powers Kahla.
 
 | Name                       | Download                                                                                                                                                                                     | Description                                                                        |
 |----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| AiurVersionControl         | [![NuGet version (AiurVersionControl)](https://img.shields.io/nuget/v/AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/AiurVersionControl/)                         | An event repro engine which helps generate final workspace from commit history.    |
-| AiurEventSyncer.WebExtends | [![NuGet version (AiurEventSyncer.WebExtends)](https://img.shields.io/nuget/v/AiurEventSyncer.WebExtends.svg?style=flat-square)](https://www.nuget.org/packages/AiurEventSyncer.WebExtends/) | WebSocket protocol server side support for AiurEventSyncer.                        |
-| AiurEventSyncer            | [![NuGet version (AiurEventSyncer)](https://img.shields.io/nuget/v/AiurEventSyncer.svg?style=flat-square)](https://www.nuget.org/packages/AiurEventSyncer/)                                  | A commits sync framework which achieves final consistency and always availability. |
-| AiurStore                  | [![NuGet version (AiurStore)](https://img.shields.io/nuget/v/AiurStore.svg?style=flat-square)](https://www.nuget.org/packages/AiurStore/)                                                    | An abstract database layer which describes a immutable data storage.               |
+| Aiursoft.AiurVersionControl         | [![NuGet version (Aiursoft.AiurVersionControl)](https://img.shields.io/nuget/v/Aiursoft.AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)                         | An event repro engine which helps generate final workspace from commit history.    |
+| Aiursoft.AiurEventSyncer.WebExtends | [![NuGet version (Aiursoft.AiurEventSyncer.WebExtends)](https://img.shields.io/nuget/v/Aiursoft.AiurEventSyncer.WebExtends.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurEventSyncer.WebExtends/) | WebSocket protocol server side support for AiurEventSyncer.                        |
+| Aiursoft.AiurEventSyncer            | [![NuGet version (Aiursoft.AiurEventSyncer)](https://img.shields.io/nuget/v/Aiursoft.AiurEventSyncer.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurEventSyncer/)                                  | A commits sync framework which achieves final consistency and always availability. |
+| Aiursoft.AiurStore                  | [![NuGet version (Aiursoft.AiurStore)](https://img.shields.io/nuget/v/Aiursoft.AiurStore.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurStore/)                                                    | An abstract database layer which describes a immutable data storage.               |
 
 ## Run locally
 
