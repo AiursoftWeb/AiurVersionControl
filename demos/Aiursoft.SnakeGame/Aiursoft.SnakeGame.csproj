@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Library</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <AssemblyName>Aiursoft.SnakeGame</AssemblyName>
         <RootNamespace>Aiursoft.SnakeGame</RootNamespace>
