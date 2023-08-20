@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Aiursoft.AiurVersionControl.Models
+﻿namespace Aiursoft.AiurVersionControl.Models
 {
     /// <summary>
     /// A class which must inert to be version controlled in a controlled repository.

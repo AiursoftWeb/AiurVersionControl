@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace AiurObserver
+﻿namespace AiurObserver
 {
     public class AsyncObserver<T> : IAsyncObserver<T>
     {

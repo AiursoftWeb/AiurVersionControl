@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AiurObserver
+﻿namespace AiurObserver
 {
     public interface IAsyncObservable<out T>
     {

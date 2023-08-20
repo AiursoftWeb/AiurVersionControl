@@ -1,5 +1,4 @@
 ﻿using Aiursoft.AiurEventSyncer.Models;
-using Microsoft.Extensions.DependencyInjection;
 using SampleWebApp.Models;
 
 namespace SampleWebApp.Services

@@ -3,7 +3,6 @@ using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.AiurEventSyncer.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurEventSyncer.Tests
 {

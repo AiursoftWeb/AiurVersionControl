@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace AiurObserver
+﻿namespace AiurObserver
 {
     public interface IAsyncObserver<in T>
     {

@@ -1,10 +1,6 @@
 ﻿using Aiursoft.AiurStore.Tools;
-using System;
-using System.IO;
 using System.Net.WebSockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurEventSyncer.Tools
 {

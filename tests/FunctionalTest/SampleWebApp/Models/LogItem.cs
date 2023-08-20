@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SampleWebApp.Models
+﻿namespace SampleWebApp.Models
 {
     public class LogItem
     {

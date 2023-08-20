@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SampleWebApp.Services;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 
 namespace SampleWebApp.Controllers
 {

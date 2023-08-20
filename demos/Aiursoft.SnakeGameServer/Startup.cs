@@ -1,6 +1,4 @@
 using Aiursoft.SnakeGameServer.Controllers;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Aiursoft.SnakeGameServer
 {

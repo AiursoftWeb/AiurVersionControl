@@ -2,8 +2,6 @@
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.AiurEventSyncer.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurEventSyncer.Tests
 {

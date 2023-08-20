@@ -1,5 +1,4 @@
-﻿using System;
-using Aiursoft.SnakeGame.Models;
+﻿using Aiursoft.SnakeGame.Models;
 
 namespace Aiursoft.SnakeGame.Launcher
 {

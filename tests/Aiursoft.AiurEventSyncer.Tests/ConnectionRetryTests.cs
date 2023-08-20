@@ -1,8 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.ConnectionProviders;
 using Aiursoft.AiurEventSyncer.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurEventSyncer.Tests
 {

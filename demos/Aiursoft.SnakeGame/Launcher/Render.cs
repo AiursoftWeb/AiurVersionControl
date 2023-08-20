@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Aiursoft.SnakeGame.Services;
+﻿using Aiursoft.SnakeGame.Services;
 
 namespace Aiursoft.SnakeGame.Launcher
 {

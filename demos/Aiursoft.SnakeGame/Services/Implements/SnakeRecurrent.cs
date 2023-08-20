@@ -1,8 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Tools;
-using System;
-using System.Collections.Generic;
 using Aiursoft.SnakeGame.Models;
 
 namespace Aiursoft.SnakeGame.Services.Implements

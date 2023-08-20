@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Aiursoft.AiurEventSyncer.Tests.Models
+﻿namespace Aiursoft.AiurEventSyncer.Tests.Models
 {
     public class Book
     {

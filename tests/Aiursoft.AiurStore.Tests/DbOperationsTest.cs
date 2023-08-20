@@ -2,7 +2,6 @@
 using Aiursoft.AiurStore.Providers;
 using Aiursoft.AiurStore.Tests.Tools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace Aiursoft.AiurStore.Tests
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using Aiursoft.AiurEventSyncer.Models;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Aiursoft.AiurEventSyncer.Models;
 
 namespace Aiursoft.AiurEventSyncer.Tests.Tools
 {

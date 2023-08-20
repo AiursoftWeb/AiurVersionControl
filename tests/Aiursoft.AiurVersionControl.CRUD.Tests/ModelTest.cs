@@ -3,8 +3,6 @@ using Aiursoft.AiurVersionControl.CRUD.Modifications;
 using Aiursoft.AiurVersionControl.CRUD.Tests.Models;
 using Aiursoft.AiurVersionControl.Remotes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurVersionControl.CRUD.Tests
 {

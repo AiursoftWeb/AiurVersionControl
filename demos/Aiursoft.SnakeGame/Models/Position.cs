@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Aiursoft.SnakeGame.Models
+﻿namespace Aiursoft.SnakeGame.Models
 {
     public class Position : ICloneable
     {

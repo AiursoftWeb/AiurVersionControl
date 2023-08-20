@@ -1,5 +1,4 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
-using System.Collections.Generic;
 
 namespace Aiursoft.AiurEventSyncer.ConnectionProviders.Models
 {

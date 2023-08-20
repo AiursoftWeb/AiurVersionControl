@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Aiursoft.SnakeGame.Models;
+﻿using Aiursoft.SnakeGame.Models;
 
 namespace Aiursoft.SnakeGame.Services.Implements
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Aiursoft.AiurEventSyncer.Abstract
+﻿namespace Aiursoft.AiurEventSyncer.Abstract
 {
     public interface IConnectionProvider<T>
     {

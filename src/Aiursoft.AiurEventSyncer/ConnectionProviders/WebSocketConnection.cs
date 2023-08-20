@@ -1,11 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurEventSyncer.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
 using Aiursoft.AiurEventSyncer.ConnectionProviders.Models;
 
 namespace Aiursoft.AiurEventSyncer.ConnectionProviders

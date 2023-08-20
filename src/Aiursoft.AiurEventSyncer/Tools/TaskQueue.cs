@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Aiursoft.AiurEventSyncer.Tools
+﻿namespace Aiursoft.AiurEventSyncer.Tools
 {
     public class TaskQueue
     {

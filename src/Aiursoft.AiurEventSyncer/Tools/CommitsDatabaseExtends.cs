@@ -1,6 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurStore.Models;
-using System.Collections.Generic;
 
 namespace Aiursoft.AiurEventSyncer.Tools
 {

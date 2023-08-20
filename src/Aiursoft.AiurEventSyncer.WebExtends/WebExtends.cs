@@ -5,8 +5,6 @@ using Aiursoft.AiurEventSyncer.Tools;
 using AiurObserver;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurEventSyncer.WebExtends
 {

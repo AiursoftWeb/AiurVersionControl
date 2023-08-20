@@ -1,7 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
-using System;
-using System.Threading.Tasks;
 using Aiursoft.SnakeGame.Launcher;
 using Aiursoft.SnakeGame.Models;
 using Aiursoft.SnakeGame.Services.Implements;

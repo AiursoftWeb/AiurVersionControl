@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Aiursoft.AiurStore.Models
+﻿namespace Aiursoft.AiurStore.Models
 {
     /// <summary>
     /// Describe a collection which can be queried after a statement.

@@ -2,7 +2,6 @@
 using Aiursoft.AiurVersionControl.Remotes;
 using Aiursoft.AiurVersionControl.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurVersionControl.Tests
 {

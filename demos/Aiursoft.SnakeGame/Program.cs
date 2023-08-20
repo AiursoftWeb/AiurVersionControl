@@ -1,12 +1,11 @@
-﻿using System.Threading.Tasks;
-using Aiursoft.SnakeGame.Launcher;
+﻿using Aiursoft.SnakeGame.Launcher;
 using Aiursoft.SnakeGame.Services;
 
 namespace Aiursoft.SnakeGame
 {
     class Program
     {
-        static async Task Main()
+        public static async Task Main(string[] args)
         {
             // Game with Observer
             await Render.StartGameWithObserver(

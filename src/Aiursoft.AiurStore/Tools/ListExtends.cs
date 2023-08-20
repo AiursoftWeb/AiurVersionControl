@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Aiursoft.AiurStore.Tools
+﻿namespace Aiursoft.AiurStore.Tools
 {
     public static class ListExtends
     {

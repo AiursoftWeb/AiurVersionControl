@@ -1,6 +1,5 @@
 ﻿using Aiursoft.AiurStore.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace Aiursoft.AiurStore.Tests.Tools
 {

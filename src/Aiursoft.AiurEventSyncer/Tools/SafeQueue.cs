@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Aiursoft.AiurEventSyncer.Tools
+﻿namespace Aiursoft.AiurEventSyncer.Tools
 {
     public class SafeQueue<T>
     {

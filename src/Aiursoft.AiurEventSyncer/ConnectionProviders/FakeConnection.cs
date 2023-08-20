@@ -1,10 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurEventSyncer.Tools;
 using AiurObserver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Aiursoft.AiurEventSyncer.ConnectionProviders
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Aiursoft.AiurEventSyncer.Abstract
+﻿namespace Aiursoft.AiurEventSyncer.Abstract
 {
     /// <summary>
     /// An object that can be synced between repositories and contains an inner object.

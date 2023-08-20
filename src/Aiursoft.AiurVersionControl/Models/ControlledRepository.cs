@@ -1,6 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurEventSyncer.Models;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Aiursoft.AiurVersionControl.Models
