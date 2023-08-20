@@ -1,5 +1,5 @@
-﻿using AiurEventSyncer.Models;
-using AiurEventSyncer.Remotes;
+﻿using Aiursoft.AiurEventSyncer.Models;
+using Aiursoft.AiurEventSyncer.Remotes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleWebApp.Models;

@@ -1,4 +1,4 @@
-﻿using AiurEventSyncer.Models;
+﻿using Aiursoft.AiurEventSyncer.Models;
 using SampleWebApp.Models;
 
 namespace SampleWebApp.Services

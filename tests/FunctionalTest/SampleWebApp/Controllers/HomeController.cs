@@ -1,4 +1,4 @@
-﻿using AiurEventSyncer.WebExtends;
+﻿using Aiursoft.AiurEventSyncer.WebExtends;
 using Microsoft.AspNetCore.Mvc;
 using SampleWebApp.Services;
 using System.Diagnostics.CodeAnalysis;

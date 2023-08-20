@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Version>0.0.1</Version>
+		<TargetFramework>net6.0</TargetFramework>
+	<OutputType>Library</OutputType>
+    </PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Aiursoft.AiurVersionControl\Aiursoft.AiurVersionControl.csproj" />
+	</ItemGroup>
+
+
+</Project>

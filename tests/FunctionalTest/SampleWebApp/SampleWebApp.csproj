@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\AiurEventSyncer.WebExtends\AiurEventSyncer.WebExtends.csproj" />
+    <ProjectReference Include="..\..\..\src\Aiursoft.AiurEventSyncer.WebExtends\Aiursoft.AiurEventSyncer.WebExtends.csproj" />
   </ItemGroup>
 
 </Project>
