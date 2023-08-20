@@ -1,8 +1,7 @@
 ﻿using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.WebExtends;
 using Microsoft.AspNetCore.Mvc;
-using Aiursoft.SnakeGame.Models;
-using System.Threading.Tasks;
+using Action = Aiursoft.SnakeGame.Models.Action;
 
 namespace Aiursoft.SnakeGameServer.Controllers
 {
