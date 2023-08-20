@@ -1,13 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-	  <Version>0.0.1</Version>
-	  <TargetFramework>net6.0</TargetFramework>
-  <OutputType>Library</OutputType>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <Version>0.0.1</Version>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>Aiursoft.AiurStore</AssemblyName>
+        <RootNamespace>Aiursoft.AiurStore</RootNamespace>
+        <IsTestProject>false</IsTestProject>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Company>Aiursoft</Company>
+        <Product>AiurStore</Product>
+        <Description>Nuget package of 'AiurStore' provided by Aiursoft</Description>
+        <PackageId>Aiursoft.AiurStore</PackageId>
+        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
 </Project>

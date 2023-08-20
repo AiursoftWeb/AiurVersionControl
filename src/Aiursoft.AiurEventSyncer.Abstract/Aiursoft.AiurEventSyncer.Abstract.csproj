@@ -1,14 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<Version>0.0.1</Version>
-		<TargetFramework>net6.0</TargetFramework>
-	<OutputType>Library</OutputType>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <Version>0.0.1</Version>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>Aiursoft.AiurEventSyncer.Abstract</AssemblyName>
+        <RootNamespace>Aiursoft.AiurEventSyncer.Abstract</RootNamespace>
+        <IsTestProject>false</IsTestProject>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Company>Aiursoft</Company>
+        <Product>Abstract</Product>
+        <Description>Nuget package of 'Abstract' provided by Aiursoft</Description>
+        <PackageId>Aiursoft.AiurEventSyncer.Abstract</PackageId>
+        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     </PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Aiursoft.AiurObserver\Aiursoft.AiurObserver.csproj" />
-		<ProjectReference Include="..\Aiursoft.AiurStore\Aiursoft.AiurStore.csproj" />
-	</ItemGroup>
-
+    <ItemGroup>
+        <ProjectReference Include="..\Aiursoft.AiurObserver\Aiursoft.AiurObserver.csproj" />
+        <ProjectReference Include="..\Aiursoft.AiurStore\Aiursoft.AiurStore.csproj" />
+    </ItemGroup>
 </Project>

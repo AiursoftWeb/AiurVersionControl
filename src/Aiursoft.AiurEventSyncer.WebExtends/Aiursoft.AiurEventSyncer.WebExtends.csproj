@@ -1,18 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-	  <Version>0.0.1</Version>
-	  <TargetFramework>net6.0</TargetFramework>
-  <OutputType>Library</OutputType>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <Version>0.0.1</Version>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>Aiursoft.AiurEventSyncer.WebExtends</AssemblyName>
+        <RootNamespace>Aiursoft.AiurEventSyncer.WebExtends</RootNamespace>
+        <IsTestProject>false</IsTestProject>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Company>Aiursoft</Company>
+        <Product>WebExtends</Product>
+        <Description>Nuget package of 'WebExtends' provided by Aiursoft</Description>
+        <PackageId>Aiursoft.AiurEventSyncer.WebExtends</PackageId>
+        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     </PropertyGroup>
-
-  <ItemGroup>
-    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
+    </ItemGroup>
 </Project>
