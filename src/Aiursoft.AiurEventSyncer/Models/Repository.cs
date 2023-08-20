@@ -2,10 +2,6 @@
 using AiurObserver;
 using Aiursoft.AiurStore.Models;
 using Aiursoft.AiurStore.Providers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Aiursoft.AiurEventSyncer.Tools;
 
 // ReSharper disable InconsistentlySynchronizedField
