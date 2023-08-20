@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Aiursoft.SnakeGame.Launcher;
 using Aiursoft.SnakeGame.Models;
 using Aiursoft.SnakeGame.Services.Implements;
-using Action = Aiursoft.SnakeGame.Models.Action;
 
 namespace Aiursoft.SnakeGame.Services
 {

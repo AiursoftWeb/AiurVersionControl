@@ -4,7 +4,6 @@ using Aiursoft.AiurEventSyncer.Tools;
 using System;
 using System.Collections.Generic;
 using Aiursoft.SnakeGame.Models;
-using Action = Aiursoft.SnakeGame.Models.Action;
 
 namespace Aiursoft.SnakeGame.Services.Implements
 {
