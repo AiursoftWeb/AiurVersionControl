@@ -1,9 +1,9 @@
-﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.Windows;
+﻿using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
+using Aiursoft.AiurVersionControl.SampleWPF.Windows;
 using System.Windows;
 
-namespace AiurVersionControl.SampleWPF
+namespace Aiursoft.AiurVersionControl.SampleWPF
 {
     internal sealed partial class App
     {

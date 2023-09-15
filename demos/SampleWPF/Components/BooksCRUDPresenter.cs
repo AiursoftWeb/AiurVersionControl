@@ -1,11 +1,11 @@
-﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
+﻿using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 
-namespace AiurVersionControl.SampleWPF.Components
+namespace Aiursoft.AiurVersionControl.SampleWPF.Components
 {
     internal sealed class BooksCRUDPresenter : Presenter
     {

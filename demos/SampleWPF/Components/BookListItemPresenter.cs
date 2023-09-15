@@ -1,9 +1,9 @@
-using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
+using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
 using System;
 using System.Windows.Input;
 
-namespace AiurVersionControl.SampleWPF.Components
+namespace Aiursoft.AiurVersionControl.SampleWPF.Components
 {
     internal sealed class BookListItemPresenter : Presenter
     {

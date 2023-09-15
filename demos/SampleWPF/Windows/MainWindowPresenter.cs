@@ -1,9 +1,9 @@
-﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.SampleWPF.Components;
-using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
+﻿using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.SampleWPF.Components;
+using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
 
-namespace AiurVersionControl.SampleWPF.Windows
+namespace Aiursoft.AiurVersionControl.SampleWPF.Windows
 {
     internal class MainWindowPresenter : Presenter
     {

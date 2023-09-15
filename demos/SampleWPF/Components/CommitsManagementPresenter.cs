@@ -1,17 +1,15 @@
-﻿using AiurEventSyncer.Abstract;
-using AiurStore.Models;
-using AiurVersionControl.CRUD;
-using AiurVersionControl.Models;
-using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
-using AiurVersionControl.SampleWPF.Services;
+﻿using Aiursoft.AiurEventSyncer.Abstract;
+using Aiursoft.AiurStore.Models;
+using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.Models;
+using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
+using Aiursoft.AiurVersionControl.SampleWPF.Services;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace AiurVersionControl.SampleWPF.Components
+namespace Aiursoft.AiurVersionControl.SampleWPF.Components
 {
     internal sealed class CommitsManagementPresenter : Presenter
     {

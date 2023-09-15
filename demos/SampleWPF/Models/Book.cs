@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AiurVersionControl.SampleWPF.Models
+namespace Aiursoft.AiurVersionControl.SampleWPF.Models
 {
     public class Book
     {

@@ -1,13 +1,13 @@
-﻿using AiurEventSyncer.ConnectionProviders;
-using AiurVersionControl.CRUD;
-using AiurVersionControl.Models;
-using AiurVersionControl.Remotes;
-using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
+﻿using Aiursoft.AiurEventSyncer.ConnectionProviders;
+using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.Models;
+using Aiursoft.AiurVersionControl.Remotes;
+using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace AiurVersionControl.SampleWPF.Components
+namespace Aiursoft.AiurVersionControl.SampleWPF.Components
 {
     internal sealed class RemoteControlPresenter : Presenter
     {

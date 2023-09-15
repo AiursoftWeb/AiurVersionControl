@@ -1,4 +1,4 @@
-﻿namespace AiurVersionControl.SampleWPF.Components
+﻿namespace Aiursoft.AiurVersionControl.SampleWPF.Components
 {
     /// <summary>
     /// Interaction logic for RemoteManagement.xaml

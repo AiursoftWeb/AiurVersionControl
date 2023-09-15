@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace AiurVersionControl.SampleWPF.Services
+namespace Aiursoft.AiurVersionControl.SampleWPF.Services
 {
     public static class Network
     {

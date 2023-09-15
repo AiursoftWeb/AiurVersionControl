@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Windows;
 
-namespace AiurVersionControl.SampleWPF.Windows
+namespace Aiursoft.AiurVersionControl.SampleWPF.Windows
 {
     internal sealed partial class MainWindow
     {

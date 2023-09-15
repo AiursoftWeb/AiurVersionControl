@@ -1,7 +1,7 @@
-﻿using AiurVersionControl.CRUD;
-using AiurVersionControl.Remotes;
-using AiurVersionControl.SampleWPF.Libraries;
-using AiurVersionControl.SampleWPF.Models;
+﻿using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.Remotes;
+using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
+using Aiursoft.AiurVersionControl.SampleWPF.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Net.WebSockets;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace AiurVersionControl.SampleWPF.Components
+namespace Aiursoft.AiurVersionControl.SampleWPF.Components
 {
     internal sealed class RemoteManagementPresenter : Presenter
     {
