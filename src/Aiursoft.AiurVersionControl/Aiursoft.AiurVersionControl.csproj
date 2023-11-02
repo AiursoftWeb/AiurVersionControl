@@ -1,21 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <Version>7.0.0</Version>
-        <TargetFramework>net7.0</TargetFramework>
-        <AssemblyName>Aiursoft.AiurVersionControl</AssemblyName>
-        <RootNamespace>Aiursoft.AiurVersionControl</RootNamespace>
-        <IsTestProject>false</IsTestProject>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IsPackable>true</IsPackable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Company>Aiursoft</Company>
-        <Product>AiurVersionControl</Product>
-        <Description>Nuget package of 'AiurVersionControl' provided by Aiursoft</Description>
-        <PackageId>Aiursoft.AiurVersionControl</PackageId>
-        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <Version>7.0.1</Version>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Aiursoft.AiurVersionControl</AssemblyName>
+    <RootNamespace>Aiursoft.AiurVersionControl</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Aiursoft</Company>
+    <Product>AiurVersionControl</Product>
+    <Description>Nuget package of 'AiurVersionControl' provided by Aiursoft</Description>
+    <PackageId>Aiursoft.AiurVersionControl</PackageId>
+    <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
+    <None Include="../../README.md" Pack="true" PackagePath="." />
+  </ItemGroup>
 </Project>

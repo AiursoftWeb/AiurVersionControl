@@ -1,18 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <Version>7.0.0</Version>
-        <TargetFramework>net7.0</TargetFramework>
-        <AssemblyName>Aiursoft.AiurObserver</AssemblyName>
-        <RootNamespace>AiurObserver</RootNamespace>
-        <IsTestProject>false</IsTestProject>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IsPackable>true</IsPackable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Company>Aiursoft</Company>
-        <Product>AiurObserver</Product>
-        <Description>Nuget package of 'AiurObserver' provided by Aiursoft</Description>
-        <PackageId>Aiursoft.AiurObserver</PackageId>
-        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <Version>7.0.1</Version>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Aiursoft.AiurObserver</AssemblyName>
+    <RootNamespace>AiurObserver</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Aiursoft</Company>
+    <Product>AiurObserver</Product>
+    <Description>Nuget package of 'AiurObserver' provided by Aiursoft</Description>
+    <PackageId>Aiursoft.AiurObserver</PackageId>
+    <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="." />
+  </ItemGroup>
 </Project>

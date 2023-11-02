@@ -1,21 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <Version>7.0.0</Version>
-        <TargetFramework>net7.0</TargetFramework>
-        <AssemblyName>Aiursoft.AiurEventSyncer</AssemblyName>
-        <RootNamespace>Aiursoft.AiurEventSyncer</RootNamespace>
-        <IsTestProject>false</IsTestProject>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IsPackable>true</IsPackable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Company>Aiursoft</Company>
-        <Product>AiurEventSyncer</Product>
-        <Description>Nuget package of 'AiurEventSyncer' provided by Aiursoft</Description>
-        <PackageId>Aiursoft.AiurEventSyncer</PackageId>
-        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Aiursoft.AiurEventSyncer.Abstract\Aiursoft.AiurEventSyncer.Abstract.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <Version>7.0.1</Version>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Aiursoft.AiurEventSyncer</AssemblyName>
+    <RootNamespace>Aiursoft.AiurEventSyncer</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Aiursoft</Company>
+    <Product>AiurEventSyncer</Product>
+    <Description>Nuget package of 'AiurEventSyncer' provided by Aiursoft</Description>
+    <PackageId>Aiursoft.AiurEventSyncer</PackageId>
+    <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aiursoft.AiurEventSyncer.Abstract\Aiursoft.AiurEventSyncer.Abstract.csproj" />
+    <None Include="../../README.md" Pack="true" PackagePath="." />
+  </ItemGroup>
 </Project>

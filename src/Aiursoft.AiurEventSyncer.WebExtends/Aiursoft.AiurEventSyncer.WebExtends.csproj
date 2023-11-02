@@ -1,24 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <Version>7.0.1</Version>
-        <TargetFramework>net7.0</TargetFramework>
-        <AssemblyName>Aiursoft.AiurEventSyncer.WebExtends</AssemblyName>
-        <RootNamespace>Aiursoft.AiurEventSyncer.WebExtends</RootNamespace>
-        <IsTestProject>false</IsTestProject>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IsPackable>true</IsPackable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Company>Aiursoft</Company>
-        <Product>WebExtends</Product>
-        <Description>Nuget package of 'WebExtends' provided by Aiursoft</Description>
-        <PackageId>Aiursoft.AiurEventSyncer.WebExtends</PackageId>
-        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
-    </PropertyGroup>
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <Version>7.0.2</Version>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Aiursoft.AiurEventSyncer.WebExtends</AssemblyName>
+    <RootNamespace>Aiursoft.AiurEventSyncer.WebExtends</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Aiursoft</Company>
+    <Product>WebExtends</Product>
+    <Description>Nuget package of 'WebExtends' provided by Aiursoft</Description>
+    <PackageId>Aiursoft.AiurEventSyncer.WebExtends</PackageId>
+    <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <None Include="../../README.md" Pack="true" PackagePath="." />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
+  </ItemGroup>
 </Project>
