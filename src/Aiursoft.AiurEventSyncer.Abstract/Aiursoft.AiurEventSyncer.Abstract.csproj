@@ -1,22 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <Version>7.0.0</Version>
-        <TargetFramework>net7.0</TargetFramework>
-        <AssemblyName>Aiursoft.AiurEventSyncer.Abstract</AssemblyName>
-        <RootNamespace>Aiursoft.AiurEventSyncer.Abstract</RootNamespace>
-        <IsTestProject>false</IsTestProject>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <IsPackable>true</IsPackable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Company>Aiursoft</Company>
-        <Product>Abstract</Product>
-        <Description>Nuget package of 'Abstract' provided by Aiursoft</Description>
-        <PackageId>Aiursoft.AiurEventSyncer.Abstract</PackageId>
-        <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\Aiursoft.AiurObserver\Aiursoft.AiurObserver.csproj" />
-        <ProjectReference Include="..\Aiursoft.AiurStore\Aiursoft.AiurStore.csproj" />
-    </ItemGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <Version>7.0.1</Version>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Aiursoft.AiurEventSyncer.Abstract</AssemblyName>
+    <RootNamespace>Aiursoft.AiurEventSyncer.Abstract</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Aiursoft</Company>
+    <Product>Abstract</Product>
+    <Description>Nuget package of 'Abstract' provided by Aiursoft</Description>
+    <PackageId>Aiursoft.AiurEventSyncer.Abstract</PackageId>
+    <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aiursoft.AiurObserver\Aiursoft.AiurObserver.csproj" />
+    <ProjectReference Include="..\Aiursoft.AiurStore\Aiursoft.AiurStore.csproj" />
+    <None Include="../../README.md" Pack="true" PackagePath="." />
+  </ItemGroup>
 </Project>
