@@ -1,11 +1,13 @@
-﻿namespace AiurObserver
+﻿using System.Collections.Concurrent;
+
+namespace AiurObserver
 {
     public class AsyncSubscription<T> : IDisposable
     {
-        private readonly List<IAsyncObserver<T>> _observers;
-        private readonly IAsyncObserver<T> _observer;
+        private readonly ConcurrentBag<IAsyncObserver<T>> _observers;
+        private IAsyncObserver<T> _observer;
 
-        internal AsyncSubscription(List<IAsyncObserver<T>> observers, IAsyncObserver<T> observer)
+        internal AsyncSubscription(ConcurrentBag<IAsyncObserver<T>> observers, IAsyncObserver<T> observer)
         {
             _observers = observers;
             _observer = observer;
@@ -15,7 +17,8 @@
         {
             if (_observers.Contains(_observer))
             {
-                _observers.Remove(_observer);
+                var removed = _observers.TryTake(out _observer);
+                if (!removed) throw new Exception("Failed to remove observer.");
             }
         }
     }

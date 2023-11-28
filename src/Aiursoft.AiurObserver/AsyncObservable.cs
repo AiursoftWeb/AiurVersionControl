@@ -1,8 +1,10 @@
-﻿namespace AiurObserver
+﻿using System.Collections.Concurrent;
+
+namespace AiurObserver
 {
     public class AsyncObservable<T> : IAsyncObservable<T>
     {
-        private readonly List<IAsyncObserver<T>> _observers = new List<IAsyncObserver<T>>();
+        private readonly ConcurrentBag<IAsyncObserver<T>> _observers = new ConcurrentBag<IAsyncObserver<T>>();
 
         public IDisposable Subscribe(IAsyncObserver<T> observer)
         {
@@ -13,7 +15,7 @@
             return new AsyncSubscription<T>(_observers, observer);
         }
 
-        public IEnumerable<Task> Boradcast(T newEvent)
+        public IEnumerable<Task> Broadcast(T newEvent)
         {
             return _observers.Select(t => t.OnHappen(newEvent));
         }
