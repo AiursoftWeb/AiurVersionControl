@@ -17,5 +17,10 @@
         {
             return _observers.Select(t => t.OnHappen(newEvent));
         }
+
+        public int GetListenerCount()
+        {
+            return _observers.Count;
+        }
     }
 }
