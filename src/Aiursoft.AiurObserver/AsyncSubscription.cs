@@ -1,25 +1,17 @@
-﻿using System.Collections.Concurrent;
-
-namespace AiurObserver
+﻿namespace AiurObserver
 {
-    public class AsyncSubscription<T> : IDisposable
+    public class AsyncSubscription : ISubscription
     {
-        private readonly ConcurrentBag<IAsyncObserver<T>> _observers;
-        private IAsyncObserver<T> _observer;
+        private readonly Action _unRegisterAction;
 
-        internal AsyncSubscription(ConcurrentBag<IAsyncObserver<T>> observers, IAsyncObserver<T> observer)
+        internal AsyncSubscription(Action unRegisterAction)
         {
-            _observers = observers;
-            _observer = observer;
+            _unRegisterAction = unRegisterAction;
         }
 
-        public void Dispose()
+        public void UnRegister()
         {
-            if (_observers.Contains(_observer))
-            {
-                var removed = _observers.TryTake(out _observer);
-                if (!removed) throw new Exception("Failed to remove observer.");
-            }
+            _unRegisterAction();
         }
     }
 }

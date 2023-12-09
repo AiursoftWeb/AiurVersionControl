@@ -12,7 +12,7 @@ namespace Aiursoft.AiurEventSyncer.Models
         protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
         protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
         protected IRepository<T> ContextRepository { get; set; }
-        protected IDisposable AutoPushsubscription { get; set; }
+        protected ISubscription AutoPushsubscription { get; set; }
         public IConnectionProvider<T> ConnectionProvider { get; set; }
 
         public Remote(
@@ -58,7 +58,7 @@ namespace Aiursoft.AiurEventSyncer.Models
             await StopMonitoring();
             if (AutoPush)
             {
-                AutoPushsubscription.Dispose();
+                AutoPushsubscription.UnRegister();
             }
             ContextRepository = null;
         }

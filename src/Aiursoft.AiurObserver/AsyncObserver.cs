@@ -1,17 +1,12 @@
 ﻿namespace AiurObserver
 {
-    public class AsyncObserver<T> : IAsyncObserver<T>
+    internal class AsyncObserver<T> : IAsyncObserver<T>
     {
-        private readonly Func<T, Task> _onHappen;
+        public Func<T, Task> OnTrigger { get; }
 
-        public AsyncObserver(Func<T, Task> onHappen)
+        internal AsyncObserver(Func<T, Task> onTrigger)
         {
-            this._onHappen = onHappen;
-        }
-
-        public Task OnHappen(T value)
-        {
-            return _onHappen(value);
+            OnTrigger = onTrigger;
         }
     }
 }

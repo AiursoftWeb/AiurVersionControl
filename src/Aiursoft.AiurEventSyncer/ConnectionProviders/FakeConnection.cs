@@ -7,7 +7,7 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
     public class FakeConnection<T> : IConnectionProvider<T>
     {
         private readonly IRepository<T> _fakeRemoteRepository;
-        private IDisposable _subscription;
+        private ISubscription _subscription;
         public event Action OnReconnecting;
 
         public FakeConnection(IRepository<T> localRepository)
@@ -44,7 +44,7 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
         public Task Disconnect()
         {
             OnReconnecting?.Invoke();
-            _subscription?.Dispose();
+            _subscription?.UnRegister();
             return Task.CompletedTask;
         }
     }

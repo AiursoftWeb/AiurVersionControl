@@ -28,7 +28,7 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
                     repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
                     return Task.CompletedTask;
                 });
-                subscription.Dispose();
+                subscription.UnRegister();
                 return new EmptyResult();
             }
 
