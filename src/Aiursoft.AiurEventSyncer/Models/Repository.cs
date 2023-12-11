@@ -1,5 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
-using AiurObserver;
+using Aiursoft.AiurObserver;
 using Aiursoft.AiurStore.Models;
 using Aiursoft.AiurStore.Providers;
 using Aiursoft.AiurEventSyncer.Tools;

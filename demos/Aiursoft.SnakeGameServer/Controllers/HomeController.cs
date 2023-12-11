@@ -20,7 +20,7 @@ namespace Aiursoft.SnakeGameServer.Controllers
         }
 
         [Route("repo.ares")]
-        public Task<IActionResult> ReturnRepoDemo(string start)
+        public Task ReturnRepoDemo(string start)
         {
             var repo = _repositoryContainer.GetLogItemRepository();
             return HttpContext.RepositoryAsync(repo, start);
@@ -29,7 +29,7 @@ namespace Aiursoft.SnakeGameServer.Controllers
 
     public class RepositoryContainer
     {
-        private readonly object _obj = new object();
+        private readonly object _obj = new();
         private Repository<Action> _logItemRepository;
 
         public Repository<Action> GetLogItemRepository()

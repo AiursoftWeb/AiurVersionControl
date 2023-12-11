@@ -1,4 +1,4 @@
-﻿using AiurObserver;
+﻿using Aiursoft.AiurObserver;
 using Aiursoft.AiurStore.Models;
 
 namespace Aiursoft.AiurEventSyncer.Abstract

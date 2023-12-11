@@ -5,7 +5,7 @@ namespace Aiursoft.AiurStore.Tools
 {
     public static class JsonTools
     {
-        private static JsonSerializerSettings _settings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings Settings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
@@ -14,12 +14,12 @@ namespace Aiursoft.AiurStore.Tools
 
         public static string Serialize<T>(T model)
         {
-           return JsonConvert.SerializeObject(model, _settings);
+           return JsonConvert.SerializeObject(model, Settings);
         }
 
         public static T Deserialize<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, _settings);
+            return JsonConvert.DeserializeObject<T>(json, Settings);
         }
     }
 }
