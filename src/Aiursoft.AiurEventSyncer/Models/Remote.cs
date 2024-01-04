@@ -58,7 +58,7 @@ namespace Aiursoft.AiurEventSyncer.Models
             await StopMonitoring();
             if (AutoPush)
             {
-                AutoPushsubscription.UnRegister();
+                AutoPushsubscription.Unsubscribe();
             }
             ContextRepository = null;
         }

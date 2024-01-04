@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>7.0.7</Version>
+    <Version>7.0.8</Version>
     <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurEventSyncer.Abstract</AssemblyName>
     <RootNamespace>Aiursoft.AiurEventSyncer.Abstract</RootNamespace>
@@ -21,6 +21,6 @@
     <None Include="../../README.md" Pack="true" PackagePath="." />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.AiurObserver" Version="7.0.6" />
+    <PackageReference Include="Aiursoft.AiurObserver" Version="7.0.9" />
   </ItemGroup>
 </Project>

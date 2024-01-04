@@ -44,7 +44,7 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
         public Task Disconnect()
         {
             OnReconnecting?.Invoke();
-            _subscription?.UnRegister();
+            _subscription?.Unsubscribe();
             return Task.CompletedTask;
         }
     }
