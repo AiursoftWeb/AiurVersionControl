@@ -9,8 +9,8 @@ namespace Aiursoft.AiurEventSyncer.Models
         public bool AutoPull { get; init; }
         public Commit<T> PullPointer { get; set; }
         public Commit<T> PushPointer { get; set; }
-        protected SemaphoreSlim PushLock { get; } = new SemaphoreSlim(1);
-        protected SemaphoreSlim PullLock { get; } = new SemaphoreSlim(1);
+        protected SemaphoreSlim PushLock { get; } = new(1);
+        protected SemaphoreSlim PullLock { get; } = new(1);
         protected IRepository<T> ContextRepository { get; set; }
         protected ISubscription AutoPushsubscription { get; set; }
         public IConnectionProvider<T> ConnectionProvider { get; set; }
@@ -58,7 +58,7 @@ namespace Aiursoft.AiurEventSyncer.Models
             await StopMonitoring();
             if (AutoPush)
             {
-                AutoPushsubscription.UnRegister();
+                AutoPushsubscription.Unsubscribe();
             }
             ContextRepository = null;
         }

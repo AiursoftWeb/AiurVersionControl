@@ -2,7 +2,7 @@
 {
     public class SafeQueue<T>
     {
-        private readonly Queue<T> _queue = new Queue<T>();
+        private readonly Queue<T> _queue = new();
 
         public void Enqueue(T item)
         {

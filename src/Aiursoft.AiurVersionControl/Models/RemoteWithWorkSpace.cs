@@ -5,7 +5,7 @@ namespace Aiursoft.AiurVersionControl.Models
 {
     public class RemoteWithWorkSpace<T> : Remote<IModification<T>> where T : WorkSpace, new()
     {
-        public T RemoteWorkSpace { get; } = new T();
+        public T RemoteWorkSpace { get; } = new();
 
         public RemoteWithWorkSpace(
             IConnectionProvider<IModification<T>> provider,

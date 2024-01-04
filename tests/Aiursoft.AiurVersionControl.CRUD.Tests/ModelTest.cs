@@ -14,8 +14,8 @@ namespace Aiursoft.AiurVersionControl.CRUD.Tests
         {
             var repo = new CollectionRepository<Book>
             {
-                new Book { Id = 0, Title = "Book first." },
-                new Book { Id = 1, Title = "Book second." }
+                new() { Id = 0, Title = "Book first." },
+                new() { Id = 1, Title = "Book second." }
             };
             repo.Drop(nameof(Book.Id), 0);
             repo.Patch(nameof(Book.Id), 1, nameof(Book.Title), "Book modified.");
@@ -42,8 +42,8 @@ namespace Aiursoft.AiurVersionControl.CRUD.Tests
             var convertedBack = JsonTools.Deserialize<Drop<Book, int>>(json);
             var repo = new CollectionRepository<Book>
             {
-                new Book { Id = 0, Title = "Book first." },
-                new Book { Id = 1, Title = "Book second." }
+                new() { Id = 0, Title = "Book first." },
+                new() { Id = 1, Title = "Book second." }
             };
             repo.ApplyChange(convertedBack);
             var only = repo.Single();
@@ -58,7 +58,7 @@ namespace Aiursoft.AiurVersionControl.CRUD.Tests
             var convertedBack = JsonTools.Deserialize<Patch<Book, int, string>>(json);
             var repo = new CollectionRepository<Book>
             {
-                new Book { Id = 1, Title = "Book second." }
+                new() { Id = 1, Title = "Book second." }
             };
             repo.ApplyChange(convertedBack);
             var only = repo.Single();

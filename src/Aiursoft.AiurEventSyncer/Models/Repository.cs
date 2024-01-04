@@ -44,8 +44,7 @@ namespace Aiursoft.AiurEventSyncer.Models
 
         protected virtual void OnAppendCommits(List<Commit<T>> newCommits)
         {
-            var subscriberTasks = _subscribersManager.Broadcast(newCommits);
-            _notifyingQueue.QueueNew(() => Task.WhenAll(subscriberTasks));
+            _notifyingQueue.QueueNew(() => _subscribersManager.BroadcastAsync(newCommits));
         }
 
         public void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)

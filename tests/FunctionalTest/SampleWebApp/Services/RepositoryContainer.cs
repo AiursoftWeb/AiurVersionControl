@@ -7,7 +7,7 @@ namespace SampleWebApp.Services
     {
         private readonly RepositoryFactory _repositoryFactory;
         private static IServiceScopeFactory _serviceScopeFactory;
-        private readonly object _obj = new object();
+        private readonly object _obj = new();
         private Repository<LogItem> _logItemRepository;
 
         public RepositoryContainer(

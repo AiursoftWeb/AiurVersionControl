@@ -28,8 +28,8 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
             });
            
             await socket.Listen(context.RequestAborted);
-            repoSubscription.UnRegister();
-            clientSubscription.UnRegister();
+            repoSubscription.Unsubscribe();
+            clientSubscription.Unsubscribe();
             
             // var websocket = context.WebSockets;
             // if (websocket.IsWebSocketRequest)
