@@ -131,5 +131,5 @@ deploy_docker:
     - docker push hub.aiursoft.cn/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
-    - exists:
+      exists:
       - Dockerfile
