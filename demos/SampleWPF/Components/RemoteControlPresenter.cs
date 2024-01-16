@@ -4,7 +4,6 @@ using Aiursoft.AiurVersionControl.Models;
 using Aiursoft.AiurVersionControl.Remotes;
 using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
 using Aiursoft.AiurVersionControl.SampleWPF.Models;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Aiursoft.AiurVersionControl.SampleWPF.Components

@@ -1,6 +1,5 @@
 using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
 using Aiursoft.AiurVersionControl.SampleWPF.Models;
-using System;
 using System.Windows.Input;
 
 namespace Aiursoft.AiurVersionControl.SampleWPF.Components
