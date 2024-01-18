@@ -1,27 +1,31 @@
 ﻿using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
+using Aiursoft.CSTools.Tools;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleWebApp.Models;
 using SampleWebApp.Services;
+using static Aiursoft.WebTools.Extends;
 
 namespace SampleWebApp.Test.IntegrationTests
 {
     [TestClass]
     public class BasicTests
     {
-        private const int Port = 15151;
-        private static readonly string EndpointUrl = $"ws://localhost:{Port}/repo.ares";
+        private readonly int _port;
+        private readonly string _endpointUrl;
         private static IHost _server;
-
+        public BasicTests()
+        {
+            _port = Network.GetAvailablePort();
+            _endpointUrl = $"ws://localhost:{_port}/repo.ares";
+        }
+        
         [TestInitialize]
         public async Task CreateServer()
         {
-            if (_server == null)
-            {
-                _server = Program.BuildHost(null, Port);
-                await _server.StartAsync();
-            }
+            _server = App<Startup>(Array.Empty<string>(), port: _port);
+            await _server.StartAsync();
         }
 
         [TestCleanup]
@@ -34,7 +38,7 @@ namespace SampleWebApp.Test.IntegrationTests
         public async Task SimpleCommitWithRemote()
         {
             var repo = new Repository<LogItem>();
-            var remote = await new WebSocketRemote<LogItem>(EndpointUrl)
+            var remote = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repo);
 
             repo.Commit(new LogItem { Message = "1" });
@@ -57,10 +61,10 @@ namespace SampleWebApp.Test.IntegrationTests
         public async Task OnewayAutoPull()
         {
             var repo = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(repo);
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
 
             var repo2 = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(repo2);
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo2);
 
             repo.Commit(new LogItem { Message = "1" });
             repo.Commit(new LogItem { Message = "2" });
@@ -85,11 +89,11 @@ namespace SampleWebApp.Test.IntegrationTests
         public async Task OneCommitSync()
         {
             var repoA = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl)
+            await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoA);
 
             var repoB = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl)
+            await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoB);
 
             repoA.Commit(new LogItem { Message = "1" });
@@ -114,15 +118,15 @@ namespace SampleWebApp.Test.IntegrationTests
             var subscriber2 = new Repository<LogItem>();
             var subscriber3 = new Repository<LogItem>();
 
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(senderserver);
-            var remote1 = await new WebSocketRemote<LogItem>(EndpointUrl)
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(senderserver);
+            var remote1 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(subscriber1);
-            var remote2 = await new WebSocketRemote<LogItem>(EndpointUrl)
+            var remote2 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(subscriber2);
 
             senderserver.Commit(new LogItem { Message = "G" });
             senderserver.Commit(new LogItem { Message = "H" });
-            var remote3 = await new WebSocketRemote<LogItem>(EndpointUrl)
+            var remote3 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(subscriber3);
             senderserver.Commit(new LogItem { Message = "X" });
             senderserver.Commit(new LogItem { Message = "Z" });
@@ -155,11 +159,11 @@ namespace SampleWebApp.Test.IntegrationTests
         public async Task DoubleWayDataBinding()
         {
             var repoA = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl)
+            await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoA);
 
             var repoB = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl)
+            await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoB);
 
             repoA.Commit(new LogItem { Message = "G" });
@@ -176,9 +180,9 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(sender);
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
 
-            var subscriberRemote = await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(subscriber);
+            var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 
             sender.Commit(new LogItem { Message = "G" });
             sender.Commit(new LogItem { Message = "H" });
@@ -212,9 +216,9 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(sender);
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
 
-            var subscriberRemote = await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(subscriber);
+            var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 
             sender.Commit(new LogItem { Message = "G" });
             sender.Commit(new LogItem { Message = "H" });
@@ -255,9 +259,9 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl, true).AttachAsync(sender);
+            await new WebSocketRemote<LogItem>(_endpointUrl, true).AttachAsync(sender);
 
-            var subscriberRemote = await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(subscriber);
+            var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 
             sender.Commit(new LogItem { Message = "G" });
             sender.Commit(new LogItem { Message = "H" });
@@ -297,10 +301,10 @@ namespace SampleWebApp.Test.IntegrationTests
         public async Task PerformanceTest()
         {
             var repo = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(repo);
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
 
             var repo2 = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(EndpointUrl).AttachAsync(repo2);
+            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo2);
 
             var beginTime = DateTime.Now;
             for (var i = 0; i < 1000; i++)
@@ -322,7 +326,7 @@ namespace SampleWebApp.Test.IntegrationTests
             repo.Commit(new LogItem { Message = "1" });
             repo.Commit(new LogItem { Message = "2" });
 
-            var remote = await new WebSocketRemote<LogItem>(EndpointUrl)
+            var remote = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repo);
 
             await Task.Delay(50);

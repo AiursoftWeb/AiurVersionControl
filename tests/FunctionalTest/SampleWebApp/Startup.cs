@@ -1,22 +1,23 @@
+using Aiursoft.WebTools.Abstractions.Models;
 using SampleWebApp.Services;
 
 namespace SampleWebApp
 {
-    public class Startup
+    public class Startup : IWebStartup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment, IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllers().AddApplicationPart(typeof(Startup).Assembly);
             services.AddSingleton<RepositoryContainer>();
             services.AddSingleton<RepositoryFactory>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(WebApplication app)
         {
             app.UseDeveloperExceptionPage();
             app.UseWebSockets();
             app.UseRouting();
-            app.UseEndpoints(endpoint => endpoint.MapDefaultControllerRoute());
+            app.MapDefaultControllerRoute();
         }
     }
 }

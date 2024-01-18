@@ -30,24 +30,6 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
             await socket.Listen(context.RequestAborted);
             repoSubscription.Unsubscribe();
             clientSubscription.Unsubscribe();
-            
-            // var websocket = context.WebSockets;
-            // if (websocket.IsWebSocketRequest)
-            // {
-            //     var ws = await websocket.AcceptWebSocketAsync();
-            //     // Send pull result.
-            //     await ws.SendObject(firstPullResult);
-            //     var subscription = repository.AppendCommitsHappened.Subscribe(async newCommits =>
-            //     {
-            //         await ws.SendObject(newCommits);
-            //     });
-            //     await ws.Monitor<PushModel<T>>(onNewObject: pushedCommits => 
-            //     {
-            //         repository.OnPushed(pushedCommits.Commits, pushedCommits.Start);
-            //         return Task.CompletedTask;
-            //     });
-            //     subscription.UnRegister();
-            // }
         }
     }
 }

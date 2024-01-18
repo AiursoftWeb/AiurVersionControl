@@ -1,27 +1,12 @@
-namespace SampleWebApp
+using static Aiursoft.WebTools.Extends;
+
+namespace SampleWebApp;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            BuildHost(args)
-                .Run();
-        }
-
-        public static IHost BuildHost(string[] args, int port = 15000)
-        {
-            return CreateHostBuilder(args, port)
-                .Build();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args, int port)
-        {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseUrls($"http://localhost:{port}");
-                    webBuilder.UseStartup<Startup>();
-                });
-        }
+        var app = App<Startup>(args);
+        await app.RunAsync();
     }
 }
