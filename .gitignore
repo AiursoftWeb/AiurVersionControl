@@ -8,6 +8,7 @@ package-lock.json
 *.min.js
 bin/
 obj/
+dist/
 node_modules/
 Properties/
 npm-debug.log
