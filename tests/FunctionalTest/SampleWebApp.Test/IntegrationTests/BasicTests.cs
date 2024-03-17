@@ -24,7 +24,7 @@ namespace SampleWebApp.Test.IntegrationTests
         [TestInitialize]
         public async Task CreateServer()
         {
-            _server = App<Startup>(Array.Empty<string>(), port: _port);
+            _server = await AppAsync<Startup>(Array.Empty<string>(), port: _port);
             await _server.StartAsync();
         }
 
