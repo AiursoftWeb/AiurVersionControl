@@ -3,8 +3,6 @@
     <OutputType>Library</OutputType>
     <Version>8.0.0</Version>
     <TargetFramework>net8.0</TargetFramework>
-    <AssemblyName>Aiursoft.AiurVersionControl.CRUD</AssemblyName>
-    <RootNamespace>Aiursoft.AiurVersionControl.CRUD</RootNamespace>
     <IsTestProject>false</IsTestProject>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
@@ -12,7 +10,7 @@
     <Company>Aiursoft</Company>
     <Product>CRUD</Product>
     <Description>Nuget package of 'CRUD' provided by Aiursoft</Description>
-    <PackageId>Aiursoft.AiurVersionControl.CRUD</PackageId>
+    <PackageId>Aiursoft.AiurVersionControl.Crud</PackageId>
     <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

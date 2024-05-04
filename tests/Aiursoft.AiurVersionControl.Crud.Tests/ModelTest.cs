@@ -1,10 +1,10 @@
 ﻿using Aiursoft.AiurStore.Tools;
-using Aiursoft.AiurVersionControl.CRUD.Modifications;
-using Aiursoft.AiurVersionControl.CRUD.Tests.Models;
+using Aiursoft.AiurVersionControl.Crud.Modifications;
+using Aiursoft.AiurVersionControl.Crud.Tests.Models;
 using Aiursoft.AiurVersionControl.Remotes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Aiursoft.AiurVersionControl.CRUD.Tests
+namespace Aiursoft.AiurVersionControl.Crud.Tests
 {
     [TestClass]
     public class ModelTest

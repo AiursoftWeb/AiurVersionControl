@@ -1,6 +1,6 @@
 ﻿using Aiursoft.AiurVersionControl.Models;
 
-namespace Aiursoft.AiurVersionControl.CRUD.Modifications
+namespace Aiursoft.AiurVersionControl.Crud.Modifications
 {
     public class Add<T> : IModification<CollectionWorkSpace<T>>
     {

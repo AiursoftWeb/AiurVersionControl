@@ -1,4 +1,4 @@
-﻿namespace Aiursoft.AiurVersionControl.CRUD.Tests.Models
+﻿namespace Aiursoft.AiurVersionControl.Crud.Tests.Models
 {
     public class Book
     {

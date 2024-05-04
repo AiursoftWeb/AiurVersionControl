@@ -1,9 +1,9 @@
-﻿using Aiursoft.AiurVersionControl.CRUD.Modifications;
-using Aiursoft.AiurVersionControl.Models;
+﻿using Aiursoft.AiurVersionControl.Models;
 using System.Collections;
 using System.Collections.Specialized;
+using Aiursoft.AiurVersionControl.Crud.Modifications;
 
-namespace Aiursoft.AiurVersionControl.CRUD
+namespace Aiursoft.AiurVersionControl.Crud
 {
     /// <summary>
     /// A special controlled repository that contains a collection workspace which you can do CRUD to.

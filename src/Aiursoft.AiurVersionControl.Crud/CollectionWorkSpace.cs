@@ -1,7 +1,7 @@
 ﻿using Aiursoft.AiurVersionControl.Models;
 using System.Collections;
 
-namespace Aiursoft.AiurVersionControl.CRUD
+namespace Aiursoft.AiurVersionControl.Crud
 {
     /// <summary>
     /// A special workspace which contains a collection with item type is T.

@@ -35,9 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.SnakeGameServer", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.AiurEventSyncer.Abstract", "src\Aiursoft.AiurEventSyncer.Abstract\Aiursoft.AiurEventSyncer.Abstract.csproj", "{5BFF7222-42E7-4AEF-8536-4D434BFAF2EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.AiurVersionControl.CRUD", "src\Aiursoft.AiurVersionControl.CRUD\Aiursoft.AiurVersionControl.CRUD.csproj", "{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.AiurVersionControl.Crud", "src\Aiursoft.AiurVersionControl.Crud\Aiursoft.AiurVersionControl.Crud.csproj", "{462A95E1-F0E2-4861-817F-1A9CBEC80B0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.AiurVersionControl.CRUD.Tests", "tests\Aiursoft.AiurVersionControl.CRUD.Tests\Aiursoft.AiurVersionControl.CRUD.Tests.csproj", "{5ACDC67F-5E9C-4787-AB12-4AE64B519DE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.AiurVersionControl.Crud.Tests", "tests\Aiursoft.AiurVersionControl.Crud.Tests\Aiursoft.AiurVersionControl.Crud.Tests.csproj", "{5ACDC67F-5E9C-4787-AB12-4AE64B519DE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
