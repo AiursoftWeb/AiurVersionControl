@@ -22,7 +22,7 @@ namespace Aiursoft.AiurEventSyncer.Tools
                 {
                     var messageBuffer = WebSocket.CreateClientBuffer(1024, 16);
                     result = await ws.ReceiveAsync(messageBuffer, CancellationToken.None);
-                    ms.Write(messageBuffer.Array ?? Array.Empty<byte>(), messageBuffer.Offset, result.Count);
+                    ms.Write(messageBuffer.Array ?? [], messageBuffer.Offset, result.Count);
                 }
                 while (!result.EndOfMessage);
 

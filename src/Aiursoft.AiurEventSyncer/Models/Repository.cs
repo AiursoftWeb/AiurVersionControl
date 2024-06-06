@@ -39,7 +39,7 @@ namespace Aiursoft.AiurEventSyncer.Models
             {
                 _commits.Add(commitObject); 
             }
-            OnAppendCommits(new List<Commit<T>> { commitObject });
+            OnAppendCommits([commitObject]);
         }
 
         protected virtual void OnAppendCommits(List<Commit<T>> newCommits)
