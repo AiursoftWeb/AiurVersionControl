@@ -10,7 +10,7 @@ namespace Aiursoft.AiurVersionControl.Crud.Tests
     public class ModelTest
     {
         [TestMethod]
-        public void CRUDTest()
+        public void CrudTest()
         {
             var repo = new CollectionRepository<Book>
             {
