@@ -39,7 +39,11 @@ namespace Aiursoft.AiurVersionControl.Crud
 
         public IEnumerator<T> GetEnumerator()
         {
-            return WorkSpace.GetEnumerator();
+            using var enumerator = WorkSpace.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return enumerator.Current;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

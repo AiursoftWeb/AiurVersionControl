@@ -19,7 +19,11 @@ namespace Aiursoft.AiurStore.Models
 
         public IEnumerator<T> GetEnumerator()
         {
-            return GetAll().GetEnumerator();
+            using var enumerator = GetAll().GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                yield return enumerator.Current;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
