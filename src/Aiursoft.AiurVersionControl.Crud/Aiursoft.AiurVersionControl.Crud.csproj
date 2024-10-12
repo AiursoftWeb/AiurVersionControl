@@ -8,8 +8,8 @@
     <IsPackable>true</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Company>Aiursoft</Company>
-    <Product>CRUD</Product>
-    <Description>Nuget package of 'CRUD' provided by Aiursoft</Description>
+    <Product>Crud</Product>
+    <Description>Nuget package of 'Crud' provided by Aiursoft</Description>
     <PackageId>Aiursoft.AiurVersionControl.Crud</PackageId>
     <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
