@@ -1,8 +1,6 @@
 .vs/
 .idea/
 lib
-*.lock.json
-package-lock.json
 *.user
 *.min.css
 *.min.js
@@ -12,7 +10,6 @@ dist/
 node_modules/
 Properties/
 npm-debug.log
-yarn.lock
 bundle.js
 appsettings.Production.json
 appsettings.Development.json

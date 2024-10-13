@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>8.0.10</Version>
+    <Version>8.0.11</Version>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurEventSyncer.WebExtends</AssemblyName>
     <RootNamespace>Aiursoft.AiurEventSyncer.WebExtends</RootNamespace>
@@ -14,6 +14,10 @@
     <Description>Nuget package of 'WebExtends' provided by Aiursoft</Description>
     <PackageId>Aiursoft.AiurEventSyncer.WebExtends</PackageId>
     <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol.git</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
@@ -24,7 +28,7 @@
     <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.AiurObserver.WebSocket.Server" Version="8.0.0" />
-    <PackageReference Include="Aiursoft.WebTools" Version="8.0.20" />
+    <PackageReference Include="Aiursoft.AiurObserver.WebSocket.Server" Version="8.0.3" />
+    <PackageReference Include="Aiursoft.WebTools" Version="8.0.23" />
   </ItemGroup>
 </Project>
