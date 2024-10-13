@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>8.0.0</Version>
+    <Version>8.0.1</Version>
     <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Aiursoft.AiurVersionControl.Crud</AssemblyName>
+    <RootNamespace>Aiursoft.AiurVersionControl.Crud</RootNamespace>
     <IsTestProject>false</IsTestProject>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
@@ -12,6 +14,10 @@
     <Description>Nuget package of 'Crud' provided by Aiursoft</Description>
     <PackageId>Aiursoft.AiurVersionControl.Crud</PackageId>
     <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol.git</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
