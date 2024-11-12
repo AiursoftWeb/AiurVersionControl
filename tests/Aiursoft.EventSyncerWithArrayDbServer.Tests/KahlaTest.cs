@@ -305,6 +305,7 @@ public class ServerController(
         var startLocation = 0;
         if (!string.IsNullOrWhiteSpace(start))
         {
+            // TODO: Really really bad performance. O(n) search.
             // Refactor required. Replace this with a hash table with LRU.
             foreach (var message in messagesDb.AsEnumerable())
             {
