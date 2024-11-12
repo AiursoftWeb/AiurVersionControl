@@ -303,6 +303,8 @@ public class ServerController(
         string start)
     {
         var startLocation = 0;
+        var found = false;
+
         if (!string.IsNullOrWhiteSpace(start))
         {
             // TODO: Really really bad performance. O(n) search.
@@ -310,11 +312,15 @@ public class ServerController(
             foreach (var message in messagesDb.AsEnumerable())
             {
                 startLocation++;
-                if (message.Id == start)
-                {
-                    break;
-                }
+                if (message.Id != start) continue;
+                found = true;
+                break;
             }
+        }
+
+        if (!found)
+        {
+            startLocation = 0;
         }
 
         var readLength = messagesDb.Count - startLocation;
@@ -336,6 +342,7 @@ public class ClientPushConsumer(
         lockObject.EnterWriteLock();
         try
         {
+            // TODO: The thread may be muted that not allowing anyone to send new messages. In this case, don't allow him to do this.
             // Deserialize the incoming messages and fill the properties.
             var model = JsonTools.Deserialize<PushModel<ChatMessage>>(clientPushed);
             var serverTime = DateTime.UtcNow;
