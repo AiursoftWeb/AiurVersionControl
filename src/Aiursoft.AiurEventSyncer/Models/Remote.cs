@@ -1,6 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurObserver;
-using Aiursoft.AiurObserver.Extensions;
 
 namespace Aiursoft.AiurEventSyncer.Models
 {

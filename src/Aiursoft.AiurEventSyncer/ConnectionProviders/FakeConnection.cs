@@ -1,7 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurEventSyncer.Tools;
 using Aiursoft.AiurObserver;
-using Aiursoft.AiurObserver.Extensions;
 
 namespace Aiursoft.AiurEventSyncer.ConnectionProviders
 {

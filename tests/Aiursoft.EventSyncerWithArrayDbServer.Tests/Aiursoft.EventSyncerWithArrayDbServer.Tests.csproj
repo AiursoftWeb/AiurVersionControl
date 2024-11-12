@@ -18,8 +18,8 @@
     <PackageReference Include="JunitXml.TestLogger" Version="4.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.6.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.6.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Aiursoft.AiurEventSyncer.WebExtends\Aiursoft.AiurEventSyncer.WebExtends.csproj" />
