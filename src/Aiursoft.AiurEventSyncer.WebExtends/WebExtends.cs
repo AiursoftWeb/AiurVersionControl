@@ -23,7 +23,7 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
             var clientSubscription = socket.Subscribe(async pushedCommits =>
             {
                 var model = JsonTools.Deserialize<PushModel<T>>(pushedCommits);
-                repository.OnPushed(model.Commits, model.Start);
+                repository.OnPushed(model.Commits);
                 await Task.CompletedTask;
             });
            

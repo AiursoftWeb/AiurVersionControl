@@ -28,10 +28,10 @@ namespace Aiursoft.AiurEventSyncer.Tests
             _localRepo.Assert(1, 2, 3);
 
             await origin.PushAsync();
-            _localRepo.Assert(1, 2, 3);
+            _localRepo.Assert(1, 2, 3, 1, 2, 3);
 
             await origin.PushAsync();
-            _localRepo.Assert(1, 2, 3);
+            _localRepo.Assert(1, 2, 3, 1, 2, 3);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace Aiursoft.AiurEventSyncer.Tests
             var origin2 = await new ObjectRemote<int>(remoteRepo).AttachAsync(_localRepo);
             await origin2.PushAsync();
 
-            remoteRepo.Assert(1, 2, 3);
+            remoteRepo.Assert(1, 2, 3, 1, 2, 3);
         }
 
         [TestMethod]
@@ -141,7 +141,7 @@ namespace Aiursoft.AiurEventSyncer.Tests
             await origin.PushAsync();
 
             _localRepo.Assert(1, 2, 3, 10, 20);
-            remoteRepo.Assert(1, 2, 3, 10, 20);
+            remoteRepo.Assert(1, 2, 3, 10, 10, 20);
         }
 
         [TestMethod]

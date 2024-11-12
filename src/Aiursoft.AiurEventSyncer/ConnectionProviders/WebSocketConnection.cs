@@ -16,13 +16,13 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
             _endPoint = endPoint;
         }
 
-        public async Task<bool> Upload(List<Commit<T>> commits, string pointerId)
+        public async Task<bool> Upload(List<Commit<T>> commits)
         {
             if (_ws?.State != WebSocketState.Open)
             {
                 return false;
             }
-            var model = new PushModel<T> { Commits = commits, Start = pointerId };
+            var model = new PushModel<T> { Commits = commits };
             await _ws.SendObject(model);
             return true;
         }

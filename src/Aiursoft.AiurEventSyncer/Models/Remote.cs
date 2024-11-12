@@ -70,7 +70,7 @@ namespace Aiursoft.AiurEventSyncer.Models
             var commitsToPush = ContextRepository.Commits.GetAllAfter(PushPointer).ToList();
             if (commitsToPush.Any())
             {
-                var uploaded = await ConnectionProvider.Upload(commitsToPush, PushPointer?.Id);
+                var uploaded = await ConnectionProvider.Upload(commitsToPush);
                 if(uploaded)
                 {
                     PushPointer = commitsToPush.Last();

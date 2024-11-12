@@ -16,9 +16,9 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
             _fakeRemoteRepository = localRepository;
         }
 
-        public Task<bool> Upload(List<Commit<T>> commits, string pointerId)
+        public Task<bool> Upload(List<Commit<T>> commits)
         {
-            _fakeRemoteRepository.OnPushed(commits, pointerId);
+            _fakeRemoteRepository.OnPushed(commits);
             return Task.FromResult(true);
         }
 

@@ -114,19 +114,15 @@ namespace Aiursoft.AiurEventSyncer.Models
             return (InsertMode.Appended, subtract);
         }
 
-        public void OnPushed(IEnumerable<Commit<T>> commitsToPush, string startPosition)
+        public void OnPushed(IEnumerable<Commit<T>> commitsToPush)
         {
             var newCommitsAppended = new List<Commit<T>>();
             lock (this)
             {
                 foreach (var commit in commitsToPush)
                 {
-                    var appended = OnPushedCommit(commit, startPosition);
-                    startPosition = commit.Id;
-                    if (appended)
-                    {
-                        newCommitsAppended.Add(commit);
-                    }
+                    OnPushedCommit(commit);
+                    newCommitsAppended.Add(commit);
                 }
             }
             if (newCommitsAppended.Any())
@@ -135,22 +131,9 @@ namespace Aiursoft.AiurEventSyncer.Models
             }
         }
 
-        private bool OnPushedCommit(Commit<T> subtract, string position)
+        private void OnPushedCommit(Commit<T> subtract)
         {
-            var localAfter = _commits.GetCommitsAfterId<Commit<T>, T>(position).FirstOrDefault();
-            if (localAfter is not null)
-            {
-                if (subtract.Id == localAfter.Id)
-                {
-                    return false;
-                }
-
-                _commits.Add(subtract);
-                return true;
-            }
-
             _commits.Add(subtract);
-            return true;
         }
     }
 }
