@@ -307,14 +307,18 @@ public class ServerController(
 
         if (!string.IsNullOrWhiteSpace(start))
         {
+            startLocation = messagesDb.Count;
+            
             // TODO: Really really bad performance. O(n) search.
             // Refactor required. Replace this with a hash table with LRU.
-            foreach (var message in messagesDb.AsEnumerable())
+            foreach (var message in messagesDb.AsReverseEnumerable())
             {
-                startLocation++;
-                if (message.Id != start) continue;
-                found = true;
-                break;
+                if (message.Id == start)
+                {
+                    found = true;
+                    break;
+                }
+                startLocation--;
             }
         }
 
