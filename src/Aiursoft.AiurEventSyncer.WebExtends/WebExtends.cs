@@ -27,9 +27,27 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
                 await Task.CompletedTask;
             });
            
-            await socket.Listen(context.RequestAborted);
-            repoSubscription.Unsubscribe();
-            clientSubscription.Unsubscribe();
+            try
+            {
+                await socket.Listen(context.RequestAborted);
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore. This happens when the client closes the connection.
+            }
+            catch (ConnectionAbortedException)
+            {
+                // Ignore. This happens when the client closes the connection.
+            }
+            finally
+            {
+                repoSubscription.Unsubscribe();
+                clientSubscription.Unsubscribe();
+                if (socket.Connected)
+                {
+                    await socket.Close(HttpContext.RequestAborted);
+                }
+            }
         }
     }
 }
