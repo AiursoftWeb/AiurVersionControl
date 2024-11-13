@@ -2,22 +2,26 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>SampleWebApp.Test</RootNamespace>
+    <RootNamespace>Aiursoft.EventSyncerWithArrayDbServer.Tests</RootNamespace>
     <IsTestProject>true</IsTestProject>
     <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Aiursoft.ArrayDb.Partitions" Version="1.0.15" />
+    <PackageReference Include="Aiursoft.InMemoryKvDb" Version="1.0.6" />
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="JunitXml.TestLogger" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SampleWebApp\SampleWebApp.csproj" />
+    <ProjectReference Include="..\..\src\Aiursoft.AiurEventSyncer.WebExtends\Aiursoft.AiurEventSyncer.WebExtends.csproj" />
   </ItemGroup>
 </Project>

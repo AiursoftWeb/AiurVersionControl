@@ -1,6 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurObserver;
-using Aiursoft.AiurObserver.Extensions;
 
 namespace Aiursoft.AiurEventSyncer.Models
 {
@@ -70,7 +69,7 @@ namespace Aiursoft.AiurEventSyncer.Models
             var commitsToPush = ContextRepository.Commits.GetAllAfter(PushPointer).ToList();
             if (commitsToPush.Any())
             {
-                var uploaded = await ConnectionProvider.Upload(commitsToPush, PushPointer?.Id);
+                var uploaded = await ConnectionProvider.Upload(commitsToPush);
                 if(uploaded)
                 {
                     PushPointer = commitsToPush.Last();

@@ -2,8 +2,8 @@
 using Aiursoft.AiurEventSyncer.ConnectionProviders.Models;
 using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Tools;
-using Aiursoft.AiurObserver.Extensions;
 using Aiursoft.AiurObserver.WebSocket.Server;
+using Aiursoft.AiurObserver;
 using Aiursoft.AiurStore.Tools;
 using Microsoft.AspNetCore.Http;
 
@@ -23,7 +23,7 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
             var clientSubscription = socket.Subscribe(async pushedCommits =>
             {
                 var model = JsonTools.Deserialize<PushModel<T>>(pushedCommits);
-                repository.OnPushed(model.Commits, model.Start);
+                repository.OnPushed(model.Commits);
                 await Task.CompletedTask;
             });
            
