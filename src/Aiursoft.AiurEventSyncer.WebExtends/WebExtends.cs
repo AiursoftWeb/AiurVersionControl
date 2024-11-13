@@ -5,6 +5,7 @@ using Aiursoft.AiurEventSyncer.Tools;
 using Aiursoft.AiurObserver.WebSocket.Server;
 using Aiursoft.AiurObserver;
 using Aiursoft.AiurStore.Tools;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 
 namespace Aiursoft.AiurEventSyncer.WebExtends
@@ -45,7 +46,7 @@ namespace Aiursoft.AiurEventSyncer.WebExtends
                 clientSubscription.Unsubscribe();
                 if (socket.Connected)
                 {
-                    await socket.Close(HttpContext.RequestAborted);
+                    await socket.Close(context.RequestAborted);
                 }
             }
         }
