@@ -9,7 +9,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.ArrayDb.Partitions" Version="1.0.17" />
+    <PackageReference Include="Aiursoft.ArrayDb.Partitions" Version="1.0.18" />
     <PackageReference Include="Aiursoft.InMemoryKvDb" Version="1.0.6" />
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
