@@ -1,29 +1,24 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
-using Aiursoft.AiurEventSyncer.Tools;
-using System.Net.WebSockets;
+using Aiursoft.AiurObserver;
 using Aiursoft.AiurEventSyncer.ConnectionProviders.Models;
+using Aiursoft.AiurObserver.WebSocket;
+using Aiursoft.AiurStore.Tools;
 
 namespace Aiursoft.AiurEventSyncer.ConnectionProviders
 {
-    public class WebSocketConnection<T> : IConnectionProvider<T>
+    public class WebSocketConnection<T>(string endPoint) : IConnectionProvider<T>
     {
-        private readonly string _endPoint;
-        private ClientWebSocket _ws;
+        private ObservableWebSocket _ws;
         public virtual event Action OnReconnecting;
-
-        public WebSocketConnection(string endPoint)
-        {
-            _endPoint = endPoint;
-        }
 
         public async Task<bool> Upload(List<Commit<T>> commits)
         {
-            if (_ws?.State != WebSocketState.Open)
+            if (!_ws.Connected)
             {
                 return false;
             }
             var model = new PushModel<T> { Commits = commits };
-            await _ws.SendObject(model);
+            await _ws.Send(JsonTools.Serialize(model));
             return true;
         }
 
@@ -34,12 +29,12 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
 
         public virtual async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
         {
-            _ws = new ClientWebSocket();
-            await _ws.ConnectAsync(new Uri(_endPoint + "?start=" + startPositionFactory()), CancellationToken.None);
+            _ws = await (endPoint + "?start=" + startPositionFactory()).ConnectAsWebSocketServer();
             await (onConnected?.Invoke() ?? Task.CompletedTask);
-            var monitorTask = _ws.Monitor<List<Commit<T>>>(onNewObject: commits =>
+            _ws.Subscribe(data =>
             {
-                if (_ws.State != WebSocketState.Open)
+                var commits = JsonTools.Deserialize<List<Commit<T>>>(data);
+                if (!_ws.Connected)
                 {
                     return Task.CompletedTask;
                 }
@@ -51,18 +46,23 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
             });
             if (monitorInCurrentThread)
             {
-                await monitorTask;
+                await _ws.Listen();
+            }
+            else
+            {
+                await Task.Factory.StartNew(async () => await _ws.Listen());
             }
         }
 
         public virtual async Task Disconnect()
         {
-            while (_ws?.State == WebSocketState.Open)
-            {
-                await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }
+            // while (_ws?.State == WebSocketState.Open)
+            // {
+            //     await _ws.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            // }
+            await _ws.Close();
             OnReconnecting?.Invoke();
-            _ws?.Dispose();
+            //_ws?.Dispose();
         }
     }
 }

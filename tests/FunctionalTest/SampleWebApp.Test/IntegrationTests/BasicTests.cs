@@ -265,7 +265,8 @@ namespace SampleWebApp.Test.IntegrationTests
 
             sender.Commit(new LogItem { Message = "G" });
             sender.Commit(new LogItem { Message = "H" });
-
+            await Task.Delay(100);
+            
             sender.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
