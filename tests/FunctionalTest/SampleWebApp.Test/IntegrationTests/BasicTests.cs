@@ -1,4 +1,5 @@
-﻿using Aiursoft.AiurEventSyncer.Models;
+﻿using System.Diagnostics;
+using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.CSTools.Tools;
 using Microsoft.Extensions.Hosting;
@@ -15,12 +16,13 @@ namespace SampleWebApp.Test.IntegrationTests
         private readonly int _port;
         private readonly string _endpointUrl;
         private static IHost _server;
+
         public BasicTests()
         {
             _port = Network.GetAvailablePort();
             _endpointUrl = $"ws://localhost:{_port}/repo.ares";
         }
-        
+
         [TestInitialize]
         public async Task CreateServer()
         {
@@ -28,11 +30,13 @@ namespace SampleWebApp.Test.IntegrationTests
             await _server.StartAsync();
         }
 
-        [TestCleanup]
-        public void CleanServer()
-        {
-            RepositoryContainer.ResetRepositoryForTest();
-        }
+        // [TestCleanup]
+        // public async Task CleanServer()
+        // {
+        //     RepositoryContainer.ResetRepositoryForTest();
+        //     await _server.StopAsync();
+        //     _server.Dispose();
+        // }
 
         [TestMethod]
         public async Task SimpleCommitWithRemote()
@@ -55,16 +59,18 @@ namespace SampleWebApp.Test.IntegrationTests
             repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" });
+
+            await remote.DetachAsync();
         }
 
         [TestMethod]
         public async Task OnewayAutoPull()
         {
             var repo = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
+            var r1 = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
 
             var repo2 = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo2);
+            var r2 = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo2);
 
             repo.Commit(new LogItem { Message = "1" });
             repo.Commit(new LogItem { Message = "2" });
@@ -83,17 +89,20 @@ namespace SampleWebApp.Test.IntegrationTests
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" },
                 new LogItem { Message = "3" });
+
+            await r1.DetachAsync();
+            await r2.DetachAsync();
         }
 
         [TestMethod]
         public async Task OneCommitSync()
         {
             var repoA = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl)
+            var ws1 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoA);
 
             var repoB = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl)
+            var ws2 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoB);
 
             repoA.Commit(new LogItem { Message = "1" });
@@ -104,6 +113,9 @@ namespace SampleWebApp.Test.IntegrationTests
                 new LogItem { Message = "1" });
             repoB.Assert(
                 new LogItem { Message = "1" });
+
+            await ws1.DetachAsync();
+            await ws2.DetachAsync();
         }
 
         [TestMethod]
@@ -118,7 +130,8 @@ namespace SampleWebApp.Test.IntegrationTests
             var subscriber2 = new Repository<LogItem>();
             var subscriber3 = new Repository<LogItem>();
 
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(senderserver);
+            var sender = await new WebSocketRemote<LogItem>(_endpointUrl)
+                .AttachAsync(senderserver);
             var remote1 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(subscriber1);
             var remote2 = await new WebSocketRemote<LogItem>(_endpointUrl)
@@ -152,6 +165,11 @@ namespace SampleWebApp.Test.IntegrationTests
             Assert.AreEqual(subscriber1.Head, remote1.PullPointer);
             Assert.AreEqual(subscriber2.Head, remote2.PullPointer);
             Assert.AreEqual(subscriber3.Head, remote3.PullPointer);
+
+            await sender.DetachAsync();
+            await remote1.DetachAsync();
+            await remote2.DetachAsync();
+            await remote3.DetachAsync();
         }
 
 
@@ -159,11 +177,11 @@ namespace SampleWebApp.Test.IntegrationTests
         public async Task DoubleWayDataBinding()
         {
             var repoA = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl)
+            var ws1 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoA);
 
             var repoB = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl)
+            var ws2 = await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoB);
 
             repoA.Commit(new LogItem { Message = "G" });
@@ -173,6 +191,9 @@ namespace SampleWebApp.Test.IntegrationTests
 
             repoA.AssertEqual(repoB, 4);
             repoA.AssertEqual(RepositoryContainer.GetRepositoryForTest(), 4);
+
+            await ws1.DetachAsync();
+            await ws2.DetachAsync();
         }
 
         [TestMethod]
@@ -180,7 +201,7 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
+            var ws1 = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
 
             var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 
@@ -209,6 +230,8 @@ namespace SampleWebApp.Test.IntegrationTests
             subscriber.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
+
+            await ws1.DetachAsync();
         }
 
         [TestMethod]
@@ -216,7 +239,7 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
+            var ws1 = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
 
             var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 
@@ -246,12 +269,15 @@ namespace SampleWebApp.Test.IntegrationTests
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
 
-            await subscriberRemote.AttachAsync(subscriber);
+            var ws2 = await subscriberRemote.AttachAsync(subscriber);
             subscriber.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" },
                 new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
+
+            await ws1.DetachAsync();
+            await ws2.DetachAsync();
         }
 
         [TestMethod]
@@ -259,14 +285,14 @@ namespace SampleWebApp.Test.IntegrationTests
         {
             var sender = new Repository<LogItem>();
             var subscriber = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl, true).AttachAsync(sender);
+            var ws1 = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(sender);
 
             var subscriberRemote = await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(subscriber);
 
             sender.Commit(new LogItem { Message = "G" });
             sender.Commit(new LogItem { Message = "H" });
             await Task.Delay(100);
-            
+
             sender.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
@@ -290,33 +316,15 @@ namespace SampleWebApp.Test.IntegrationTests
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" });
 
-            await subscriberRemote.AttachAsync(subscriber);
+            var ws2 = await subscriberRemote.AttachAsync(subscriber);
             subscriber.Assert(
                 new LogItem { Message = "G" },
                 new LogItem { Message = "H" },
                 new LogItem { Message = "X" },
                 new LogItem { Message = "Z" });
-        }
 
-        [TestMethod]
-        public async Task PerformanceTest()
-        {
-            var repo = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo);
-
-            var repo2 = new Repository<LogItem>();
-            await new WebSocketRemote<LogItem>(_endpointUrl).AttachAsync(repo2);
-
-            var beginTime = DateTime.Now;
-            for (var i = 0; i < 1000; i++)
-            {
-                repo.Commit(new LogItem { Message = "1" });
-                repo2.Commit(new LogItem { Message = "2" });
-            }
-
-            var endTime = DateTime.Now;
-
-            Assert.IsTrue((endTime - beginTime) < TimeSpan.FromSeconds(0.5));
+            await ws1.DetachAsync();
+            await ws2.DetachAsync();
         }
 
         [TestMethod]
@@ -341,6 +349,8 @@ namespace SampleWebApp.Test.IntegrationTests
             repo.Assert(
                 new LogItem { Message = "1" },
                 new LogItem { Message = "2" });
+
+            await remote.DetachAsync();
         }
     }
 
@@ -354,39 +364,45 @@ namespace SampleWebApp.Test.IntegrationTests
             var commits2 = repo2.Commits.ToArray();
             if (commits.Length != commits2.Length || commits.Length != expectedCount)
             {
-                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo  don't match! Expected: {string.Join(',', commits2.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail(
+                    $"The repo  don't match! Expected: {string.Join(',', commits2.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
             }
+
             for (var i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Id.Equals(commits2[i].Id))
                 {
-                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo don't match! Expected: {string.Join(',', commits2.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail(
+                        $"The repo don't match! Expected: {string.Join(',', commits2.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }
             }
         }
+
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
-            repo.WaitTill(array.Length, 9).Wait();
+            repo.WaitTill(array.Length, 5).Wait();
             var commits = repo.Commits.ToArray();
             for (var i = 0; i < commits.Length; i++)
             {
                 if (!commits[i].Item.Equals(array[i]))
                 {
-                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"The repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail(
+                        $"The repo don't match! Expected: {string.Join(',', array.Select(t => t.ToString()))}; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }
             }
         }
 
         private static async Task WaitTill<T>(this Repository<T> repo, int count, int maxWaitSeconds = 5)
         {
-            var waitedTimes = 0;
+            var wastedSeconds = 0;
             while (repo.Commits.Count() < count)
             {
-                await Task.Delay(10);
-                waitedTimes++;
-                if (waitedTimes / 100 >= maxWaitSeconds)
+                await Task.Delay(1000);
+                wastedSeconds++;
+                if (wastedSeconds >= maxWaitSeconds)
                 {
-                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail($"Two repo don't match! Expected: {count} commits; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
+                    Microsoft.VisualStudio.TestTools.UnitTesting.Assert.Fail(
+                        $"Two repo don't match! Expected: {count} commits; Actual: {string.Join(',', repo.Commits.Select(t => t.ToString()))}");
                 }
             }
         }

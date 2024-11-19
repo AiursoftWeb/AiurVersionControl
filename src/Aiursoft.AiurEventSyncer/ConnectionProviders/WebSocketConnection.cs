@@ -50,7 +50,7 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
             }
             else
             {
-                await Task.Factory.StartNew(async () => await _ws.Listen());
+                _ = Task.Run(async () => await _ws.Listen());
             }
         }
 
