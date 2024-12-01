@@ -8,6 +8,8 @@ using Aiursoft.AiurObserver.WebSocket;
 using Aiursoft.AiurObserver.WebSocket.Server;
 using Aiursoft.AiurStore.Tools;
 using Aiursoft.ArrayDb.ObjectBucket;
+using Aiursoft.ArrayDb.ObjectBucket.Abstractions.Attributes;
+using Aiursoft.ArrayDb.ObjectBucket.Abstractions.Interfaces;
 using Aiursoft.ArrayDb.Partitions;
 using Aiursoft.CSTools.Tools;
 using Aiursoft.InMemoryKvDb;
@@ -165,6 +167,8 @@ public class ChatMessageInDb : PartitionedBucketEntity<int>
     public Guid SenderId { get; set; } = Guid.Empty;
 
     public string Id { get; set; } = Guid.NewGuid().ToString("D");
+    
+    public DateTime CreationTime { get; set; } = DateTime.UtcNow;
 
     public ChatMessage ToClientView()
     {

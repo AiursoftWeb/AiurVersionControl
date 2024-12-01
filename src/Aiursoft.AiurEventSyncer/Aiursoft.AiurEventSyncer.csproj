@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>8.0.4</Version>
+    <Version>8.0.5</Version>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurEventSyncer</AssemblyName>
     <RootNamespace>Aiursoft.AiurEventSyncer</RootNamespace>
@@ -21,7 +21,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.AiurObserver.WebSocket" Version="8.0.8" />
+    <PackageReference Include="Aiursoft.AiurObserver.WebSocket" Version="8.0.10" />
     <ProjectReference Include="..\Aiursoft.AiurEventSyncer.Abstract\Aiursoft.AiurEventSyncer.Abstract.csproj" />
     <None Include="../../README.md" Pack="true" PackagePath="." />
   </ItemGroup>

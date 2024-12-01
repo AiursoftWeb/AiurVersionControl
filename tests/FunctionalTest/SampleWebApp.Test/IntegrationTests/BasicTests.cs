@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Aiursoft.AiurEventSyncer.Models;
+﻿using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.CSTools.Tools;
 using Microsoft.Extensions.Hosting;
@@ -380,7 +379,7 @@ namespace SampleWebApp.Test.IntegrationTests
 
         public static void Assert<T>(this Repository<T> repo, params T[] array)
         {
-            repo.WaitTill(array.Length, 5).Wait();
+            repo.WaitTill(array.Length).Wait();
             var commits = repo.Commits.ToArray();
             for (var i = 0; i < commits.Length; i++)
             {
