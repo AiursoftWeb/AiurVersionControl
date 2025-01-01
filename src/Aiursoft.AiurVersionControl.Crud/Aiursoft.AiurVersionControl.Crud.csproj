@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <Version>8.0.5</Version>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurVersionControl.Crud</AssemblyName>
     <RootNamespace>Aiursoft.AiurVersionControl.Crud</RootNamespace>
     <IsTestProject>false</IsTestProject>
