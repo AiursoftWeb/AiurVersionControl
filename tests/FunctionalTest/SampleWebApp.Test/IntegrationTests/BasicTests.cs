@@ -20,7 +20,7 @@ namespace SampleWebApp.Test.IntegrationTests
             _port = Network.GetAvailablePort();
             _endpointUrl = $"ws://localhost:{_port}/repo.ares";
         }
-        
+
         [TestInitialize]
         public async Task CreateServer()
         {
@@ -165,6 +165,8 @@ namespace SampleWebApp.Test.IntegrationTests
             var repoB = new Repository<LogItem>();
             await new WebSocketRemote<LogItem>(_endpointUrl)
                 .AttachAsync(repoB);
+
+            await Task.Delay(50);
 
             repoA.Commit(new LogItem { Message = "G" });
             repoA.Commit(new LogItem { Message = "H" });
