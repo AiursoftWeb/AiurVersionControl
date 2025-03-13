@@ -1,5 +1,6 @@
 # AiurVersionControl
 
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/-/blob/master/LICENSE)
 [![Pipeline stat](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/badges/master/pipeline.svg)](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/-/pipelines)
 [![Test Coverage](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/badges/master/coverage.svg)](https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol/-/pipelines)
 [![NuGet version](https://img.shields.io/nuget/v/Aiursoft.AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)
@@ -7,7 +8,7 @@
 
 A powerful collection sync framework that powers Kahla.
 
-## Install
+## How to install
 
 | Name                       | Download                                                                                                                                                                                     | Description                                                                        |
 |----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
