@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>9.0.8</Version>
+    <Version>9.0.9</Version>
     <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurEventSyncer.WebExtends</AssemblyName>
     <RootNamespace>Aiursoft.AiurEventSyncer.WebExtends</RootNamespace>
@@ -28,7 +28,7 @@
     <ProjectReference Include="..\Aiursoft.AiurEventSyncer\Aiursoft.AiurEventSyncer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.AiurObserver.WebSocket.Server" Version="9.0.4" />
+    <PackageReference Include="Aiursoft.AiurObserver.WebSocket.Server" Version="9.0.5" />
     <PackageReference Include="Aiursoft.WebTools" Version="9.0.3" />
   </ItemGroup>
 </Project>
