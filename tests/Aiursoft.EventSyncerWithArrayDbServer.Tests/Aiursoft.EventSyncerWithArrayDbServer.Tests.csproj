@@ -10,16 +10,16 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aiursoft.ArrayDb.Partitions" Version="9.0.0" />
-    <PackageReference Include="Aiursoft.InMemoryKvDb" Version="9.0.5" />
+    <PackageReference Include="Aiursoft.InMemoryKvDb" Version="9.0.6" />
     <PackageReference Include="coverlet.collector" Version="6.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="JunitXml.TestLogger" Version="6.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.9.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.9.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.9.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.9.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Aiursoft.AiurEventSyncer.WebExtends\Aiursoft.AiurEventSyncer.WebExtends.csproj" />
