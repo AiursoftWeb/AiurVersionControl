@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aiursoft.ArrayDb.Partitions" Version="9.0.0" />
-    <PackageReference Include="Aiursoft.InMemoryKvDb" Version="9.0.6" />
+    <PackageReference Include="Aiursoft.InMemoryKvDb" Version="9.0.7" />
     <PackageReference Include="coverlet.collector" Version="6.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
