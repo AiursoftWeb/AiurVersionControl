@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>9.0.0</Version>
+    <Version>9.0.1</Version>
     <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurStore</AssemblyName>
     <RootNamespace>Aiursoft.AiurStore</RootNamespace>
@@ -21,7 +21,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <None Include="../../README.md" Pack="true" PackagePath="." />
   </ItemGroup>
 </Project>
