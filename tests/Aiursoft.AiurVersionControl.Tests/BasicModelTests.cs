@@ -1,7 +1,6 @@
 ﻿using Aiursoft.AiurVersionControl.Models;
 using Aiursoft.AiurVersionControl.Remotes;
 using Aiursoft.AiurVersionControl.Tests.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.AiurVersionControl.Tests
 {

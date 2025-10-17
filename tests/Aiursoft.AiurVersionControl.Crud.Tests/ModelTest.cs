@@ -2,7 +2,6 @@
 using Aiursoft.AiurVersionControl.Crud.Modifications;
 using Aiursoft.AiurVersionControl.Crud.Tests.Models;
 using Aiursoft.AiurVersionControl.Remotes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.AiurVersionControl.Crud.Tests
 {

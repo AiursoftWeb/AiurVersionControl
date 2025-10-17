@@ -23,7 +23,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.EventSyncerWithArrayDbServer.Tests;
 
@@ -76,7 +75,7 @@ public class ArrayDbAsWebServerTests
 
         // Reflect to client 2.
         await Task.Delay(1500);
-        Assert.AreEqual(1, repo2.Commits.Count);
+        Assert.HasCount(1, repo2.Commits);
         Assert.AreEqual("Hello, world!", repo2.Head.Item.Content);
 
         // Prepare client 3.
@@ -87,7 +86,7 @@ public class ArrayDbAsWebServerTests
 
         // Client 3 gets the message.
         await Task.Delay(1500);
-        Assert.AreEqual(1, repo3.Commits.Count);
+        Assert.HasCount(1, repo3.Commits);
         Assert.AreEqual("Hello, world!", repo3.Head.Item.Content);
 
         // Client 2 drop.
@@ -102,11 +101,11 @@ public class ArrayDbAsWebServerTests
 
         // Reflect to client 1.
         await Task.Delay(1500);
-        Assert.AreEqual(2, repo1.Commits.Count);
+        Assert.HasCount(2, repo1.Commits);
         Assert.AreEqual("Hello, world! 2", repo1.Head.Item.Content);
 
         // Not reflect to client 2.
-        Assert.AreEqual(1, repo2.Commits.Count);
+        Assert.HasCount(1, repo2.Commits);
 
         // Client 2 commit locally (Not sync to server).
         repo2.Commit(new ChatMessage
@@ -117,9 +116,9 @@ public class ArrayDbAsWebServerTests
 
         // Not reflect to client 1 and client 3.
         await Task.Delay(1500);
-        Assert.AreEqual(2, repo1.Commits.Count);
-        Assert.AreEqual(2, repo2.Commits.Count);
-        Assert.AreEqual(2, repo3.Commits.Count);
+        Assert.HasCount(2, repo1.Commits);
+        Assert.HasCount(2, repo2.Commits);
+        Assert.HasCount(2, repo3.Commits);
         Assert.AreEqual("Hello, world! 2", repo1.Head.Item.Content);
         Assert.AreEqual("Hello, world! 3", repo2.Head.Item.Content);
         Assert.AreEqual("Hello, world! 2", repo3.Head.Item.Content);
@@ -129,9 +128,9 @@ public class ArrayDbAsWebServerTests
 
         // All has 3 messages: Hw, Hw2, Hw3
         await Task.Delay(1500);
-        Assert.AreEqual(3, repo1.Commits.Count);
-        Assert.AreEqual(3, repo2.Commits.Count);
-        Assert.AreEqual(3, repo3.Commits.Count);
+        Assert.HasCount(3, repo1.Commits);
+        Assert.HasCount(3, repo2.Commits);
+        Assert.HasCount(3, repo3.Commits);
         Assert.AreEqual("Hello, world! 3", repo1.Head.Item.Content);
         Assert.AreEqual("Hello, world! 3", repo2.Head.Item.Content);
         Assert.AreEqual("Hello, world! 3", repo3.Head.Item.Content);

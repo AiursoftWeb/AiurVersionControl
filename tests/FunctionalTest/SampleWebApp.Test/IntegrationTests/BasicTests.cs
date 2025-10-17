@@ -2,7 +2,6 @@
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.CSTools.Tools;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SampleWebApp.Models;
 using SampleWebApp.Services;
 using static Aiursoft.WebTools.Extends;

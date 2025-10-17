@@ -1,5 +1,4 @@
 ﻿using Aiursoft.AiurStore.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.AiurStore.Tests.Tools
 {
@@ -11,7 +10,7 @@ namespace Aiursoft.AiurStore.Tests.Tools
             {
                 Assert.AreEqual(db.ToArray()[i], array[i]);
             }
-            Assert.AreEqual(db.Count(), array.Length);
+            Assert.HasCount(db.Count(), array);
         }
     }
 }
