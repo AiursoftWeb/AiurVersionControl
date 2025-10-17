@@ -1,6 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.ConnectionProviders;
 using Aiursoft.AiurEventSyncer.Tests.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.AiurEventSyncer.Tests
 {

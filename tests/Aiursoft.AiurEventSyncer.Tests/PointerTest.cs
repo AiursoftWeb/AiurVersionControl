@@ -2,7 +2,6 @@
 using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.AiurEventSyncer.Tests.Tools;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.AiurEventSyncer.Tests
 {
@@ -32,17 +31,17 @@ namespace Aiursoft.AiurEventSyncer.Tests
             var localRepo = new Repository<int>();
             var origin = await new ObjectRemote<int>(_demoRepo).AttachAsync(localRepo);
 
-            Assert.AreEqual(origin.PullPointer, null);
-            Assert.AreEqual(origin.PushPointer, null);
-            Assert.AreEqual(localRepo.Head?.Item, null);
-            Assert.AreEqual(_demoRepo.Head.Item, 3);
+            Assert.IsNull(origin.PullPointer);
+            Assert.IsNull(origin.PushPointer);
+            Assert.IsNull(localRepo.Head?.Item);
+            Assert.AreEqual(3, _demoRepo.Head.Item);
 
             await origin.PullAsync();
 
             Assert.IsNotNull(origin.PullPointer);
             Assert.IsNotNull(origin.PushPointer);
-            Assert.AreEqual(localRepo.Head?.Item, 3);
-            Assert.AreEqual(_demoRepo.Head.Item, 3);
+            Assert.AreEqual(3, localRepo.Head?.Item);
+            Assert.AreEqual(3, _demoRepo.Head.Item);
         }
 
         [TestMethod]
@@ -52,23 +51,23 @@ namespace Aiursoft.AiurEventSyncer.Tests
             var localRepo = _demoRepo;
             var origin = await new ObjectRemote<int>(remoteRepo).AttachAsync(localRepo);
 
-            Assert.AreEqual(origin.PullPointer, null);
-            Assert.AreEqual(origin.PushPointer, null);
-            Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(remoteRepo.Head?.Item, null);
+            Assert.IsNull(origin.PullPointer);
+            Assert.IsNull(origin.PushPointer);
+            Assert.AreEqual(3, localRepo.Head.Item);
+            Assert.IsNull(remoteRepo.Head?.Item);
 
             await origin.PushAsync();
 
-            Assert.AreEqual(origin.PullPointer, null);
+            Assert.IsNull(origin.PullPointer);
             Assert.IsNotNull(origin.PushPointer);
-            Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(remoteRepo.Head?.Item, 3);
+            Assert.AreEqual(3, localRepo.Head.Item);
+            Assert.AreEqual(3, remoteRepo.Head?.Item);
 
             await origin.PullAsync();
             Assert.IsNotNull(origin.PullPointer);
             Assert.IsNotNull(origin.PushPointer);
-            Assert.AreEqual(localRepo.Head.Item, 3);
-            Assert.AreEqual(remoteRepo.Head?.Item, 3);
+            Assert.AreEqual(3, localRepo.Head.Item);
+            Assert.AreEqual(3, remoteRepo.Head?.Item);
         }
 
         [TestMethod]
@@ -87,7 +86,7 @@ namespace Aiursoft.AiurEventSyncer.Tests
             await origin.PushAsync();
 
             Assert.AreEqual(origin.PushPointer.Id, square1.Id);
-            Assert.AreEqual(origin.PullPointer.Id, CommitId3);
+            Assert.AreEqual(CommitId3, origin.PullPointer.Id);
 
             var tri1 = new Commit<int> { Item = 11111 };
             var tri2 = new Commit<int> { Item = 22222 };
@@ -123,7 +122,7 @@ namespace Aiursoft.AiurEventSyncer.Tests
             await origin.PushAsync();
 
             Assert.AreEqual(origin.PushPointer.Id, square1.Id);
-            Assert.AreEqual(origin.PullPointer.Id, CommitId3);
+            Assert.AreEqual(CommitId3, origin.PullPointer.Id);
             localRepo.Assert(1, 2, 3, 111);
             remoteRepo.Assert(1, 2, 3, 111);
 
@@ -131,7 +130,7 @@ namespace Aiursoft.AiurEventSyncer.Tests
             localRepo.CommitObject(square2);
 
             Assert.AreEqual(origin.PushPointer.Id, square1.Id);
-            Assert.AreEqual(origin.PullPointer.Id, CommitId3);
+            Assert.AreEqual(CommitId3, origin.PullPointer.Id);
             localRepo.Assert(1, 2, 3, 111, 222);
             remoteRepo.Assert(1, 2, 3, 111);
 

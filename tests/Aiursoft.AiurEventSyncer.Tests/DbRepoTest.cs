@@ -1,7 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.AiurEventSyncer.Tests.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.AiurEventSyncer.Tests
 {
@@ -24,9 +23,9 @@ namespace Aiursoft.AiurEventSyncer.Tests
                 await Task.Delay(10);
             }
 
-            Assert.IsTrue(localRepo.Commits.First().Item.Name == "Love");
-            Assert.IsTrue(dbRepo.Commits.First().Item.Name == "Love");
-            Assert.IsTrue(localRepo2.Commits.First().Item.Name == "Love");
+            Assert.AreEqual("Love", localRepo.Commits.First().Item.Name);
+            Assert.AreEqual("Love", dbRepo.Commits.First().Item.Name);
+            Assert.AreEqual("Love", localRepo2.Commits.First().Item.Name);
         }
     }
 }
