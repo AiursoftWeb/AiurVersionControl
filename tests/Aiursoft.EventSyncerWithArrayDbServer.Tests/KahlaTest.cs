@@ -24,6 +24,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+[assembly: DoNotParallelize]
+
 namespace Aiursoft.EventSyncerWithArrayDbServer.Tests;
 
 [TestClass]
@@ -122,7 +124,7 @@ public class ArrayDbAsWebServerTests
         Assert.AreEqual("Hello, world! 2", repo1.Head.Item.Content);
         Assert.AreEqual("Hello, world! 3", repo2.Head.Item.Content);
         Assert.AreEqual("Hello, world! 2", repo3.Head.Item.Content);
-        
+
         // Client 2 reconnect.
         await ws2.AttachAsync(repo2);
 
@@ -166,7 +168,7 @@ public class ChatMessageInDb : PartitionedBucketEntity<int>
     public Guid SenderId { get; set; } = Guid.Empty;
 
     public string Id { get; set; } = Guid.NewGuid().ToString("D");
-    
+
     public DateTime CreationTime { get; set; } = DateTime.UtcNow;
 
     public ChatMessage ToClientView()
@@ -243,13 +245,13 @@ public class ServerController(
         var messagesDb = messages.GetPartitionById(threadId);
         var threadReflector = memoryDb.GetThreadNewMessagesChannel(threadId);
         var lockObject = locks.GetThreadMessagesLock(threadId);
-        
+
         logger.LogInformation("User with ID: {UserId} is trying to connect to thread {ThreadId}.", userId, threadId);
         var socket = await HttpContext.AcceptWebSocketClient();
 
         ISubscription? reflectorSubscription;
         ISubscription? clientSubscription;
-        
+
         var clientPushConsumer = new ClientPushConsumer(
             logger,
             lockObject,
@@ -259,7 +261,7 @@ public class ServerController(
         var reflectorConsumer = new ThreadReflectConsumer(
             logger,
             socket);
-        
+
         lockObject.EnterReadLock();
         try
         {
@@ -300,7 +302,7 @@ public class ServerController(
             await socket.Close(HttpContext.RequestAborted);
         }
     }
-    
+
     private static (int startOffset, int readLength) GetInitialReadLocation(
         IObjectBucket<ChatMessageInDb> messagesDb,
         string start)
@@ -311,7 +313,7 @@ public class ServerController(
         if (!string.IsNullOrWhiteSpace(start))
         {
             startLocation = messagesDb.Count;
-            
+
             // TODO: Really really bad performance. O(n) search.
             // Refactor required. Replace this with a hash table with LRU.
             foreach (var message in messagesDb.AsReverseEnumerable())
