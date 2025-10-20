@@ -6,6 +6,8 @@ using SampleWebApp.Models;
 using SampleWebApp.Services;
 using static Aiursoft.WebTools.Extends;
 
+[assembly:DoNotParallelize]
+
 namespace SampleWebApp.Test.IntegrationTests
 {
     [TestClass]

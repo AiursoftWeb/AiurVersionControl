@@ -2,6 +2,8 @@
 using Aiursoft.AiurVersionControl.Remotes;
 using Aiursoft.AiurVersionControl.Tests.Models;
 
+[assembly:DoNotParallelize]
+
 namespace Aiursoft.AiurVersionControl.Tests
 {
     [TestClass]

@@ -2,6 +2,8 @@
 using Aiursoft.AiurStore.Providers;
 using Aiursoft.AiurStore.Tests.Tools;
 
+[assembly:DoNotParallelize]
+
 namespace Aiursoft.AiurStore.Tests
 {
     [TestClass]
