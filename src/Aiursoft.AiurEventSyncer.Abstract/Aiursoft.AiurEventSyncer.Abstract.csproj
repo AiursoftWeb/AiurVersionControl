@@ -15,9 +15,9 @@
     <PackageId>Aiursoft.AiurEventSyncer.Abstract</PackageId>
     <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol</PackageProjectUrl>
+    <PackageProjectUrl>https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://gitlab.aiursoft.cn/aiursoft/aiurversioncontrol.git</RepositoryUrl>
+    <RepositoryUrl>https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol.git</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
