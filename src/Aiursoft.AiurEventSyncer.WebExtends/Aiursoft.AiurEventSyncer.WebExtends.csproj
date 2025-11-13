@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>9.0.18</Version>
-    <TargetFramework>net9.0</TargetFramework>
+    <Version>10.0.0</Version>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurEventSyncer.WebExtends</AssemblyName>
     <RootNamespace>Aiursoft.AiurEventSyncer.WebExtends</RootNamespace>
     <IsTestProject>false</IsTestProject>
