@@ -21,7 +21,7 @@ A powerful collection sync framework that powers Kahla.
 
 Requirements about how to run
 
-1. [.NET 9 SDK](http://dot.net/)
+1. [.NET 10 SDK](http://dot.net/)
 2. Execute `dotnet run` to run the app
 
 ## Run in Microsoft Visual Studio
