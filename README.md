@@ -4,7 +4,7 @@
 [![Pipeline stat](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/badges/master/pipeline.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/pipelines)
 [![Test Coverage](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/badges/master/coverage.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/pipelines)
 [![NuGet version](https://img.shields.io/nuget/v/Aiursoft.AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)
-[![ManHours](https://manhours.aiursoft.com/r/gitlab.aiursoft.com/aiursoft/aiurversioncontrol.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/commits/master?ref_type=heads)
+[![Man hours](https://manhours.aiursoft.com/r/gitlab.aiursoft.com/aiursoft/aiurversioncontrol.svg)](https://manhours.aiursoft.com/r/gitlab.aiursoft.com/aiursoft/aiurversioncontrol.html)
 
 A powerful collection sync framework that powers Kahla.
 
