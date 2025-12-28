@@ -7,66 +7,102 @@ namespace Aiursoft.AiurStore.Providers
     public class MemoryAiurStoreDb<T> : InOutDatabase<T>
     {
         private readonly LinkedList<T> _store = new();
+        private readonly object _lock = new();
         public override event NotifyCollectionChangedEventHandler CollectionChanged;
 
         private LinkedListNode<T> SearchFromLast(Predicate<T> prefix)
         {
-            var last = _store.Last;
-            while (last != null)
+            lock (_lock)
             {
-                if (prefix(last.Value))
+                var last = _store.Last;
+                while (last != null)
                 {
-                    return last;
+                    if (prefix(last.Value))
+                    {
+                        return last;
+                    }
+
+                    last = last.Previous;
                 }
-                last = last.Previous;
             }
             throw new InvalidOperationException("Result not found.");
         }
 
         public override IEnumerable<T> GetAll()
         {
-            return _store;
+            lock (_lock)
+            {
+                return _store.ToList();
+            }
         }
 
         public override IEnumerable<T> GetAllAfter(Predicate<T> prefix)
         {
-            var node = SearchFromLast(prefix);
-            return ListExtends.YieldAfter(node);
+            lock (_lock)
+            {
+                var node = SearchFromLast(prefix);
+                return ListExtends.YieldAfter(node).ToList();
+            }
         }
 
         public override IEnumerable<T> GetAllAfter(T afterWhich)
         {
-            if (afterWhich == null)
+            lock (_lock)
             {
-                return _store;
-            }
+                if (afterWhich == null)
+                {
+                    return _store.ToList();
+                }
 
-            var start = _store.FindLast(afterWhich);
-            return ListExtends.YieldAfter(start);
+                var start = _store.FindLast(afterWhich);
+                return ListExtends.YieldAfter(start).ToList();
+            }
         }
 
         public override void Add(T newItem)
         {
-            _store.AddLast(newItem);
+            lock (_lock)
+            {
+                _store.AddLast(newItem);
+            }
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem));
         }
 
         public override void InsertAfter(T afterWhich, T newItem)
         {
+            lock (_lock)
+            {
+                if (afterWhich == null)
+                {
+                    _store.AddFirst(newItem);
+                }
+                else
+                {
+                    var which = _store.FindLast(afterWhich);
+                    if (which == null) throw new KeyNotFoundException($"Insertion point {nameof(afterWhich)} not found.");
+                    _store.AddAfter(which, newItem);
+                }
+            }
+
             if (afterWhich == null)
             {
-                _store.AddFirst(newItem);
                 CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, 0));
             }
             else
             {
-                var which = _store.FindLast(afterWhich);
-                if (which == null) throw new KeyNotFoundException($"Insertion point {nameof(afterWhich)} not found.");
-                _store.AddAfter(which, newItem);
                 CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
 
-        public override int Count => _store.Count;
+        public override int Count
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _store.Count;
+                }
+            }
+        }
     }
 }

@@ -69,7 +69,9 @@ namespace Aiursoft.AiurVersionControl.Tests
             repo.ApplyChange(new AddModification(5));
             repo.ApplyChange(new AddModification(50));
 
-            await Task.Delay(10);
+            await repo.WaitAsync();
+            await repo2.WaitAsync();
+            await repo.WaitAsync();
             var workspacePointerNew = repo.WorkSpace;
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
             Assert.AreEqual(55, repo.WorkSpace.NumberStore);

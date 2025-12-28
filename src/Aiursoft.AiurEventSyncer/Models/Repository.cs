@@ -28,6 +28,11 @@ namespace Aiursoft.AiurEventSyncer.Models
             _commits = dbProvider;
         }
 
+        public async Task WaitAsync()
+        {
+            await _notifyingQueue.WaitAsync();
+        }
+
         public void Commit(T content)
         {
             CommitObject(new Commit<T> { Item = content });
@@ -50,32 +55,36 @@ namespace Aiursoft.AiurEventSyncer.Models
         public void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord)
         {
             var newCommitsAppended = new List<Commit<T>>();
-            var pushingPushPointer = false;
             var inserted = false;
 
             lock (this)
             {
                 foreach (var commit in subtraction)
                 {
+                    var pushingPushPointer = false;
                     var (resultMode, pointer) = OnPulledCommit(commit, remoteRecord.PullPointer);
-                    if (remoteRecord.PullPointer == remoteRecord.PushPointer)
+                    lock (remoteRecord.StateLock)
                     {
-                        pushingPushPointer = true;
-                    }
-                    if (remoteRecord.PullPointer != pointer)
-                    {
-                        remoteRecord.PullPointer = pointer;
-                        remoteRecord.OnPullPointerMovedForwardOnce(pointer);
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Update pointer failed. Seems it inserted to the same position.");
+                        if (remoteRecord.PullPointer == remoteRecord.PushPointer)
+                        {
+                            pushingPushPointer = true;
+                        }
+                        if (remoteRecord.PullPointer != pointer)
+                        {
+                            remoteRecord.PullPointer = pointer;
+                            remoteRecord.OnPullPointerMovedForwardOnce(pointer);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Update pointer failed. Seems it inserted to the same position.");
+                        }
+
+                        if (pushingPushPointer)
+                        {
+                            remoteRecord.PushPointer = remoteRecord.PullPointer;
+                        }
                     }
 
-                    if (pushingPushPointer)
-                    {
-                        remoteRecord.PushPointer = remoteRecord.PullPointer;
-                    }
                     if (resultMode == InsertMode.Appended)
                     {
                         newCommitsAppended.Add(commit);
