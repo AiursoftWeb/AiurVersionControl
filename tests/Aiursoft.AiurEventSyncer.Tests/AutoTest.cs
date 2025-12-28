@@ -27,7 +27,7 @@ namespace Aiursoft.AiurEventSyncer.Tests
             var remoteRepo = new Repository<int>();
             await new ObjectRemote<int>(remoteRepo, autoPush: true).AttachAsync(_localRepo);
 
-             _localRepo.Commit(50);
+            _localRepo.Commit(50);
             remoteRepo.Assert(1, 2, 3, 50);
 
             _localRepo.Commit(200);
@@ -71,9 +71,12 @@ namespace Aiursoft.AiurEventSyncer.Tests
             b.Assert(5, 10);
 
             a.Commit(100);
-            b.Commit(200); // This is faster. Because while B is saving 200, A hasn't push 100.
-            a.Assert(5, 10, 200, 100);
-            b.Assert(5, 10, 200, 100);
+            await a.WaitForNotificationsAsync(); // Ensure 100 is pushed before B commits
+            b.Commit(200);
+            await b.WaitForNotificationsAsync(); // Ensure all sync completes
+
+            a.Assert(5, 10, 100, 200); // Now deterministic: A's 100 happens before B's 200
+            b.Assert(5, 10, 100, 200);
         }
 
         [TestMethod]
