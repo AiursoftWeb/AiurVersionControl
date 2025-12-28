@@ -28,13 +28,13 @@ namespace Aiursoft.AiurEventSyncer.ConnectionProviders
 
         public async Task PullAndMonitor(Func<List<Commit<T>>, Task> onData, Func<string> startPositionFactory, Func<Task> onConnected, bool monitorInCurrentThread)
         {
+            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onData);
             var pulledData = await Download(startPositionFactory());
             if (pulledData.Any())
             {
                 await onData(pulledData);
             }
             await onConnected();
-            _subscription = _fakeRemoteRepository.AppendCommitsHappened.Subscribe(onData);
             if (monitorInCurrentThread)
             {
                 await Task.Delay(int.MaxValue);

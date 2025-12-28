@@ -72,6 +72,14 @@ namespace Aiursoft.AiurVersionControl.Tests
             await repo.WaitAsync();
             await repo2.WaitAsync();
             await repo.WaitAsync();
+            
+            int retries = 0;
+            while (remote.RemoteWorkSpace.NumberStore != 55 && retries < 100)
+            {
+                await Task.Delay(20);
+                retries++;
+            }
+
             var workspacePointerNew = repo.WorkSpace;
             Assert.AreEqual(55, remote.RemoteWorkSpace.NumberStore);
             Assert.AreEqual(55, repo.WorkSpace.NumberStore);
