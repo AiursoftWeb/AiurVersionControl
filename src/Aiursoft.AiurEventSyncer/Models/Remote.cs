@@ -11,6 +11,7 @@ namespace Aiursoft.AiurEventSyncer.Models
         public Commit<T> PushPointer { get; set; }
         protected SemaphoreSlim PushLock { get; } = new(1);
         protected SemaphoreSlim PullLock { get; } = new(1);
+        public object StateLock { get; } = new();
         protected IRepository<T> ContextRepository { get; set; }
         protected ISubscription AutoPushsubscription { get; set; }
         public IConnectionProvider<T> ConnectionProvider { get; set; }
@@ -21,7 +22,13 @@ namespace Aiursoft.AiurEventSyncer.Models
             bool autoPull = false)
         {
             ConnectionProvider = provider;
-            ConnectionProvider.OnReconnecting += () => this.PushPointer = this.PullPointer;
+            ConnectionProvider.OnReconnecting += () =>
+            {
+                lock (StateLock)
+                {
+                    this.PushPointer = this.PullPointer;
+                }
+            };
             AutoPush = autoPush;
             AutoPull = autoPull;
         }
@@ -44,7 +51,13 @@ namespace Aiursoft.AiurEventSyncer.Models
                     await PullLock.WaitAsync();
                     ContextRepository.OnPulled(data.ToList(), this);
                     PullLock.Release();
-                }, () => PullPointer?.Id, onConnected: () => AutoPush ? PushAsync() : Task.CompletedTask, monitorInCurrentThread);
+                }, () =>
+                {
+                    lock (StateLock)
+                    {
+                        return PullPointer?.Id;
+                    }
+                }, onConnected: () => AutoPush ? PushAsync() : Task.CompletedTask, monitorInCurrentThread);
             }
             return this;
         }
@@ -66,13 +79,21 @@ namespace Aiursoft.AiurEventSyncer.Models
         public async Task PushAsync()
         {
             await PushLock.WaitAsync();
-            var commitsToPush = ContextRepository.Commits.GetAllAfter(PushPointer).ToList();
+            Commit<T> currentPushPointer;
+            lock (StateLock)
+            {
+                currentPushPointer = PushPointer;
+            }
+            var commitsToPush = ContextRepository.Commits.GetAllAfter(currentPushPointer).ToList();
             if (commitsToPush.Any())
             {
                 var uploaded = await ConnectionProvider.Upload(commitsToPush);
                 if(uploaded)
                 {
-                    PushPointer = commitsToPush.Last();
+                    lock (StateLock)
+                    {
+                        PushPointer = commitsToPush.Last();
+                    }
                 }
             }
             PushLock.Release();
@@ -85,7 +106,12 @@ namespace Aiursoft.AiurEventSyncer.Models
                 throw new ArgumentNullException(nameof(ContextRepository), "Please add this remote to a repository.");
             }
             await PullLock.WaitAsync();
-            var downloadResult = await ConnectionProvider.Download(PullPointer?.Id);
+            string currentPullPointerId;
+            lock (StateLock)
+            {
+                currentPullPointerId = PullPointer?.Id;
+            }
+            var downloadResult = await ConnectionProvider.Download(currentPullPointerId);
             if (downloadResult.Any())
             {
                 ContextRepository.OnPulled(downloadResult, this);

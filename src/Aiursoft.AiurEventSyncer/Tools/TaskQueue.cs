@@ -22,6 +22,15 @@
             });
         }
 
+        public async Task WaitAsync()
+        {
+            while (_pendingTaskFactories.Any())
+            {
+                await _engine;
+            }
+            await _engine;
+        }
+
         private async Task RunTasksInQueue()
         {
             var tasksInFlight = Task.CompletedTask;

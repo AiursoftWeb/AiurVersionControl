@@ -9,5 +9,6 @@ namespace Aiursoft.AiurEventSyncer.Abstract
         IAsyncObservable<List<Commit<T>>> AppendCommitsHappened { get; }
         void OnPulled(IEnumerable<Commit<T>> subtraction, IRemote<T> remoteRecord);
         void OnPushed(IEnumerable<Commit<T>> commitsToPush);
+        Task WaitAsync();
     }
 }

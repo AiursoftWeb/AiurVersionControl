@@ -81,11 +81,10 @@ namespace Aiursoft.AiurVersionControl.Crud.Tests
             await remote.AttachAsync(repoB);
 
             // Wait for initial sync to complete
-            await Task.Delay(100); // Brief delay for async operations to start
-            while (repo.WorkSpace.Count() != 6 || repoB.WorkSpace.Count() != 6)
-            {
-                await Task.Delay(50);
-            }
+            await repo.WaitAsync();
+            await repoB.WaitAsync();
+            await repo.WaitAsync();
+            await repoB.WaitAsync();
 
             Assert.AreEqual(6, repo.WorkSpace.Count());
             Assert.AreEqual(6, repoB.WorkSpace.Count());
