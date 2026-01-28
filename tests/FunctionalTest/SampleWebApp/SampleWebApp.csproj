@@ -12,6 +12,6 @@
     <ProjectReference Include="..\..\..\src\Aiursoft.AiurEventSyncer.WebExtends\Aiursoft.AiurEventSyncer.WebExtends.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.Webtools" Version="10.0.7" />
+    <PackageReference Include="Aiursoft.Webtools" Version="10.0.8" />
   </ItemGroup>
 </Project>
