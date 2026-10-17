@@ -1,6 +1,6 @@
 ﻿using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurStore.Models;
-using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.Crud;
 using Aiursoft.AiurVersionControl.Models;
 using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
 using Aiursoft.AiurVersionControl.SampleWPF.Models;

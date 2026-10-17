@@ -1,4 +1,4 @@
-﻿using Aiursoft.AiurVersionControl.CRUD;
+﻿using Aiursoft.AiurVersionControl.Crud;
 using Aiursoft.AiurVersionControl.SampleWPF.Models;
 using Aiursoft.AiurVersionControl.SampleWPF.Windows;
 using System.Windows;
