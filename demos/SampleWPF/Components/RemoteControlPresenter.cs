@@ -1,5 +1,5 @@
 ﻿using Aiursoft.AiurEventSyncer.ConnectionProviders;
-using Aiursoft.AiurVersionControl.CRUD;
+using Aiursoft.AiurVersionControl.Crud;
 using Aiursoft.AiurVersionControl.Models;
 using Aiursoft.AiurVersionControl.Remotes;
 using Aiursoft.AiurVersionControl.SampleWPF.Libraries;
