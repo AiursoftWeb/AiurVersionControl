@@ -4,7 +4,7 @@
 [![Pipeline stat](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/badges/master/pipeline.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/pipelines)
 [![Test Coverage](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/badges/master/coverage.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/pipelines)
 [![NuGet version](https://img.shields.io/nuget/v/Aiursoft.AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)
-[![Man hours](https://manhours.aiursoft.com/r/gitlab.aiursoft.com/aiursoft/aiurversioncontrol.svg)](https://manhours.aiursoft.com/r/gitlab.aiursoft.com/aiursoft/aiurversioncontrol.html)
+[![Man hours](https://manhours.aiursoft.com/r/github.com/aiursoftweb/aiurversioncontrol.svg)](https://manhours.aiursoft.com/r/github.com/aiursoftweb/aiurversioncontrol.html)
 
 **A powerful, elegant distributed synchronization framework** that brings Git-like version control to any .NET application. Powers [Kahla](https://kahla.app) real-time messaging with **eventual consistency**, **automatic conflict resolution**, and **offline-first capabilities**.
 
