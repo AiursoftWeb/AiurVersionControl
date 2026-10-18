@@ -1,6 +1,6 @@
 # AiurVersionControl
 
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/blob/master/LICENSE)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/AiursoftWeb/aiurversioncontrol/blob/master/LICENSE)
 [![Pipeline stat](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/badges/master/pipeline.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/pipelines)
 [![Test Coverage](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/badges/master/coverage.svg)](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol/-/pipelines)
 [![NuGet version](https://img.shields.io/nuget/v/Aiursoft.AiurVersionControl.svg?style=flat-square)](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)
@@ -435,7 +435,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 - **Live Demo**: Try the [Snake Game](./demos/Aiursoft.SnakeGame) to see real-time sync in action
 - **NuGet Packages**: [Aiursoft.AiurVersionControl](https://www.nuget.org/packages/Aiursoft.AiurVersionControl/)
-- **GitLab Repository**: [gitlab.aiursoft.com/aiursoft/aiurversioncontrol](https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol)
+- **GitHub Repository**: [github.com/AiursoftWeb/aiurversioncontrol](https://github.com/AiursoftWeb/aiurversioncontrol)
 - **Kahla Application**: [kahla.app](https://kahla.app) - See it in production
 
 ---
