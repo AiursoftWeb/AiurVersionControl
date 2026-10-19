@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>10.0.3</Version>
+    <Version>10.0.4</Version>
     <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>Aiursoft.AiurVersionControl</AssemblyName>
     <RootNamespace>Aiursoft.AiurVersionControl</RootNamespace>
@@ -15,9 +15,9 @@
     <PackageId>Aiursoft.AiurVersionControl</PackageId>
     <PackageTags>nuget package dotnet csproj dependencies</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/AiursoftWeb/aiurversioncontrol</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://gitlab.aiursoft.com/aiursoft/aiurversioncontrol.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/AiursoftWeb/aiurversioncontrol.git</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
