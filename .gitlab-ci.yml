@@ -1,9 +1,9 @@
 stages:
+    - s360
     - build
     - validate
     - publish
     - deploy
-    - notify
 
 # Prefer the merge request pipeline once a branch has an open MR, so the same
 # validation suite is not run twice for a single push.
@@ -40,7 +40,6 @@ before_script:
       NUGETEOF
     - "export PATH=$PATH:$HOME/.dotnet/tools"
     - "which jb || dotnet tool install JetBrains.ReSharper.GlobalTools --global $CUSTOM_NUGET_ARGS -v d"
-    - "dotnet tool update Aiursoft.S360.Client --global $CUSTOM_NUGET_ARGS"
     - "which reportgenerator || dotnet tool install dotnet-reportgenerator-globaltool --global $CUSTOM_NUGET_ARGS -v d"
     - 'echo "Hostname: $(hostname)"'
     - "dotnet --info"
@@ -53,27 +52,32 @@ variables:
     S360_CHECK_KEY: ""
     CUSTOM_NUGET_ARGS: "--add-source https://nuget.aiursoft.com/v3/index.json --configfile ./nuget.config"
 
-restore:
-    stage: build
+s360:
+    stage: s360
     script:
-        - dotnet restore "$SOLUTION_FILE" --disable-parallel --no-cache --configfile nuget.config
+        - dotnet tool update Aiursoft.S360.Client --global $CUSTOM_NUGET_ARGS
+        - dotnet restore "$SOLUTION_FILE" --use-lock-file --disable-parallel --no-cache --configfile nuget.config --packages "$CI_PROJECT_DIR/obj/s360-packages"
+        - s360 check --path "$SOLUTION_FILE" --ecosystem nuget --purpose "$S360_PURPOSE"
+    artifacts:
+        expire_in: 1 day
+        paths:
+            - "**/packages.lock.json"
     retry:
         max: 2
-        when: script_failure
+        # Policy rejection must stop immediately, without retrying the audit.
+        when: runner_system_failure
 
 build:
     stage: build
     needs:
-        - restore
+        - s360
     script:
-        # Audit and compile the same restore output in this job. Shared caches
-        # retain their original source even after changing nuget.config.
-        - dotnet restore "$SOLUTION_FILE" --disable-parallel --no-cache --configfile nuget.config --packages "$CI_PROJECT_DIR/obj/s360-packages"
-        - s360 check --path "$SOLUTION_FILE" --ecosystem nuget --purpose "$S360_PURPOSE"
+        # Job directories differ. Restore the audited versions and content hashes
+        # from the lock files instead of reusing another job's absolute paths.
+        - dotnet restore "$SOLUTION_FILE" --locked-mode --disable-parallel --no-cache --configfile nuget.config --packages "$CI_PROJECT_DIR/obj/s360-packages"
         - dotnet build "$SOLUTION_FILE" -maxcpucount:1 --no-self-contained --no-restore
     retry:
         max: 2
-        # Policy rejection must stop immediately, without retrying the audit.
         when: runner_system_failure
 
 lint:
@@ -221,46 +225,3 @@ deploy_docker_all:
         - if: '$CI_COMMIT_BRANCH == "master"'
           exists:
               - Dockerfile
-
-# Reporting shares a resource group per project/ref. Counters live on incidents,
-# not in runner caches or GitLab pipeline history. A reporting outage is visible
-# but must not turn a successful product build into a failed build.
-.alertcenter_report:
-    stage: notify
-    dependencies: []
-    resource_group: "alertcenter-$CI_COMMIT_REF_SLUG"
-    timeout: 10m
-    allow_failure: true
-    retry:
-        max: 2
-        when: script_failure
-    before_script:
-        - |
-            set +x
-            test -n "${ALERTCENTER_SERVER:-}" && test -n "${ALERTCENTER_API_KEY:-}" || {
-                echo "AlertCenter server or API key is not configured."
-                exit 1
-            }
-            mkdir -p "$CI_PROJECT_DIR/.alertcenter-tools"
-            cat > "$CI_PROJECT_DIR/.alertcenter-tools/nuget.config" <<'NUGETEOF'
-            <configuration><packageSources><clear/><add key="aiursoft" value="https://nuget.aiursoft.com/v3/index.json"/></packageSources></configuration>
-            NUGETEOF
-            dotnet tool install Aiursoft.AlertCenter.Client --version 10.8.0 --tool-path "$CI_PROJECT_DIR/.alertcenter-tools" --configfile "$CI_PROJECT_DIR/.alertcenter-tools/nuget.config"
-    script:
-        - .alertcenter-tools/alertcenter ci report --result "$ALERTCENTER_RESULT" --server "$ALERTCENTER_SERVER" --api-key "$ALERTCENTER_API_KEY"
-
-alertcenter_failure:
-    extends: .alertcenter_report
-    when: on_failure
-    variables:
-        ALERTCENTER_RESULT: failed
-    rules:
-        - if: '$CI_COMMIT_BRANCH == "master"'
-
-alertcenter_success:
-    extends: .alertcenter_report
-    when: on_success
-    variables:
-        ALERTCENTER_RESULT: success
-    rules:
-        - if: '$CI_COMMIT_BRANCH == "master"'
