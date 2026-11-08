@@ -60,12 +60,12 @@ namespace Aiursoft.AiurEventSyncer.Tests
         public async Task WaitForNotificationsWaitsForSubscriber()
         {
             var repo = new Repository<int>();
-            using var entered = new ManualResetEventSlim();
-            using var release = new ManualResetEventSlim();
+            var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             var subscription = repo.AppendCommitsHappened.Subscribe(_ =>
             {
-                entered.Set();
-                if (!release.Wait(TimeSpan.FromSeconds(5)))
+                entered.TrySetResult();
+                if (!release.Task.Wait(TimeSpan.FromSeconds(5)))
                 {
                     throw new TimeoutException("Subscriber was not released.");
                 }
@@ -76,14 +76,14 @@ namespace Aiursoft.AiurEventSyncer.Tests
             try
             {
                 repo.Commit(100);
-                Assert.IsTrue(entered.Wait(TimeSpan.FromSeconds(5)));
+                await entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
                 completion = repo.WaitAsync();
                 Assert.IsFalse(completion.IsCompleted,
                     "Notification completion must wait for the subscriber.");
             }
             finally
             {
-                release.Set();
+                release.TrySetResult();
                 await completion.WaitAsync(TimeSpan.FromSeconds(5));
                 subscription.Unsubscribe();
             }
