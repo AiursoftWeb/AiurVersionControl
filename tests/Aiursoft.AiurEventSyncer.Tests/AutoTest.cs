@@ -1,6 +1,7 @@
-﻿using Aiursoft.AiurEventSyncer.Models;
+using Aiursoft.AiurEventSyncer.Models;
 using Aiursoft.AiurEventSyncer.Remotes;
 using Aiursoft.AiurEventSyncer.Tests.Tools;
+using Aiursoft.AiurObserver;
 
 [assembly: DoNotParallelize]
 
@@ -56,6 +57,40 @@ namespace Aiursoft.AiurEventSyncer.Tests
         }
 
         [TestMethod]
+        public async Task WaitForNotificationsWaitsForSubscriber()
+        {
+            var repo = new Repository<int>();
+            using var entered = new ManualResetEventSlim();
+            using var release = new ManualResetEventSlim();
+            var subscription = repo.AppendCommitsHappened.Subscribe(_ =>
+            {
+                entered.Set();
+                if (!release.Wait(TimeSpan.FromSeconds(5)))
+                {
+                    throw new TimeoutException("Subscriber was not released.");
+                }
+                return Task.CompletedTask;
+            });
+
+            Task completion = Task.CompletedTask;
+            try
+            {
+                repo.Commit(100);
+                Assert.IsTrue(entered.Wait(TimeSpan.FromSeconds(5)));
+                completion = repo.WaitAsync();
+                Assert.IsFalse(completion.IsCompleted,
+                    "Notification completion must wait for the subscriber.");
+            }
+            finally
+            {
+                release.Set();
+                await completion.WaitAsync(TimeSpan.FromSeconds(5));
+                subscription.Unsubscribe();
+            }
+            repo.Assert(100);
+        }
+
+        [TestMethod]
         public async Task DoubleWaySync()
         {
             var a = new Repository<int>();
@@ -71,7 +106,8 @@ namespace Aiursoft.AiurEventSyncer.Tests
             b.Assert(5, 10);
 
             a.Commit(100);
-            await a.WaitForNotificationsAsync(); // Ensure 100 is pushed before B commits
+            await a.WaitForNotificationsAsync(); // Push 100 to B.
+            await b.WaitForNotificationsAsync(); // Pull its echo before B commits 200.
             b.Commit(200);
             await b.WaitForNotificationsAsync(); // Ensure all sync completes
 

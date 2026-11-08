@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Net.WebSockets;
 using Aiursoft.AiurEventSyncer.Abstract;
 using Aiursoft.AiurEventSyncer.ConnectionProviders.Models;
 using Aiursoft.AiurEventSyncer.Models;
@@ -47,6 +49,16 @@ public class ArrayDbAsWebServerTests
             port: _port);
     }
 
+    private static async Task WaitForCommitsAsync(Repository<ChatMessage> repo, int count)
+    {
+        var elapsed = Stopwatch.StartNew();
+        while (repo.Commits.Count < count && elapsed.Elapsed < TimeSpan.FromSeconds(10))
+        {
+            await Task.Delay(10);
+        }
+        Assert.HasCount(count, repo.Commits);
+    }
+
     [TestMethod]
     public async Task TestPush()
     {
@@ -76,7 +88,7 @@ public class ArrayDbAsWebServerTests
         });
 
         // Reflect to client 2.
-        await Task.Delay(1500);
+        await WaitForCommitsAsync(repo2, 1);
         Assert.HasCount(1, repo2.Commits);
         Assert.AreEqual("Hello, world!", repo2.Head.Item.Content);
 
@@ -87,7 +99,7 @@ public class ArrayDbAsWebServerTests
             .AttachAsync(repo3);
 
         // Client 3 gets the message.
-        await Task.Delay(1500);
+        await WaitForCommitsAsync(repo3, 1);
         Assert.HasCount(1, repo3.Commits);
         Assert.AreEqual("Hello, world!", repo3.Head.Item.Content);
 
@@ -102,7 +114,7 @@ public class ArrayDbAsWebServerTests
         });
 
         // Reflect to client 1.
-        await Task.Delay(1500);
+        await WaitForCommitsAsync(repo1, 2);
         Assert.HasCount(2, repo1.Commits);
         Assert.AreEqual("Hello, world! 2", repo1.Head.Item.Content);
 
@@ -129,7 +141,9 @@ public class ArrayDbAsWebServerTests
         await ws2.AttachAsync(repo2);
 
         // All has 3 messages: Hw, Hw2, Hw3
-        await Task.Delay(1500);
+        await WaitForCommitsAsync(repo1, 3);
+        await WaitForCommitsAsync(repo2, 3);
+        await WaitForCommitsAsync(repo3, 3);
         Assert.HasCount(3, repo1.Commits);
         Assert.HasCount(3, repo2.Commits);
         Assert.HasCount(3, repo3.Commits);
@@ -365,11 +379,9 @@ public class ClientPushConsumer(
                 })
                 .ToArray();
 
-            // Reflect to other clients.
-            await threadReflector.BroadcastAsync(messagesToAddToDb);
-
-            // Save to database.
+            // Persist before notifying clients so reconnects can replay every message.
             messagesDb.Add(messagesToAddToDb);
+            await threadReflector.BroadcastAsync(messagesToAddToDb);
             logger.LogInformation("User with ID: {UserId} pushed {Count} messages. Successfully broadcast to other clients and saved to database.", userIdGuid, messagesToAddToDb.Length);
         }
         finally
@@ -387,11 +399,19 @@ public class ThreadReflectConsumer(
     public async Task Consume(ChatMessageInDb[] newCommits)
     {
         logger.LogInformation("Reflecting {Count} new messages to the client.", newCommits.Length);
-        await socket.Send(JsonTools.Serialize(newCommits.Select(t => new Commit<ChatMessage>
+        try
         {
-            Item = t.ToClientView(),
-            Id = t.Id,
-            CommitTime = t.CreationTime
-        })));
+            await socket.Send(JsonTools.Serialize(newCommits.Select(t => new Commit<ChatMessage>
+            {
+                Item = t.ToClientView(),
+                Id = t.Id,
+                CommitTime = t.CreationTime
+            })));
+        }
+        catch (WebSocketException)
+        {
+            // A disconnect can race subscription cleanup; other clients must still sync.
+            logger.LogDebug("Client disconnected during message reflection.");
+        }
     }
 }

@@ -1,53 +1,49 @@
-﻿namespace Aiursoft.AiurEventSyncer.Tools
+namespace Aiursoft.AiurEventSyncer.Tools
 {
     public class TaskQueue
     {
         public Action<Exception> OnError;
 
-        private readonly SafeQueue<Func<Task>> _pendingTaskFactories = new();
+        private readonly object _queueLock = new();
         private Task _engine = Task.CompletedTask;
 
         public void QueueNew(Func<Task> taskFactory)
         {
-            _pendingTaskFactories.Enqueue(taskFactory);
-            Task.Factory.StartNew(() =>
+            lock (_queueLock)
             {
-                lock (this)
+                var previous = _engine;
+                // Publish the completion task before a notification can start.
+                _engine = Task.Run(async () =>
                 {
-                    if (_engine.IsCompleted)
+                    await previous;
+                    try
                     {
-                        _engine = RunTasksInQueue();
+                        await taskFactory();
                     }
-                }
-            });
+                    catch (Exception e)
+                    {
+                        OnError?.Invoke(e);
+                    }
+                });
+            }
         }
 
         public async Task WaitAsync()
         {
-            while (_pendingTaskFactories.Any())
+            while (true)
             {
-                await _engine;
-            }
-            await _engine;
-        }
-
-        private async Task RunTasksInQueue()
-        {
-            var tasksInFlight = Task.CompletedTask;
-            while (_pendingTaskFactories.Any())
-            {
-                while (tasksInFlight.IsCompleted && _pendingTaskFactories.Any())
+                Task completion;
+                lock (_queueLock)
                 {
-                    var taskFactory = _pendingTaskFactories.Dequeue();
-                    tasksInFlight = taskFactory();
+                    completion = _engine;
                 }
-                try
+                await completion;
+                lock (_queueLock)
                 {
-                    await tasksInFlight;
-                }
-                catch (Exception e)
-                {
-                    OnError?.Invoke(e);
+                    if (completion == _engine)
+                    {
+                        return;
+                    }
                 }
             }
         }
