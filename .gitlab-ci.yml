@@ -67,10 +67,27 @@ s360:
         # Policy rejection must stop immediately, without retrying the audit.
         when: runner_system_failure
 
+s360_npm:
+    stage: s360
+    before_script: []
+    script:
+        - export PATH="$PATH:$HOME/.dotnet/tools"
+        - dotnet tool update Aiursoft.S360.Client --global --add-source https://nuget.aiursoft.com/v3/index.json
+        - s360 check --path . --ecosystem npm --npm-lockfile-only --purpose "$S360_PURPOSE"
+    rules:
+        - exists:
+              - "**/package.json"
+    retry:
+        max: 2
+        when: runner_system_failure
+
 build:
     stage: build
     needs:
         - s360
+        - job: s360_npm
+          optional: true
+          artifacts: false
     script:
         # Job directories differ. Restore the audited versions and content hashes
         # from the lock files instead of reusing another job's absolute paths.
