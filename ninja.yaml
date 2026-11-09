@@ -1,4 +1,6 @@
 configVersion: 1
+npm:
+  updateDependencies: true
 http:
   profiles:
     company-source:
