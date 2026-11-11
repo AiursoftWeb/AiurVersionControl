@@ -91,6 +91,11 @@ build:
     script:
         # Job directories differ. Restore the audited versions and content hashes
         # from the lock files instead of reusing another job's absolute paths.
+        # Keep an optional build-only feed separate from the source audited above.
+        - |
+            if [ -f nuget.build.config ]; then
+              cp nuget.build.config nuget.config
+            fi
         - dotnet restore "$SOLUTION_FILE" --locked-mode --disable-parallel --no-cache --configfile nuget.config --packages "$CI_PROJECT_DIR/obj/s360-packages"
         - dotnet build "$SOLUTION_FILE" -maxcpucount:1 --no-self-contained --no-restore
     retry:
