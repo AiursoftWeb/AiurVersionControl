@@ -41,12 +41,7 @@ if [ -z "$CI" ]; then
 fi
 
 echo "Checking for JetBrains ReSharper Global Tools..."
-if ! command -v jb &> /dev/null; then
-    echo "jb not found, installing..."
-    dotnet tool install JetBrains.ReSharper.GlobalTools --global --add-source https://nuget.aiursoft.com/v3/index.json --configfile ./nuget.config -v d
-else
-    echo "jb is already installed."
-fi
+command -v jb || { echo "Required tool 'jb' is missing." >&2; exit 1; }
 
 echo "Restoring dependencies..."
 dotnet restore --no-cache --configfile nuget.config || \
