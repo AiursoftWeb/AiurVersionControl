@@ -34,7 +34,7 @@ before_script:
       <configuration>
           <packageSources>
               <clear />
-              <add key="aiursoft" value="https://nuget.aiursoft.com/v3/index.json" />
+              <add key="aiursoft" value="https://nupkg.aiursoft.com/v3/index.json" />
           </packageSources>
       </configuration>
       NUGETEOF
@@ -55,6 +55,8 @@ variables:
     GIT_CLONE_PATH: "$CI_BUILDS_DIR/$CI_PROJECT_NAME/$CI_PIPELINE_ID/$CI_JOB_ID"
     MSBUILDDISABLENODEREUSE: "1"
     DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+    npm_config_registry: "https://nopkg.aiursoft.com/npm/"
+    npm_config_replace_registry_host: "always"
     S360_PURPOSE: review
     S360_CHECK_KEY: ""
 
@@ -75,7 +77,7 @@ s360:
 s360_npm:
     stage: s360
     script:
-        - s360 check --path . --ecosystem npm --npm-lockfile-only --purpose "$S360_PURPOSE"
+        - s360 check --path . --ecosystem npm --npm-lockfile-only --npm-registry "$npm_config_registry" --purpose "$S360_PURPOSE"
     rules:
         - exists:
               - "**/package.json"
@@ -93,11 +95,6 @@ build:
     script:
         # Job directories differ. Restore the audited versions and content hashes
         # from the lock files instead of reusing another job's absolute paths.
-        # Keep an optional build-only feed separate from the source audited above.
-        - |
-            if [ -f nuget.build.config ]; then
-              cp nuget.build.config nuget.config
-            fi
         - dotnet restore "$SOLUTION_FILE" --locked-mode --disable-parallel --no-cache --configfile nuget.config --packages "$CI_PROJECT_DIR/obj/s360-packages"
         - dotnet build "$SOLUTION_FILE" -maxcpucount:1 --no-self-contained --no-restore
     retry:
@@ -154,7 +151,7 @@ validate_docker:
         - build
     script:
         - docker buildx use aiur-global-builder
-        - docker buildx build . --platform linux/amd64,linux/arm64
+        - docker buildx build . --platform linux/amd64,linux/arm64 --build-arg NUGET_SOURCE=https://nupkg.aiursoft.com/v3/index.json --build-arg NPM_REGISTRY=https://nopkg.aiursoft.com/npm/
     rules:
         - exists:
               - Dockerfile
@@ -202,10 +199,10 @@ deploy_local_nuget:
     script:
         - |
             for file in $(find . -name "*.nupkg"); do
-              dotnet nuget push "$file" --api-key "$LOCAL_NUGET_API_KEY" --source "https://nuget.aiursoft.com/v3/index.json" --skip-duplicate || exit 1;
+              dotnet nuget push "$file" --api-key "$NUPKG_API_KEY" --source "https://nupkg.aiursoft.com/v3/index.json" --skip-duplicate || exit 1;
             done
     rules:
-        - if: '$CI_COMMIT_BRANCH == "master"'
+        - if: '$CI_COMMIT_BRANCH == "master" && $NUPKG_API_KEY'
 
 deploy_public_nuget:
     stage: deploy
@@ -242,7 +239,7 @@ deploy_docker_all:
         - docker buildx use aiur-global-builder
         # Both required destinations must succeed. China replication is handled
         # asynchronously by puller_cn after the home-registry push completes.
-        - docker buildx build . --platform linux/amd64,linux/arm64 --tag "$LOCAL_TARGET_COM" --tag "$PUBLIC_TARGET" --push
+        - docker buildx build . --platform linux/amd64,linux/arm64 --build-arg NUGET_SOURCE=https://nupkg.aiursoft.com/v3/index.json --build-arg NPM_REGISTRY=https://nopkg.aiursoft.com/npm/ --tag "$LOCAL_TARGET_COM" --tag "$PUBLIC_TARGET" --push
 
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
