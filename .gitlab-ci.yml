@@ -185,11 +185,11 @@ pack:
           optional: true
     script:
         - dotnet build -maxcpucount:1 --configuration Release --no-self-contained -p:GeneratePackageOnBuild=false "$SOLUTION_FILE"
-        - dotnet pack -maxcpucount:1 --configuration Release --no-build "$SOLUTION_FILE"
+        - dotnet pack -maxcpucount:1 --configuration Release --no-build --output "$CI_PROJECT_DIR/artifacts/nuget" "$SOLUTION_FILE"
     artifacts:
         expire_in: 1 week
         paths:
-            - "**/*.nupkg"
+            - "artifacts/nuget/*.nupkg"
 
 deploy_local_nuget:
     stage: deploy
@@ -198,11 +198,13 @@ deploy_local_nuget:
         - pack
     script:
         - |
-            for file in $(find . -name "*.nupkg"); do
-              dotnet nuget push "$file" --api-key "$NUPKG_API_KEY" --source "https://nupkg.aiursoft.com/v3/index.json" --skip-duplicate || exit 1;
+            for file in artifacts/nuget/*.nupkg; do
+              [ -f "$file" ] || continue
+              : "${NUPKG_API_KEY:?NuGet publishing credential is required}"
+              dotnet nuget push "$file" --api-key "$NUPKG_API_KEY" --source "https://nupkg.aiursoft.com/v3/index.json" --timeout 1200 --skip-duplicate || exit 1
             done
     rules:
-        - if: '$CI_COMMIT_BRANCH == "master" && $NUPKG_API_KEY'
+        - if: '$CI_COMMIT_BRANCH == "master"'
 
 deploy_public_nuget:
     stage: deploy
@@ -211,8 +213,10 @@ deploy_public_nuget:
         - pack
     script:
         - |
-            for file in $(find . -name "*.nupkg"); do
-              dotnet nuget push "$file" --api-key "$NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --timeout 1200 --skip-duplicate || exit 1;
+            for file in artifacts/nuget/*.nupkg; do
+              [ -f "$file" ] || continue
+              : "${NUGET_API_KEY:?NuGet publishing credential is required}"
+              dotnet nuget push "$file" --api-key "$NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --timeout 1200 --skip-duplicate || exit 1
             done
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"'
