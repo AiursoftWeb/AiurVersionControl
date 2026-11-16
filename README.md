@@ -100,10 +100,14 @@ await new ObjectRemote<string>(serverRepo, autoPush: true, autoPull: true)
 
 // Now they sync automatically!
 clientRepo.Commit("Hello from client");
+await clientRepo.WaitAsync();
+await serverRepo.WaitAsync();
 // Output: [Client] Received: Hello from client
 //         [Server] Received: Hello from client
 
 serverRepo.Commit("Hello from server");
+await serverRepo.WaitAsync();
+await clientRepo.WaitAsync();
 // Output: [Server] Received: Hello from server
 //         [Client] Received: Hello from server
 
