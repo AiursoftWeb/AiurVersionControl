@@ -1,4 +1,9 @@
 configVersion: 1
+nuget:
+  sameVersionGroups:
+    skia-linux:
+      - SkiaSharp
+      - SkiaSharp.NativeAssets.Linux.NoDependencies
 npm:
   updateDependencies: true
 http:
