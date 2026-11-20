@@ -1,4 +1,8 @@
 configVersion: 1
+proposalCooldowns:
+  nuget: 1d
+  npm: 7d
+  translation: 0
 nuget:
   sameVersionGroups:
     skia-linux:
